@@ -1,5 +1,6 @@
 import nodemailer, { type Transporter } from "nodemailer";
 import { getDb, schema } from "@/db";
+import { emailBudget } from "./budget";
 import { toHtml } from "./html";
 import type { EmailContent } from "./templates";
 
@@ -20,6 +21,9 @@ export async function sendOrderEmail(input: { orderUuid: string; template: strin
     const t = getTransport();
     if (!t) {
       result = "skipped: SMTP is not configured";
+    } else if ((await emailBudget()).remaining < 1) {
+      // Gmail's daily cap: do not send, and say so in the log so finance can see who was missed.
+      result = "blocked: daily limit reached";
     } else {
       await t.sendMail({
         from: `"START: COLLECTIONS" <${process.env.SMTP_USER}>`,

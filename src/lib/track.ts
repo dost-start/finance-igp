@@ -4,7 +4,8 @@ import { getDb, schema } from "@/db";
 import { formatManila } from "./email/templates";
 import type { LimitStore } from "./rate-limit";
 import { hashToken } from "./tracking";
-import { BUYER_STATUS_TEXT, isTimelineStatus, last4Matches, type TrackedOrder } from "./tracking-view";
+import { buyerTimeline } from "./status";
+import { BUYER_STATUS_TEXT, last4Matches, type TrackedOrder } from "./tracking-view";
 
 type OrderRow = { id: string; orderId: string; status: TrackedOrder["status"] };
 
@@ -18,7 +19,7 @@ async function toTracked(order: OrderRow): Promise<TrackedOrder> {
     orderId: order.orderId,
     status: order.status,
     text: BUYER_STATUS_TEXT[order.status] ?? "",
-    timeline: events.filter((e) => isTimelineStatus(e.status)).map((e) => ({ status: e.status, at: formatManila(e.at) })),
+    timeline: buyerTimeline(events, order.status).map((e) => ({ status: e.status, at: formatManila(e.at) })),
   };
 }
 

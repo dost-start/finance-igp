@@ -37,3 +37,32 @@ export const generalNextStatuses = (from: OrderStatus): readonly OrderStatus[] =
 
 // Buyers see statuses from Payment Confirmation onward; Order Received and Pending Payment are internal.
 export const isBuyerVisible = (s: OrderStatus): boolean => !["order_received", "pending_payment"].includes(s);
+
+// Corrections (PRD FR05.03, FR06.04): fixing a wrong status is allowed and recorded. A correction can
+// go back or skip ahead inside the same line of progress, but never into payment checking (that stays
+// a manual review) and never between the delivery line and the cancel/refund line (those carry their
+// own emails and decisions). It does not email the buyer.
+const DELIVERY_LINE: readonly OrderStatus[] = ["payment_confirmation", "in_production", "out_for_shipping", "received_successfully"];
+const REFUND_LINE: readonly OrderStatus[] = ["canceled", "refund_in_process", "refund_successful"];
+
+export const correctionTargets = (from: OrderStatus): readonly OrderStatus[] => {
+  const line = [DELIVERY_LINE, REFUND_LINE].find((l) => l.includes(from));
+  return line ? line.filter((s) => s !== from) : [];
+};
+export const canCorrect = (from: OrderStatus, to: OrderStatus): boolean => correctionTargets(from).includes(to);
+
+// The dated progress list a buyer sees. After a correction an order may have visited a status that no
+// longer applies (shipped by mistake, then put back to In Production), so the list keeps only steps up
+// to the order's current status, one line per step, each with the latest time that step was set.
+export function buyerTimeline<T extends { status: OrderStatus; at: Date }>(events: T[], current: OrderStatus): T[] {
+  const line = REFUND_LINE.includes(current) ? REFUND_LINE : DELIVERY_LINE;
+  const limit = line.indexOf(current);
+  const keep = (s: OrderStatus) => (REFUND_LINE.includes(s) ? REFUND_LINE.includes(current) && REFUND_LINE.indexOf(s) <= limit : DELIVERY_LINE.includes(s) && (REFUND_LINE.includes(current) || DELIVERY_LINE.indexOf(s) <= limit));
+  const latest = new Map<OrderStatus, T>();
+  for (const e of events) {
+    if (!keep(e.status)) continue;
+    const prev = latest.get(e.status);
+    if (!prev || e.at >= prev.at) latest.set(e.status, e);
+  }
+  return [...latest.values()].sort((a, b) => a.at.getTime() - b.at.getTime());
+}

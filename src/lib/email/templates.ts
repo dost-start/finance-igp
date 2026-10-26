@@ -89,7 +89,17 @@ export function renderEmail2(d: Email2Data, ticketUrl: string | null): EmailCont
 export const REJECT_REASONS = ["Unreadable receipt", "Incorrect amount", "Invalid reference number"] as const;
 export type RejectReason = (typeof REJECT_REASONS)[number];
 
-export function rejectionDeadline(from: Date, hours = Number(process.env.REJECTION_DEADLINE_HOURS) || 48): Date {
+// Finance has not given the submission deadline rule yet, so nothing is assumed: until
+// REJECTION_DEADLINE_HOURS is set to a whole number of hours, rejecting a payment is refused in the
+// admin screen (see missingSetting), so no buyer is ever promised an invented deadline.
+export function rejectionDeadlineHours(env: Record<string, string | undefined> = process.env): number | null {
+  const raw = env.REJECTION_DEADLINE_HOURS?.trim();
+  if (!raw || !/^\d{1,4}$/.test(raw)) return null;
+  const hours = Number(raw);
+  return hours >= 1 ? hours : null;
+}
+
+export function rejectionDeadline(from: Date, hours: number): Date {
   return new Date(from.getTime() + hours * 3_600_000);
 }
 
@@ -151,16 +161,27 @@ export type StatusEmailData = {
   at: Date; // when the status was set
 };
 
-export type StatusEmailConfig = { siteUrl: string; refundTimeframe: string };
+export type StatusEmailConfig = { siteUrl: string; refundTimeframe: string | null };
 
-// One fixed refund timeframe for all orders (finance question Q3). Until finance answers, a stand-in.
-export const DEFAULT_REFUND_TIMEFRAME = "5 to 7 business days";
-
+// One fixed refund timeframe for all orders (finance question Q3). Finance has not given it yet, so
+// nothing is assumed: while REFUND_TIMEFRAME is unset, moving an order to Refund in Process is
+// refused in the admin screen (see missingSetting).
 export function statusEmailConfig(env: Record<string, string | undefined> = process.env): StatusEmailConfig {
   return {
     siteUrl: (env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, ""),
-    refundTimeframe: env.REFUND_TIMEFRAME?.trim() || DEFAULT_REFUND_TIMEFRAME,
+    refundTimeframe: env.REFUND_TIMEFRAME?.trim() || null,
   };
+}
+
+export const SETTING_MISSING = {
+  refundTimeframe: "Refund timeframe is not set yet, ask tech.",
+  rejectionDeadline: "Submission deadline is not set yet, ask tech.",
+} as const;
+
+// The admin action that needs a value finance has not provided yet, or null when it can go ahead.
+export function missingSetting(action: "refund_in_process" | "reject_payment", env: Record<string, string | undefined> = process.env): string | null {
+  if (action === "refund_in_process") return statusEmailConfig(env).refundTimeframe === null ? SETTING_MISSING.refundTimeframe : null;
+  return rejectionDeadlineHours(env) === null ? SETTING_MISSING.rejectionDeadline : null;
 }
 
 // Finance-typed text goes into the email body, so keep it to one tidy paragraph.
@@ -181,6 +202,9 @@ export function renderStatusEmail(
   config: StatusEmailConfig = statusEmailConfig(),
 ): { template: string; content: EmailContent } {
   const trackUrl = `${config.siteUrl}/track`;
+  // Never send a refund email without the real timeframe (the admin screen refuses first; this is the backstop).
+  if (status === "refund_in_process" && !config.refundTimeframe) throw new Error(SETTING_MISSING.refundTimeframe);
+  const refundTimeframe = config.refundTimeframe ?? "";
   const form = ticketUrl ?? "(the merch ticket form link will be added soon)";
   const when = formatManila(d.at);
   const sign = (team: string) => ["Best regards,", team, "", "--", footer(ticketUrl)];
@@ -296,7 +320,7 @@ export function renderStatusEmail(
             `Order ID: ${d.orderId}`,
             `Refund Amount: ${formatPeso(d.totalCentavos)}`,
             "Refund Destination: the account you provided in the refund form",
-            `Refund Timeframe: ${config.refundTimeframe}`,
+            `Refund Timeframe: ${refundTimeframe}`,
             noteLine(d.note),
             "",
             "Refund Process from Finance",

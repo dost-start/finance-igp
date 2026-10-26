@@ -15,6 +15,7 @@ export const E2E_AUTH_SECRET = "e2e-only-secret-never-used-in-production-0123456
 export default defineConfig({
   testDir: "./e2e",
   testMatch: "**/*.e2e.ts",
+  globalSetup: "./e2e/global-setup.ts",
   timeout: 120_000,
   workers: 1,
   reporter: "list",
@@ -31,6 +32,10 @@ export default defineConfig({
       SMTP_PASS: "",
       AUTH_SECRET: E2E_AUTH_SECRET,
       NEXT_PUBLIC_SITE_URL: `http://localhost:${E2E_PORT}`,
+      // Values finance has not given yet, set to obvious test values so the actions that need them can run.
+      REFUND_TIMEFRAME: "E2E TEST TIMEFRAME",
+      REJECTION_DEADLINE_HOURS: "10",
+      EMAIL_DAILY_LIMIT: "5", // small on purpose: the status-flow test fills it with fake "sent" rows to check the guard
     },
   },
 });

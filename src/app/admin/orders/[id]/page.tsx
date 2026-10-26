@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { z } from "zod";
+import { CorrectionForm } from "@/components/admin/correction-form";
 import { OcrPanel } from "@/components/admin/ocr-panel";
 import { ReceiptViewer } from "@/components/admin/receipt-viewer";
 import { ReviewActions } from "@/components/admin/review-actions";
@@ -12,9 +13,11 @@ import { StatusControl } from "@/components/admin/status-control";
 import { getDb, schema } from "@/db";
 import { requireAdmin } from "@/lib/admin";
 import { findDuplicateReferences } from "@/lib/duplicates";
-import { formatManila } from "@/lib/email/templates";
+import { emailBudget } from "@/lib/email/budget";
+import { checkBudget } from "@/lib/email/limit";
+import { SETTING_MISSING, formatManila, missingSetting } from "@/lib/email/templates";
 import { formatPeso } from "@/lib/money";
-import { generalNextStatuses, STATUS_LABEL } from "@/lib/status";
+import { correctionTargets, generalNextStatuses, STATUS_LABEL } from "@/lib/status";
 
 export const metadata: Metadata = { title: "Review order" };
 
@@ -22,8 +25,11 @@ const NOTICE: Record<string, string> = {
   changed: "Someone else already changed this order, so nothing was saved. Here is its current state.",
   reason: "Choose a reason before rejecting.",
   cancel_reason: "Add the reason for canceling. The buyer reads it in their email.",
+  deadline_unset: SETTING_MISSING.rejectionDeadline,
+  refund_unset: SETTING_MISSING.refundTimeframe,
+  correction_reason: "Say what went wrong before saving a correction.",
 };
-const DONE: Record<string, string> = { confirmed: "Payment confirmed. Here is the next order waiting.", rejected: "Payment rejected. Here is the next order waiting.", status: "Status updated." };
+const DONE: Record<string, string> = { confirmed: "Payment confirmed. Here is the next order waiting.", rejected: "Payment rejected. Here is the next order waiting.", status: "Status updated.", corrected: "Status corrected and recorded. The buyer was not emailed." };
 
 function Fact({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -40,6 +46,7 @@ async function Review({ params, searchParams }: { params: PageProps<"/admin/orde
   const sp = await searchParams;
   const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
   const notice = one(sp.notice);
+  const limitMessage = notice === "email_limit" ? checkBudget(await emailBudget(), 1) : null;
   const done = one(sp.done);
   if (!z.uuid().safeParse(id).success) notFound();
 
@@ -86,6 +93,11 @@ async function Review({ params, searchParams }: { params: PageProps<"/admin/orde
         )}
       </div>
 
+      {limitMessage && !limitMessage.ok && (
+        <p role="alert" className="mt-4 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-100">
+          {limitMessage.message}
+        </p>
+      )}
       {notice && NOTICE[notice] && (
         <p role="alert" className="mt-4 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-100">
           {NOTICE[notice]}
@@ -196,14 +208,15 @@ async function Review({ params, searchParams }: { params: PageProps<"/admin/orde
           <h2 className="text-lg font-semibold">Decision</h2>
           {canReview ? (
             <div className="mt-4">
-              <ReviewActions orderUuid={order.id} />
+              <ReviewActions orderUuid={order.id} rejectBlocked={missingSetting("reject_payment")} />
             </div>
           ) : order.status === "order_received" ? (
             <p className="mt-3 text-sm text-zinc-500">The buyer has not uploaded a receipt yet, so there is nothing to verify.</p>
           ) : (
             <div className="mt-3">
               <p className="mb-3 text-sm text-zinc-500">This order is {STATUS_LABEL[order.status]}. Move it one step forward:</p>
-              <StatusControl orderUuid={order.id} options={generalNextStatuses(order.status)} />
+              <StatusControl orderUuid={order.id} options={generalNextStatuses(order.status)} refundBlocked={missingSetting("refund_in_process")} />
+              <CorrectionForm orderUuid={order.id} targets={correctionTargets(order.status)} />
             </div>
           )}
         </aside>

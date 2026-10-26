@@ -41,3 +41,83 @@ describe("status rules", () => {
     expect(isBuyerVisible("payment_rejected")).toBe(true);
   });
 });
+
+import { buyerTimeline, canCorrect, correctionTargets } from "./status";
+
+describe("corrections", () => {
+  it("allow moving back or skipping ahead inside the delivery line", () => {
+    expect(correctionTargets("out_for_shipping")).toEqual(["payment_confirmation", "in_production", "received_successfully"]);
+    expect(canCorrect("received_successfully", "in_production")).toBe(true);
+    expect(canCorrect("in_production", "received_successfully")).toBe(true);
+  });
+  it("allow moving back inside the cancel and refund line", () => {
+    expect(correctionTargets("refund_successful")).toEqual(["canceled", "refund_in_process"]);
+    expect(canCorrect("refund_in_process", "canceled")).toBe(true);
+  });
+  it("never reach payment checking or cross between the two lines", () => {
+    for (const s of ["order_received", "pending_payment", "payment_rejected"] as const) {
+      expect(canCorrect("in_production", s)).toBe(false);
+      expect(correctionTargets(s)).toEqual([]);
+    }
+    expect(canCorrect("in_production", "canceled")).toBe(false);
+    expect(canCorrect("canceled", "in_production")).toBe(false);
+    expect(canCorrect("in_production", "in_production")).toBe(false);
+  });
+});
+
+describe("buyer timeline", () => {
+  const at = (h: number) => new Date(Date.UTC(2026, 10, 13, h));
+  it("lists the steps in order with their dates", () => {
+    const t = buyerTimeline(
+      [
+        { status: "payment_confirmation" as const, at: at(1) },
+        { status: "in_production" as const, at: at(2) },
+      ],
+      "in_production",
+    );
+    expect(t.map((e) => e.status)).toEqual(["payment_confirmation", "in_production"]);
+  });
+  it("drops a step that was set by mistake and corrected away", () => {
+    const t = buyerTimeline(
+      [
+        { status: "payment_confirmation" as const, at: at(1) },
+        { status: "in_production" as const, at: at(2) },
+        { status: "out_for_shipping" as const, at: at(3) },
+        { status: "in_production" as const, at: at(4) }, // correction back
+      ],
+      "in_production",
+    );
+    expect(t.map((e) => [e.status, e.at.getUTCHours()])).toEqual([
+      ["payment_confirmation", 1],
+      ["in_production", 4],
+    ]);
+  });
+  it("shows the cancel and refund steps after cancel, with the confirmed payment before them", () => {
+    const t = buyerTimeline(
+      [
+        { status: "payment_confirmation" as const, at: at(1) },
+        { status: "canceled" as const, at: at(2) },
+        { status: "refund_in_process" as const, at: at(3) },
+      ],
+      "refund_in_process",
+    );
+    expect(t.map((e) => e.status)).toEqual(["payment_confirmation", "canceled", "refund_in_process"]);
+  });
+  it("hides a refund step that was corrected away", () => {
+    const t = buyerTimeline(
+      [
+        { status: "payment_confirmation" as const, at: at(1) },
+        { status: "canceled" as const, at: at(2) },
+        { status: "refund_in_process" as const, at: at(3) },
+        { status: "refund_successful" as const, at: at(4) },
+        { status: "refund_in_process" as const, at: at(5) },
+      ],
+      "refund_in_process",
+    );
+    expect(t.map((e) => e.status)).toEqual(["payment_confirmation", "canceled", "refund_in_process"]);
+  });
+  it("ignores steps buyers never see", () => {
+    const t = buyerTimeline([{ status: "pending_payment" as const, at: at(1) }, { status: "payment_confirmation" as const, at: at(2) }], "payment_confirmation");
+    expect(t.map((e) => e.status)).toEqual(["payment_confirmation"]);
+  });
+});

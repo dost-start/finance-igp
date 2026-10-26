@@ -6,7 +6,7 @@ import { writeAudit } from "@/lib/admin";
 import type { Admin } from "@/lib/admin-accounts";
 import { sendOrderEmail } from "@/lib/email/send";
 import { cleanNote, isStatusEmailStatus, renderStatusEmail, ticketFormUrl } from "@/lib/email/templates";
-import { generalNextStatuses } from "@/lib/status";
+import { canCorrect, generalNextStatuses } from "@/lib/status";
 
 // One status change after payment confirmation (production, shipping, received, cancel, refund).
 // Used for a single order and for each order in a bulk update, so both follow the same rules:
@@ -98,4 +98,30 @@ export async function sendStatusEmails(changed: ChangedOrder[]): Promise<void> {
     }
   }
   await Promise.all(Array.from({ length: Math.min(EMAIL_CONCURRENCY, queue.length) }, worker));
+}
+
+export type CorrectionResult = { ok: true } | { ok: false; reason: "missing" | "not_allowed" | "no_reason" };
+
+// Fixes a wrong status. It is recorded in the order's history and the audit log with the reason, and
+// does not email the buyer (nothing new happened to their order, a mistake was undone).
+export async function correctStatus(admin: Admin, orderUuid: string, to: OrderStatus, rawReason: string | null): Promise<CorrectionResult> {
+  const reason = cleanNote(rawReason);
+  if (!reason) return { ok: false, reason: "no_reason" };
+  const db = getDb();
+  const [order] = await db.select({ id: schema.orders.id, status: schema.orders.status }).from(schema.orders).where(eq(schema.orders.id, orderUuid)).limit(1);
+  if (!order) return { ok: false, reason: "missing" };
+  if (!canCorrect(order.status, to)) return { ok: false, reason: "not_allowed" };
+
+  const moved = await db.transaction(async (tx) => {
+    const updated = await tx
+      .update(schema.orders)
+      .set({ status: to })
+      .where(and(eq(schema.orders.id, orderUuid), eq(schema.orders.status, order.status)))
+      .returning({ id: schema.orders.id });
+    if (updated.length === 0) return false;
+    await tx.insert(schema.statusEvents).values({ orderUuid, status: to, changedBy: admin.id, note: `Correction: ${reason}` });
+    await writeAudit(tx, { adminId: admin.id, action: "status.correction", orderUuid, before: { status: order.status }, after: { status: to, reason } });
+    return true;
+  });
+  return moved ? { ok: true } : { ok: false, reason: "not_allowed" };
 }

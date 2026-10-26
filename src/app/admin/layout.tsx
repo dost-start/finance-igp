@@ -29,9 +29,19 @@ export default function AdminLayout({ children }: LayoutProps<"/admin">) {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between border-b border-zinc-200 pb-4 dark:border-zinc-800">
-        <Link href="/admin" className="font-semibold">
-          Merch admin
-        </Link>
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
+          <Link href="/admin" className="font-semibold">
+            Merch admin
+          </Link>
+          <nav aria-label="Admin sections" className="flex gap-4 text-sm">
+            <Link href="/admin" className="underline-offset-4 hover:underline">
+              Orders
+            </Link>
+            <Link href="/admin/emails" className="underline-offset-4 hover:underline">
+              Email log
+            </Link>
+          </nav>
+        </div>
         <Suspense fallback={null}>
           <Who />
         </Suspense>
