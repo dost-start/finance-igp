@@ -7,6 +7,7 @@ try {
 }
 
 export const E2E_PORT = 3101;
+export const E2E_CRON_SECRET = "e2e-cron-secret-0123456789abcdef0123456789abcdef";
 export const E2E_AUTH_SECRET = "e2e-only-secret-never-used-in-production-0123456789";
 
 // The test runs the app locally. Drive and Gmail are switched off (empty values beat .env.local), so
@@ -32,6 +33,7 @@ export default defineConfig({
       SMTP_USER: "",
       SMTP_PASS: "",
       AUTH_SECRET: E2E_AUTH_SECRET,
+      CRON_SECRET: E2E_CRON_SECRET,
       NEXT_PUBLIC_SITE_URL: `http://localhost:${E2E_PORT}`,
       EMAIL_DAILY_LIMIT: "5", // small on purpose: the status-flow test fills it with fake "sent" rows to check the guard
     },

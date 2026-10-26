@@ -94,3 +94,63 @@ describe("store lock", () => {
     expect(STORE_CLOSED_MESSAGE).toContain("payments");
   });
 });
+
+import { PRODUCT_TYPES, SLUG_SHAPE, parsePhotos, photosToText, slugify } from "./product-edit";
+
+describe("product photos", () => {
+  it("accepts plain file names, one per line or comma separated, in order and without repeats", () => {
+    const r = parsePhotos("tee-front.jpg\ntee-back.png, tee-front.jpg\n/products/tee-side.webp");
+    expect(r).toEqual({ ok: true, images: [{ url: "/products/tee-front.jpg", kind: "flat" }, { url: "/products/tee-back.png", kind: "flat" }, { url: "/products/tee-side.webp", kind: "flat" }] });
+  });
+  it("keeps the kind (flat or model) of a photo that was already there", () => {
+    const r = parsePhotos("a.jpg\nb.jpg", [{ url: "/products/b.jpg", kind: "model" }]);
+    expect(r.ok && r.images.map((i) => i.kind)).toEqual(["flat", "model"]);
+  });
+  it("allows no photos at all (the shop then shows a placeholder)", () => {
+    expect(parsePhotos("  \n ")).toEqual({ ok: true, images: [] });
+  });
+  it("refuses folders, web addresses, parent paths, odd extensions and too many", () => {
+    for (const bad of ["../secret.jpg", "folder/tee.jpg", "https://evil.example/x.jpg", "tee.exe", "tee", ".hidden.jpg", "a..b.jpg", "tee front.jpg", "<script>.jpg"]) {
+      expect(parsePhotos(bad).ok, bad).toBe(false);
+    }
+    expect(parsePhotos(Array.from({ length: 7 }, (_, i) => `p${i}.jpg`).join("\n")).ok).toBe(false);
+  });
+  it("shows existing photos as file names for editing", () => {
+    expect(photosToText([{ url: "/products/a.jpg", kind: "flat" }, { url: "/products/b.png", kind: "model" }])).toBe("a.jpg\nb.png");
+  });
+  it("passes photos through the product edit, and leaves them alone when not given", () => {
+    const base = { name: "Tee", price: "450", active: true, sizesJson: JSON.stringify([{ size: "M", available: true }]) };
+    const withPhotos = parseProductEdit({ ...base, photos: "tee.jpg" });
+    expect(withPhotos.ok && withPhotos.data.images).toEqual([{ url: "/products/tee.jpg", kind: "flat" }]);
+    const without = parseProductEdit(base);
+    expect(without.ok && without.data.images).toBeUndefined();
+    const bad = parseProductEdit({ ...base, photos: "../x.jpg" });
+    expect(!bad.ok && bad.errors.photos).toContain("not a photo file name");
+  });
+  it("notes changed photos in the audit log", () => {
+    const a = { name: "A", priceCentavos: 100, active: true, sizes: [{ size: "S", available: true }], images: [{ url: "/products/a.jpg", kind: "flat" as const }] };
+    expect(changedFields(a, { ...a, images: [{ url: "/products/b.jpg", kind: "flat" }] })).toEqual(["photos"]);
+    expect(changedFields(a, a)).toEqual([]);
+  });
+});
+
+describe("new products", () => {
+  it("makes a web address from the name", () => {
+    expect(slugify("START T-Shirt, Design C")).toBe("start-t-shirt-design-c");
+    expect(slugify("  Lanyard (Dark)!! ")).toBe("lanyard-dark");
+    expect(slugify("Café Tote")).toBe("cafe-tote");
+    expect(slugify("***")).toBe("");
+    expect(slugify("x".repeat(200)).length).toBeLessThanOrEqual(60);
+  });
+  it("accepts only tidy lowercase addresses", () => {
+    for (const ok of ["tee", "tee-a", "sticker-01"]) expect(SLUG_SHAPE.test(ok), ok).toBe(true);
+    for (const bad of ["Tee", "tee_a", "-tee", "tee-", "tee--a", "tee a", ""]) expect(SLUG_SHAPE.test(bad), bad).toBe(false);
+  });
+  it("offers the product types the shop already uses", () => {
+    expect(PRODUCT_TYPES.map((t) => t.value)).toEqual(expect.arrayContaining(["tshirt", "jacket", "lanyard", "tote", "sticker"]));
+  });
+  it("names a created product in the audit log", () => {
+    expect(auditLabel("product.create")).toBe("Added a product");
+    expect(describeAudit("product.create", null, { name: "Cap" })).toBe("Cap (not on sale until switched on)");
+  });
+});

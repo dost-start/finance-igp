@@ -1,9 +1,10 @@
+import { formatLaunch } from "./launch";
 import { STATUS_LABEL } from "./status";
 import type { OrderStatus } from "@/db/schema";
 
 // The audit log screen (PRD FR06.06): who changed what, and when. Every admin write already leaves
 // a row with a short action code; this turns the code and its before/after into plain words.
-export const AUDIT_ACTIONS = ["payment.confirm", "payment.reject", "status.change", "status.correction", "orders.export", "product.update", "store.lock", "store.unlock"] as const;
+export const AUDIT_ACTIONS = ["payment.confirm", "payment.reject", "status.change", "status.correction", "orders.export", "product.update", "product.create", "store.lock", "store.unlock", "launch.update", "backup.run"] as const;
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
 
 export const AUDIT_LABEL: Record<AuditAction, string> = {
@@ -13,8 +14,11 @@ export const AUDIT_LABEL: Record<AuditAction, string> = {
   "status.correction": "Corrected an order's status",
   "orders.export": "Exported orders to CSV",
   "product.update": "Edited a product",
+  "product.create": "Added a product",
   "store.lock": "Closed the store",
   "store.unlock": "Reopened the store",
+  "launch.update": "Changed the launch date",
+  "backup.run": "Ran a backup by hand",
 };
 
 export const isAuditAction = (a: string): a is AuditAction => (AUDIT_ACTIONS as readonly string[]).includes(a);
@@ -56,6 +60,19 @@ export function describeAudit(action: string, before: Json, after: Json): string
       const name = text(after, "name") ?? text(before, "name");
       const changed = after && typeof after === "object" && Array.isArray((after as Record<string, unknown>).changed) ? ((after as Record<string, unknown>).changed as unknown[]).filter((c): c is string => typeof c === "string") : [];
       return [name, changed.length ? `changed ${changed.join(", ")}` : ""].filter(Boolean).join(": ");
+    }
+    case "product.create": {
+      const name = text(after, "name");
+      return name ? `${name} (not on sale until switched on)` : "";
+    }
+    case "launch.update": {
+      const from = text(before, "launchAt");
+      const to = text(after, "launchAt");
+      return from && to ? `From ${formatLaunch(from)} to ${formatLaunch(to)}` : "";
+    }
+    case "backup.run": {
+      const file = text(after, "file");
+      return file ?? "";
     }
     case "store.lock":
       return "No new orders or payments until it is reopened";

@@ -185,4 +185,20 @@ export const storeSettings = pgTable("store_settings", {
   updatedBy: uuid("updated_by").references(() => adminAccounts.id),
 }).enableRLS();
 
+// Server errors, written by instrumentation.ts so the Technology team can see problems on the admin
+// System page before buyers report them. No request bodies, headers or buyer data: only the route
+// (without its query), the HTTP method and a short cleaned message.
+export const errorLogs = pgTable(
+  "error_logs",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    route: text("route").notNull(),
+    method: text("method").notNull(),
+    message: text("message").notNull(),
+    digest: text("digest"),
+    createdAt: createdAt(),
+  },
+  (t) => [index("error_logs_created_idx").on(t.createdAt)],
+).enableRLS();
+
 export const nextOrderNumber = sql`nextval('order_number_seq')`;

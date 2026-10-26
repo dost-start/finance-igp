@@ -48,6 +48,7 @@ describe("tracking rate limit", () => {
 
 import { CHECKOUT_DEFAULT_MAX, CHECKOUT_DEFAULT_WINDOW_MINUTES, checkoutKey, checkoutLimit, recordHit } from "./rate-limit";
 import { visitorAddress } from "./visitor";
+import { UPLOAD_MAX, UPLOAD_WINDOW_SECONDS, uploadKey } from "./rate-limit";
 
 describe("checkout order limit", () => {
   it("uses generous defaults, because students share a university network", () => {
@@ -83,5 +84,25 @@ describe("visitorAddress", () => {
     expect(visitorAddress(headers({ "x-forwarded-for": "203.0.113.9, 10.0.0.1" }))).toBe("203.0.113.9");
     expect(visitorAddress(headers({ "x-real-ip": "198.51.100.4" }))).toBe("198.51.100.4");
     expect(visitorAddress(headers({}))).toBe("unknown");
+  });
+});
+
+describe("upload limit", () => {
+  it("is separate from the checkout and tracking counters and never stores the address", () => {
+    expect(uploadKey("203.0.113.9")).toMatch(/^upload:[0-9a-f]{32}$/);
+    expect(uploadKey("203.0.113.9")).not.toBe(checkoutKey("203.0.113.9"));
+    expect(uploadKey("203.0.113.9")).not.toBe(visitorKey("203.0.113.9"));
+    expect(uploadKey("203.0.113.9")).not.toContain("203.0.113.9");
+  });
+  it("lets a shared university connection upload plenty of receipts before it stops", () => {
+    expect(UPLOAD_MAX).toBeGreaterThanOrEqual(CHECKOUT_DEFAULT_MAX);
+    expect(UPLOAD_WINDOW_SECONDS).toBe(900);
+  });
+  it("blocks a visitor at the limit and nobody else", async () => {
+    const store = memoryStore();
+    const mine = [{ key: uploadKey("203.0.113.9"), max: UPLOAD_MAX }];
+    for (let i = 0; i < UPLOAD_MAX; i++) await recordHit(store, mine);
+    expect(await isBlocked(store, mine, UPLOAD_WINDOW_SECONDS)).toBe(true);
+    expect(await isBlocked(store, [{ key: uploadKey("198.51.100.4"), max: UPLOAD_MAX }], UPLOAD_WINDOW_SECONDS)).toBe(false);
   });
 });

@@ -60,6 +60,12 @@ export default function AdminLayout({ children }: LayoutProps<"/admin">) {
             <Suspense fallback={null}>
               <ProductsLink />
             </Suspense>
+            <Link href="/admin/system" className="underline-offset-4 hover:underline">
+              System
+            </Link>
+            <Link href="/admin/help" className="underline-offset-4 hover:underline">
+              Help
+            </Link>
             <Link href="/admin/changelog" className="underline-offset-4 hover:underline">
               Release notes <span className="text-zinc-500 dark:text-zinc-400">v{CURRENT_VERSION}</span>
             </Link>

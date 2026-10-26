@@ -100,7 +100,8 @@ test("finance and tech: audit log, product editor and the store lock", async ({ 
   await expect
     .poll(async () => {
       await buyerPage.goto("/checkout");
-      return buyerPage.getByText("The store is closed for now", { exact: true }).count();
+      // The page asks the server after it opens, so give the answer a moment to arrive.
+      return buyerPage.getByText("The store is closed for now", { exact: true }).waitFor({ timeout: 8_000 }).then(() => 1, () => 0);
     }, { timeout: 60_000, intervals: [2_000] })
     .toBeGreaterThan(0);
   await buyerPage.goto("/");
@@ -147,7 +148,7 @@ test("finance and tech: audit log, product editor and the store lock", async ({ 
   expect(edited.sizes).toEqual([{ size: "One size", available: true }, { size: "Large", available: false }]);
 
   //    The shop shows it straight away, at the new price.
-  await page.goto("/");
+  await page.goto("/shop");
   await expect(page.getByText("E2E Edited Product")).toBeVisible();
   await expect(page.locator("li", { hasText: "E2E Edited Product" })).toContainText("₱123.45");
 
@@ -157,7 +158,7 @@ test("finance and tech: audit log, product editor and the store lock", async ({ 
   await page.getByLabel("On sale").uncheck();
   await page.getByRole("button", { name: "Save product" }).click();
   await expect(page.getByText("Saved “E2E Edited Product”.")).toBeVisible();
-  await page.goto("/");
+  await page.goto("/shop");
   await expect(page.getByText("E2E Edited Product")).toHaveCount(0);
 
   // 6. The audit log shows all of it, with who did it (finance can read it).

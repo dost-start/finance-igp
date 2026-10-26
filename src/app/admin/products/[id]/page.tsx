@@ -7,6 +7,7 @@ import { z } from "zod";
 import { ProductForm } from "@/components/admin/product-form";
 import { getDb, schema } from "@/db";
 import { requireTech } from "@/lib/admin";
+import { photosToText } from "@/lib/product-edit";
 
 export const metadata: Metadata = { title: "Edit product" };
 
@@ -24,9 +25,9 @@ async function Edit({ params }: { params: PageProps<"/admin/products/[id]">["par
       </Link>
       <h1 className="mt-4 text-2xl font-semibold tracking-tight">{product.name}</h1>
       <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-        Address in the shop: <span className="font-mono">/products/{product.slug}</span>. Photos are added when the real ones arrive.
+        Address in the shop: <span className="font-mono">/products/{product.slug}</span>. 
       </p>
-      <ProductForm productId={product.id} initial={{ name: product.name, priceCentavos: product.priceCentavos, active: product.active, sizes: product.sizes }} />
+      <ProductForm productId={product.id} initial={{ name: product.name, priceCentavos: product.priceCentavos, active: product.active, sizes: product.sizes, photos: photosToText(product.images) }} />
     </>
   );
 }

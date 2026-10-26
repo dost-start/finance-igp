@@ -1,6 +1,6 @@
 {
   "name": "start-shop",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -17,7 +17,13 @@
     "e2e": "playwright test",
     "predev": "node scripts/copy-ocr-assets.mjs",
     "prebuild": "node scripts/copy-ocr-assets.mjs",
-    "changelog": "tsx scripts/write-changelog.mts"
+    "changelog": "tsx scripts/write-changelog.mts",
+    "verify-backup": "tsx scripts/verify-backup.mts",
+    "loadtest": "node scripts/loadtest.mjs",
+    "loadtest:orders": "tsx --env-file=.env.local scripts/loadtest-orders.mts",
+    "guide": "tsx scripts/write-guide.mts",
+    "demo:seed": "tsx --env-file=.env.local scripts/demo-seed.mts",
+    "demo:cleanup": "tsx --env-file=.env.local scripts/demo-cleanup.mts"
   },
   "dependencies": {
     "@tesseract.js-data/eng": "^1.0.0",
@@ -40,6 +46,7 @@
     "@types/nodemailer": "^8.0.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "autocannon": "^8.0.0",
     "drizzle-kit": "^0.31.11",
     "eslint": "^9",
     "eslint-config-next": "16.4.3",

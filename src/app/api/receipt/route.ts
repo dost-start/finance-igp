@@ -8,7 +8,10 @@ import { judgeOcr, readingFromFields } from "@/lib/ocr/judge";
 import { amountField } from "@/lib/ocr/parse";
 import { CHANNEL_KEY, IMAGE_EXTENSION, MAX_RECEIPT_BYTES, checkReceipt, ocrFieldsSchema, referenceSchema } from "@/lib/receipt";
 import { getFileStore } from "@/lib/storage";
+import { UPLOAD_MAX, UPLOAD_WINDOW_SECONDS, isBlocked, recordHit, uploadKey } from "@/lib/rate-limit";
 import { isStoreLocked } from "@/lib/store";
+import { dbLimitStore } from "@/lib/track";
+import { visitorAddress } from "@/lib/visitor";
 import { STORE_CLOSED_MESSAGE } from "@/lib/store-lock";
 
 const reply = (status: number, body: Record<string, unknown>) =>
@@ -31,6 +34,12 @@ export async function POST(request: Request) {
   if (!sameOrigin(request)) return reply(403, { error: "forbidden" });
   // Store lock: no payment is accepted while the store is closed (423 = locked).
   if (await isStoreLocked()) return reply(423, { error: "store_closed", message: STORE_CLOSED_MESSAGE });
+
+  // One connection cannot hammer the upload route (see UPLOAD_MAX). Every attempt counts, good or bad.
+  const rule = [{ key: uploadKey(visitorAddress(request.headers)), max: UPLOAD_MAX }];
+  const counter = dbLimitStore();
+  if (await isBlocked(counter, rule, UPLOAD_WINDOW_SECONDS)) return reply(429, { error: "too_many", message: "There have been many uploads from this connection in a short time. Please wait a few minutes and try again." });
+  await recordHit(counter, rule, UPLOAD_WINDOW_SECONDS).catch(() => undefined);
 
   let form: FormData;
   try {

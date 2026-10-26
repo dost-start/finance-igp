@@ -11,6 +11,20 @@ const KIND_ORDER: ChangeKind[] = ["added", "changed", "fixed", "removed", "secur
 
 export const RELEASES: Release[] = [
   {
+    version: "0.3.0",
+    date: "2026-10-27",
+    title: "Sprint 3: demo-ready for finance",
+    changes: [
+      { kind: "added", text: "A landing page at the main address with a countdown to launch, a sneak peek of the products, the full lineup once the store opens, and a space reserved for the puzzle. The shop moved to /shop. Finance or tech can change the launch date from the admin home page." },
+      { kind: "added", text: "A nightly backup of all orders and shop data to the private Drive folder, with a System page in the admin area showing health, the last backup, recent emails and any server errors, and a Back up now button." },
+      { kind: "added", text: "A built-in guide for finance (Help in the admin area, also saved as docs/finance-guide.md) covering confirm, reject, bulk updates, cancel and refund, corrections, export, the audit log and the store lock." },
+      { kind: "added", text: "Technology can add new products and set product photos by file name from the Products screen, with no code change." },
+      { kind: "added", text: "A demo kit: 14 sample orders covering every status and receipt result, loaded and removed with one command, plus a step-by-step demo script." },
+      { kind: "added", text: "A load test: 200 orders placed at the same moment with no failures and 500 visitors browsing at once with no errors." },
+      { kind: "security", text: "Receipt uploads are limited per visitor, and server errors are logged with personal details removed." },
+    ],
+  },
+  {
     version: "0.2.2",
     date: "2026-10-27",
     title: "Version numbers and release notes",

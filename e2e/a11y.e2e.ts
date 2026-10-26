@@ -49,7 +49,7 @@ test("public pages have no serious accessibility problems", async ({ page }) => 
   await page.getByRole("button", { name: "Add to cart" }).click();
   await page.getByText("Added to your cart.").waitFor();
   for (const mode of ["light", "dark"] as const) {
-    for (const path of ["/", "/products/tshirt-design-a", "/cart", "/checkout", "/track", "/privacy", `/pay/${ORDER}`, "/admin/signin"]) await scan(page, path, mode, found);
+    for (const path of ["/", "/shop", "/products/tshirt-design-a", "/cart", "/checkout", "/track", "/privacy", `/pay/${ORDER}`, "/admin/signin"]) await scan(page, path, mode, found);
   }
   const bad = found.filter((f) => f.impact === "serious" || f.impact === "critical");
   console.log("A11Y public: " + JSON.stringify(found, null, 1));
@@ -61,7 +61,7 @@ test("admin pages have no serious accessibility problems", async ({ page, contex
   await signInAdmin(context);
   const found: Finding[] = [];
   for (const mode of ["light", "dark"] as const) {
-    for (const path of ["/admin", `/admin/orders/${PAID}`, "/admin/emails", "/admin/audit", "/admin/changelog", "/admin/products", `/admin/products/${productId}`]) await scan(page, path, mode, found);
+    for (const path of ["/admin", `/admin/orders/${PAID}`, "/admin/emails", "/admin/audit", "/admin/changelog", "/admin/products", "/admin/products/new", "/admin/system", "/admin/help", `/admin/products/${productId}`]) await scan(page, path, mode, found);
   }
   const bad = found.filter((f) => f.impact === "serious" || f.impact === "critical");
   console.log("A11Y admin: " + JSON.stringify(found, null, 1));

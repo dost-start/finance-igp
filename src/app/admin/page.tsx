@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { BulkForm } from "@/components/admin/bulk-form";
+import { LaunchCard } from "@/components/admin/launch-card";
 import { StoreSwitch } from "@/components/admin/store-switch";
-import { isStoreLocked } from "@/lib/store";
+import { getLaunchAt, isStoreLocked } from "@/lib/store";
 import { OcrBadge } from "@/components/admin/ocr-badge";
 import { SelectAll } from "@/components/admin/select-all";
 import { StatusBadge } from "@/components/admin/status-badge";
@@ -196,7 +197,8 @@ async function Orders({ searchParams }: { searchParams: PageProps<"/admin">["sea
   const done = Array.isArray(sp.done) ? sp.done[0] : sp.done;
   const notice = Array.isArray(sp.notice) ? sp.notice[0] : sp.notice;
   const store = Array.isArray(sp.store) ? sp.store[0] : sp.store;
-  const [{ rows, total }, products, summary, locked] = await Promise.all([listOrders(f), productOptions(), waitingSummary(), isStoreLocked()]);
+  const launch = Array.isArray(sp.launch) ? sp.launch[0] : sp.launch;
+  const [{ rows, total }, products, summary, locked, launchAt] = await Promise.all([listOrders(f), productOptions(), waitingSummary(), isStoreLocked(), getLaunchAt()]);
 
   return (
     <>
@@ -217,6 +219,12 @@ async function Orders({ searchParams }: { searchParams: PageProps<"/admin">["sea
       )}
       <h1 className="text-2xl font-semibold tracking-tight">Orders</h1>
       <StoreSwitch locked={locked} />
+      {launch && (
+        <p role={launch === "invalid" ? "alert" : "status"} className={`mt-4 rounded-md border p-3 text-sm ${launch === "invalid" ? "border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-100" : "border-emerald-300 bg-emerald-50 text-emerald-900 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-100"}`}>
+          {launch === "invalid" ? "That is not a valid launch date and time. Nothing was changed." : "Launch date saved. The landing page follows it within moments."}
+        </p>
+      )}
+      <LaunchCard launchAt={launchAt} />
       <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
         <Link href="/admin?pay=verifying" className="font-medium underline underline-offset-4">
           {summary.waiting} waiting for verification

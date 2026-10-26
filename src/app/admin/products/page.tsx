@@ -17,7 +17,12 @@ async function Products({ searchParams }: { searchParams: PageProps<"/admin/prod
   return (
     <>
       <h1 className="text-2xl font-semibold tracking-tight">Products</h1>
-      <p className="mt-2 max-w-2xl text-sm text-zinc-600 dark:text-zinc-400">Change a product&apos;s name, price, sizes and whether it is on sale. Edits show in the shop straight away. Orders already placed keep the price they were placed at. Only the Technology team sees this page.</p>
+      <p className="mt-2 max-w-2xl text-sm text-zinc-600 dark:text-zinc-400">Change a product&apos;s name, price, sizes and whether it is on sale. Edits show in the shop straight away. Add new products here as the real catalog arrives. Orders already placed keep the price they were placed at. Only the Technology team sees this page.</p>
+      <p className="mt-4">
+        <Link href="/admin/products/new" className="inline-block rounded-md bg-sky-800 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700">
+          Add a product
+        </Link>
+      </p>
       {saved && (
         <p role="status" className="mt-4 rounded-md border border-emerald-300 bg-emerald-50 p-3 text-sm text-emerald-900 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-100">
           Saved &ldquo;{saved}&rdquo;.

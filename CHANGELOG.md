@@ -2,6 +2,21 @@
 
 What changed in each version of the START: COLLECTIONS shop, newest first. Versions follow major.minor.patch: a new sprint raises the middle number, a fix or polish raises the last. This file is generated from `src/lib/changelog.ts` (run `npm run changelog`); edit that file, not this one.
 
+## 0.3.0: Sprint 3: demo-ready for finance (2026-10-27)
+
+### Added
+
+- A landing page at the main address with a countdown to launch, a sneak peek of the products, the full lineup once the store opens, and a space reserved for the puzzle. The shop moved to /shop. Finance or tech can change the launch date from the admin home page.
+- A nightly backup of all orders and shop data to the private Drive folder, with a System page in the admin area showing health, the last backup, recent emails and any server errors, and a Back up now button.
+- A built-in guide for finance (Help in the admin area, also saved as docs/finance-guide.md) covering confirm, reject, bulk updates, cancel and refund, corrections, export, the audit log and the store lock.
+- Technology can add new products and set product photos by file name from the Products screen, with no code change.
+- A demo kit: 14 sample orders covering every status and receipt result, loaded and removed with one command, plus a step-by-step demo script.
+- A load test: 200 orders placed at the same moment with no failures and 500 visitors browsing at once with no errors.
+
+### Security
+
+- Receipt uploads are limited per visitor, and server errors are logged with personal details removed.
+
 ## 0.2.2: Version numbers and release notes (2026-10-27)
 
 ### Added

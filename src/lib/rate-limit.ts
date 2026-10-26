@@ -54,3 +54,9 @@ export const checkoutKey = (address: string): string => `checkout:${createHash("
 // Counts one thing against a key. (The same counter that counts failed tracking lookups, here
 // counting orders created.)
 export const recordHit = recordFailure;
+
+// Receipt uploads. Each needs a real open order, so abuse is already bounded; this stops one connection
+// hammering the upload route. Generous for the same reason as the checkout limit (shared university networks).
+export const UPLOAD_MAX = 60;
+export const UPLOAD_WINDOW_SECONDS = 15 * 60;
+export const uploadKey = (address: string): string => `upload:${createHash("sha256").update(address).digest("hex").slice(0, 32)}`;

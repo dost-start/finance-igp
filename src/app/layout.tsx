@@ -36,6 +36,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               START: COLLECTIONS
             </Link>
             <nav className="flex items-center gap-4 text-sm sm:gap-5">
+              <Link href="/shop" className="whitespace-nowrap underline-offset-4 hover:underline">
+                Shop
+              </Link>
               <Link href="/track" className="whitespace-nowrap underline-offset-4 hover:underline">
                 Track order
               </Link>
