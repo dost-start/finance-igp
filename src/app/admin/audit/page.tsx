@@ -73,11 +73,11 @@ async function Audit({ searchParams }: { searchParams: PageProps<"/admin/audit">
       </form>
 
       {rows.length === 0 ? (
-        <p className="mt-6 text-sm text-zinc-500">{action ? "Nothing recorded for this yet." : "Nothing has been recorded yet."}</p>
+        <p className="mt-6 text-sm text-zinc-500 dark:text-zinc-400">{action ? "Nothing recorded for this yet." : "Nothing has been recorded yet."}</p>
       ) : (
         <div className="mt-4 overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-800">
           <table className="w-full min-w-[48rem] text-left text-sm">
-            <thead className="bg-zinc-50 text-xs text-zinc-500 uppercase dark:bg-zinc-900">
+            <thead className="bg-zinc-50 text-xs text-zinc-500 dark:text-zinc-400 uppercase dark:bg-zinc-900">
               <tr>
                 {["When", "Who", "What", "Details", "Order"].map((h) => (
                   <th key={h} className="px-3 py-2 font-medium">
@@ -92,7 +92,7 @@ async function Audit({ searchParams }: { searchParams: PageProps<"/admin/audit">
                   <td className="px-3 py-2 whitespace-nowrap">{formatManila(r.at)}</td>
                   <td className="px-3 py-2">
                     <span className="font-medium">{r.who}</span>
-                    <span className="block text-xs break-all text-zinc-500">{r.email}</span>
+                    <span className="block text-xs break-all text-zinc-500 dark:text-zinc-400">{r.email}</span>
                   </td>
                   <td className="px-3 py-2">{auditLabel(r.action)}</td>
                   <td className="px-3 py-2 text-zinc-600 dark:text-zinc-400">{describeAudit(r.action, r.before as Record<string, unknown> | null, r.after as Record<string, unknown> | null)}</td>
@@ -121,7 +121,7 @@ async function Audit({ searchParams }: { searchParams: PageProps<"/admin/audit">
           ) : (
             <span className="text-zinc-400">Newer</span>
           )}
-          <span className="text-zinc-500">
+          <span className="text-zinc-500 dark:text-zinc-400">
             Page {page} of {pages}
           </span>
           {page < pages ? (
@@ -140,7 +140,7 @@ async function Audit({ searchParams }: { searchParams: PageProps<"/admin/audit">
 export default function AuditPage({ searchParams }: PageProps<"/admin/audit">) {
   return (
     <main>
-      <Suspense fallback={<p className="text-sm text-zinc-500">Loading the audit log…</p>}>
+      <Suspense fallback={<p className="text-sm text-zinc-500 dark:text-zinc-400">Loading the audit log…</p>}>
         <Audit searchParams={searchParams} />
       </Suspense>
     </main>

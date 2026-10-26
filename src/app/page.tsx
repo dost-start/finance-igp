@@ -31,7 +31,7 @@ export default async function Home() {
                   {soldOut && <span className="absolute left-2 top-2 rounded bg-zinc-900 px-2 py-0.5 text-xs font-medium text-white">Sold out</span>}
                 </div>
                 <p className="mt-3 text-sm font-medium group-hover:underline">{p.name}</p>
-                <p className="mt-0.5 text-sm text-zinc-500">{formatPeso(p.priceCentavos)}</p>
+                <p className="mt-0.5 text-sm text-zinc-500 dark:text-zinc-400">{formatPeso(p.priceCentavos)}</p>
               </Link>
             </li>
           );

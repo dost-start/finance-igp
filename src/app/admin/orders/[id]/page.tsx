@@ -32,7 +32,7 @@ const DONE: Record<string, string> = { confirmed: "Payment confirmed. Here is th
 function Fact({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-0.5 sm:flex-row sm:gap-4">
-      <dt className="w-40 shrink-0 text-sm text-zinc-500">{label}</dt>
+      <dt className="w-40 shrink-0 text-sm text-zinc-500 dark:text-zinc-400">{label}</dt>
       <dd className="min-w-0 text-sm break-words">{children}</dd>
     </div>
   );
@@ -116,7 +116,7 @@ async function Review({ params, searchParams }: { params: PageProps<"/admin/orde
         <div className="min-w-0 space-y-8">
           <section>
             <h2 className="mb-2 text-lg font-semibold">Receipt</h2>
-            {proof ? <ReceiptViewer src={`/api/admin/receipts/${order.id}`} /> : <p className="rounded-lg border border-dashed border-zinc-300 p-6 text-sm text-zinc-500 dark:border-zinc-700">No receipt uploaded yet.</p>}
+            {proof ? <ReceiptViewer src={`/api/admin/receipts/${order.id}`} /> : <p className="rounded-lg border border-dashed border-zinc-300 p-6 text-sm text-zinc-500 dark:text-zinc-400 dark:border-zinc-700">No receipt uploaded yet.</p>}
           </section>
 
           <section>
@@ -152,7 +152,7 @@ async function Review({ params, searchParams }: { params: PageProps<"/admin/orde
                   {items.map((i, n) => (
                     <tr key={n}>
                       <td className="px-3 py-2">{i.name}</td>
-                      <td className="px-3 py-2 text-zinc-500">Size {i.size}</td>
+                      <td className="px-3 py-2 text-zinc-500 dark:text-zinc-400">Size {i.size}</td>
                       <td className="px-3 py-2 tabular-nums">
                         {i.quantity} × {formatPeso(i.unit)}
                       </td>
@@ -190,9 +190,9 @@ async function Review({ params, searchParams }: { params: PageProps<"/admin/orde
             <ol className="space-y-2 text-sm">
               {events.map((e, n) => (
                 <li key={n} className="flex flex-wrap gap-x-3">
-                  <span className="w-44 text-zinc-500">{formatManila(e.at)}</span>
+                  <span className="w-44 text-zinc-500 dark:text-zinc-400">{formatManila(e.at)}</span>
                   <span className="font-medium">{STATUS_LABEL[e.status]}</span>
-                  <span className="text-zinc-500">
+                  <span className="text-zinc-500 dark:text-zinc-400">
                     {e.by ? `by ${e.by}` : "by the system"}
                     {e.note ? `, ${e.note}` : ""}
                   </span>
@@ -209,10 +209,10 @@ async function Review({ params, searchParams }: { params: PageProps<"/admin/orde
               <ReviewActions orderUuid={order.id} />
             </div>
           ) : order.status === "order_received" ? (
-            <p className="mt-3 text-sm text-zinc-500">The buyer has not uploaded a receipt yet, so there is nothing to verify.</p>
+            <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">The buyer has not uploaded a receipt yet, so there is nothing to verify.</p>
           ) : (
             <div className="mt-3">
-              <p className="mb-3 text-sm text-zinc-500">This order is {STATUS_LABEL[order.status]}. Move it one step forward:</p>
+              <p className="mb-3 text-sm text-zinc-500 dark:text-zinc-400">This order is {STATUS_LABEL[order.status]}. Move it one step forward:</p>
               <StatusControl orderUuid={order.id} options={generalNextStatuses(order.status)} />
               <CorrectionForm orderUuid={order.id} targets={correctionTargets(order.status)} />
             </div>
@@ -226,7 +226,7 @@ async function Review({ params, searchParams }: { params: PageProps<"/admin/orde
 export default function OrderReviewPage({ params, searchParams }: PageProps<"/admin/orders/[id]">) {
   return (
     <main>
-      <Suspense fallback={<p className="text-sm text-zinc-500">Loading order…</p>}>
+      <Suspense fallback={<p className="text-sm text-zinc-500 dark:text-zinc-400">Loading order…</p>}>
         <Review params={params} searchParams={searchParams} />
       </Suspense>
     </main>

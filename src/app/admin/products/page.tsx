@@ -25,7 +25,7 @@ async function Products({ searchParams }: { searchParams: PageProps<"/admin/prod
       )}
       <div className="mt-4 overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-800">
         <table className="w-full min-w-[40rem] text-left text-sm">
-          <thead className="bg-zinc-50 text-xs text-zinc-500 uppercase dark:bg-zinc-900">
+          <thead className="bg-zinc-50 text-xs text-zinc-500 dark:text-zinc-400 uppercase dark:bg-zinc-900">
             <tr>
               {["Product", "Price", "Sizes", "On sale", ""].map((h) => (
                 <th key={h} className="px-3 py-2 font-medium">
@@ -36,7 +36,7 @@ async function Products({ searchParams }: { searchParams: PageProps<"/admin/prod
           </thead>
           <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
             {rows.map((p) => (
-              <tr key={p.id} className={p.active ? undefined : "text-zinc-500"}>
+              <tr key={p.id} className={p.active ? undefined : "text-zinc-500 dark:text-zinc-400"}>
                 <td className="px-3 py-2">{p.name}</td>
                 <td className="px-3 py-2 tabular-nums">{formatPeso(p.priceCentavos)}</td>
                 <td className="px-3 py-2">
@@ -60,7 +60,7 @@ async function Products({ searchParams }: { searchParams: PageProps<"/admin/prod
 export default function ProductsPage({ searchParams }: PageProps<"/admin/products">) {
   return (
     <main>
-      <Suspense fallback={<p className="text-sm text-zinc-500">Loading products…</p>}>
+      <Suspense fallback={<p className="text-sm text-zinc-500 dark:text-zinc-400">Loading products…</p>}>
         <Products searchParams={searchParams} />
       </Suspense>
     </main>

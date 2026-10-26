@@ -8,12 +8,12 @@ import { STATUS_LABEL } from "@/lib/status";
 // One step forward at a time. The optional note is saved in the order's history and printed in the
 // buyer's email. Each button saves exactly the status named on it, with the note typed above.
 export function StatusControl({ orderUuid, options }: { orderUuid: string; options: readonly OrderStatus[] }) {
-  if (options.length === 0) return <p className="text-sm text-zinc-500">No further steps for this order.</p>;
+  if (options.length === 0) return <p className="text-sm text-zinc-500 dark:text-zinc-400">No further steps for this order.</p>;
   return (
     <form className="space-y-3">
       <div>
         <label htmlFor="note" className="text-sm font-medium">
-          Note for the buyer <span className="font-normal text-zinc-500">(optional)</span>
+          Note for the buyer <span className="font-normal text-zinc-500 dark:text-zinc-400">(optional)</span>
         </label>
         <textarea
           id="note"
@@ -23,14 +23,14 @@ export function StatusControl({ orderUuid, options }: { orderUuid: string; optio
           className="mt-1 w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm dark:border-zinc-700"
           aria-describedby="note-hint"
         />
-        <p id="note-hint" className="mt-1 text-xs text-zinc-500">
+        <p id="note-hint" className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
           Printed in the email the buyer receives. When canceling, this is the reason they read, so it is required.
         </p>
       </div>
       {options.map((s) => (
         <StatusButton key={s} orderUuid={orderUuid} to={s} />
       ))}
-      <p className="text-xs text-zinc-500">The buyer is emailed about the new status.</p>
+      <p className="text-xs text-zinc-500 dark:text-zinc-400">The buyer is emailed about the new status.</p>
     </form>
   );
 }

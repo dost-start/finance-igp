@@ -12,8 +12,8 @@ export async function signInAdmin(context: BrowserContext, email: string = ADMIN
 }
 
 // Draws a receipt like an e-wallet screenshot. amount null leaves the amount line out; blank draws nothing.
-export async function drawReceipt(page: Page, opts: { amount: string | null; reference: string; blank?: boolean }): Promise<Buffer> {
-  const dataUrl = await page.evaluate(({ amount, reference, blank }) => {
+export async function drawReceipt(page: Page, opts: { amount: string | null; reference: string; blank?: boolean; blur?: number }): Promise<Buffer> {
+  const dataUrl = await page.evaluate(({ amount, reference, blank, blur }) => {
     const c = document.createElement("canvas");
     c.width = 1080;
     c.height = 1500;
@@ -39,13 +39,22 @@ export async function drawReceipt(page: Page, opts: { amount: string | null; ref
         g.fillText(v, 60, y + 60);
       });
     }
+    if (blur) {
+      const t = document.createElement("canvas");
+      t.width = c.width;
+      t.height = c.height;
+      const tg = t.getContext("2d")!;
+      tg.filter = `blur(${blur}px)`;
+      tg.drawImage(c, 0, 0);
+      return t.toDataURL("image/png");
+    }
     return c.toDataURL("image/png");
   }, opts);
   return Buffer.from(dataUrl.split(",")[1], "base64");
 }
 
 // Shop to submitted payment for one T-shirt (total 450 pesos). Returns the internal order id.
-export async function placeOrder(page: Page, o: { name: string; email: string; reference: string; receipt: { amount: string | null; reference?: string; blank?: boolean } }): Promise<string> {
+export async function placeOrder(page: Page, o: { name: string; email: string; reference: string; receipt: { amount: string | null; reference?: string; blank?: boolean; blur?: number } }): Promise<string> {
   await page.goto("/products/tshirt-design-a");
   await page.locator("label", { hasText: /^M$/ }).click();
   await page.getByRole("button", { name: "Add to cart" }).click();
@@ -66,7 +75,7 @@ export async function placeOrder(page: Page, o: { name: string; email: string; r
   await page.waitForURL(/\/pay\/[0-9a-f-]{36}$/);
   const orderUuid = page.url().split("/").pop() as string;
 
-  const image = await drawReceipt(page, { amount: o.receipt.amount, reference: o.receipt.reference ?? o.reference, blank: o.receipt.blank });
+  const image = await drawReceipt(page, { amount: o.receipt.amount, reference: o.receipt.reference ?? o.reference, blank: o.receipt.blank, blur: o.receipt.blur });
   await page.getByLabel("Reference number").fill(o.reference);
   await page.getByLabel("Receipt image").setInputFiles({ name: "receipt.png", mimeType: "image/png", buffer: image });
   await page.getByRole("button", { name: /Submit payment details|Checking receipt|Uploading/ }).click();

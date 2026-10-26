@@ -116,7 +116,7 @@ function Table({ rows }: { rows: OrderRow[] }) {
   return (
     <div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-800">
       <table className="w-full min-w-[56rem] text-left text-sm">
-        <thead className="bg-zinc-50 text-xs text-zinc-500 uppercase dark:bg-zinc-900">
+        <thead className="bg-zinc-50 text-xs text-zinc-500 dark:text-zinc-400 uppercase dark:bg-zinc-900">
           <tr>
             <th className="w-10 px-3 py-2">
               <SelectAll />
@@ -175,7 +175,7 @@ function Pager({ f, total }: { f: OrderFilters; total: number }) {
       ) : (
         <span className="text-zinc-400">Previous</span>
       )}
-      <span className="text-zinc-500">
+      <span className="text-zinc-500 dark:text-zinc-400">
         Page {f.page} of {pages}
       </span>
       {f.page < pages ? (
@@ -240,7 +240,7 @@ async function Orders({ searchParams }: { searchParams: PageProps<"/admin">["sea
         {hasFilters(f) ? "Matching orders" : "All orders"} ({total})
       </h2>
       {rows.length === 0 ? (
-        <p className="mt-3 text-sm text-zinc-500">{hasFilters(f) ? "No orders match these filters." : "No orders yet. New orders appear here as buyers check out."}</p>
+        <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">{hasFilters(f) ? "No orders match these filters." : "No orders yet. New orders appear here as buyers check out."}</p>
       ) : (
         <div className="mt-3">
           <BulkForm>
@@ -256,7 +256,7 @@ async function Orders({ searchParams }: { searchParams: PageProps<"/admin">["sea
 export default function AdminHome({ searchParams }: PageProps<"/admin">) {
   return (
     <main>
-      <Suspense fallback={<p className="text-sm text-zinc-500">Loading orders…</p>}>
+      <Suspense fallback={<p className="text-sm text-zinc-500 dark:text-zinc-400">Loading orders…</p>}>
         <Orders searchParams={searchParams} />
       </Suspense>
     </main>

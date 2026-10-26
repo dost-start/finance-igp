@@ -29,7 +29,7 @@ async function ProductContent({ params }: { params: PageProps<"/products/[slug]"
 
   return (
     <main>
-      <nav aria-label="Breadcrumb" className="text-sm text-zinc-500">
+      <nav aria-label="Breadcrumb" className="text-sm text-zinc-500 dark:text-zinc-400">
         <Link href="/" className="underline underline-offset-4">
           Shop
         </Link>

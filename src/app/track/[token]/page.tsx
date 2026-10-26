@@ -21,7 +21,7 @@ export default function TrackedPage({ params }: PageProps<"/track/[token]">) {
     <main>
       <h1 className="text-2xl font-semibold tracking-tight">Your order</h1>
       <div className="mt-6">
-        <Suspense fallback={<p className="text-sm text-zinc-500">Loading your order…</p>}>
+        <Suspense fallback={<p className="text-sm text-zinc-500 dark:text-zinc-400">Loading your order…</p>}>
           <Tracked params={params} />
         </Suspense>
       </div>

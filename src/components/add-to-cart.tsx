@@ -77,7 +77,7 @@ export function AddToCart({ product }: Props) {
               );
             })}
           </div>
-          {product.sizes.some((s) => !s.available) && <p className="mt-2 text-xs text-zinc-500">Crossed-out sizes are sold out.</p>}
+          {product.sizes.some((s) => !s.available) && <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">Crossed-out sizes are sold out.</p>}
         </fieldset>
       )}
 
@@ -87,7 +87,7 @@ export function AddToCart({ product }: Props) {
         </label>
         <div className="mt-2 inline-flex items-center rounded-md border border-zinc-300 dark:border-zinc-700">
           <button type="button" onClick={() => setQty((q) => Math.max(1, q - 1))} className="px-3 py-2 text-lg leading-none" aria-label="Decrease quantity">
-            −
+            <span aria-hidden="true">−</span>
           </button>
           <input
             id="qty"
@@ -101,7 +101,7 @@ export function AddToCart({ product }: Props) {
             className="w-12 bg-transparent py-2 text-center text-sm outline-none"
           />
           <button type="button" onClick={() => setQty((q) => Math.min(MAX_QTY, q + 1))} className="px-3 py-2 text-lg leading-none" aria-label="Increase quantity">
-            +
+            <span aria-hidden="true">+</span>
           </button>
         </div>
       </div>

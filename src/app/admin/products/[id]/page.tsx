@@ -23,7 +23,7 @@ async function Edit({ params }: { params: PageProps<"/admin/products/[id]">["par
         All products
       </Link>
       <h1 className="mt-4 text-2xl font-semibold tracking-tight">{product.name}</h1>
-      <p className="mt-1 text-sm text-zinc-500">
+      <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
         Address in the shop: <span className="font-mono">/products/{product.slug}</span>. Photos are added when the real ones arrive.
       </p>
       <ProductForm productId={product.id} initial={{ name: product.name, priceCentavos: product.priceCentavos, active: product.active, sizes: product.sizes }} />
@@ -34,7 +34,7 @@ async function Edit({ params }: { params: PageProps<"/admin/products/[id]">["par
 export default function EditProductPage({ params }: PageProps<"/admin/products/[id]">) {
   return (
     <main>
-      <Suspense fallback={<p className="text-sm text-zinc-500">Loading product…</p>}>
+      <Suspense fallback={<p className="text-sm text-zinc-500 dark:text-zinc-400">Loading product…</p>}>
         <Edit params={params} />
       </Suspense>
     </main>

@@ -60,11 +60,11 @@ async function Log({ searchParams }: { searchParams: PageProps<"/admin/emails">[
       </p>
 
       {rows.length === 0 ? (
-        <p className="mt-4 text-sm text-zinc-500">{only ? "Every email was sent." : "No emails yet."}</p>
+        <p className="mt-4 text-sm text-zinc-500 dark:text-zinc-400">{only ? "Every email was sent." : "No emails yet."}</p>
       ) : (
         <div className="mt-4 overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-800">
           <table className="w-full min-w-[44rem] text-left text-sm">
-            <thead className="bg-zinc-50 text-xs text-zinc-500 uppercase dark:bg-zinc-900">
+            <thead className="bg-zinc-50 text-xs text-zinc-500 dark:text-zinc-400 uppercase dark:bg-zinc-900">
               <tr>
                 {["When", "Email", "Order", "To", "Result"].map((h) => (
                   <th key={h} className="px-3 py-2 font-medium">
@@ -101,7 +101,7 @@ async function Log({ searchParams }: { searchParams: PageProps<"/admin/emails">[
           </table>
         </div>
       )}
-      {rows.length >= SHOWN && <p className="mt-3 text-xs text-zinc-500">Showing the latest {SHOWN}.</p>}
+      {rows.length >= SHOWN && <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-400">Showing the latest {SHOWN}.</p>}
     </>
   );
 }
@@ -109,7 +109,7 @@ async function Log({ searchParams }: { searchParams: PageProps<"/admin/emails">[
 export default function EmailLogPage({ searchParams }: PageProps<"/admin/emails">) {
   return (
     <main>
-      <Suspense fallback={<p className="text-sm text-zinc-500">Loading the email log…</p>}>
+      <Suspense fallback={<p className="text-sm text-zinc-500 dark:text-zinc-400">Loading the email log…</p>}>
         <Log searchParams={searchParams} />
       </Suspense>
     </main>

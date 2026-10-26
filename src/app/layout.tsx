@@ -47,7 +47,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           {children}
         </div>
         <footer className="border-t border-zinc-200 dark:border-zinc-800">
-          <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-6 text-sm text-zinc-500">
+          <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-6 text-sm text-zinc-500 dark:text-zinc-400">
             <p>START-DOST merchandise</p>
             <Link href="/privacy" className="underline underline-offset-4">
               Privacy Notice

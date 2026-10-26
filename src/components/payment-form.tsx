@@ -122,7 +122,7 @@ export function PaymentForm({ orderUuid, totalCentavos, channels, alreadySubmitt
       <div className="space-y-8">
         <fieldset>
           <legend className="text-lg font-semibold">1. Choose where to pay</legend>
-          <p className="mt-1 text-sm text-zinc-500">Pick the one with the lowest transfer fee for you. Any bank or e-wallet app can scan these QR codes.</p>
+          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Pick the one with the lowest transfer fee for you. Any bank or e-wallet app can scan these QR codes.</p>
           <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
             {channels.map((c) => (
               <label
@@ -150,9 +150,9 @@ export function PaymentForm({ orderUuid, totalCentavos, channels, alreadySubmitt
                 className="h-auto w-full max-w-xs rounded bg-white"
               />
             ) : (
-              <p className="py-10 text-sm text-zinc-500">The {selected?.label} QR code is not available yet. Please choose another channel.</p>
+              <p className="py-10 text-sm text-zinc-500 dark:text-zinc-400">The {selected?.label} QR code is not available yet. Please choose another channel.</p>
             )}
-            <p className="mt-4 text-center text-sm text-zinc-500">
+            <p className="mt-4 text-center text-sm text-zinc-500 dark:text-zinc-400">
               Scan, then enter exactly <strong className="text-base text-zinc-900 dark:text-zinc-100">{amount}</strong>
             </p>
           </div>
@@ -173,7 +173,7 @@ export function PaymentForm({ orderUuid, totalCentavos, channels, alreadySubmitt
               className={inputClass}
               aria-describedby="reference-hint"
             />
-            <p id="reference-hint" className="mt-1 text-xs text-zinc-500">
+            <p id="reference-hint" className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
               Copy it from the receipt screen of your banking or e-wallet app.
             </p>
           </div>
@@ -190,10 +190,10 @@ export function PaymentForm({ orderUuid, totalCentavos, channels, alreadySubmitt
               className="mt-1 block w-full text-sm file:mr-3 file:rounded-md file:border-0 file:bg-zinc-200 file:px-4 file:py-2 file:text-sm file:font-medium dark:file:bg-zinc-800"
               aria-describedby="receipt-hint receipt-reading"
             />
-            <p id="receipt-hint" className="mt-1 text-xs text-zinc-500">
+            <p id="receipt-hint" className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
               A screenshot works best. Paid in several transactions? Combine the screenshots into one image first. Large images are shrunk on your phone before upload.
             </p>
-            <p id="receipt-reading" role="status" className="mt-1 min-h-4 text-xs text-zinc-500">
+            <p id="receipt-reading" role="status" className="mt-1 min-h-4 text-xs text-zinc-500 dark:text-zinc-400">
               {reading === "reading" && "Reading your receipt on your phone to help finance check it…"}
               {reading === "done" && "Receipt read on your phone. Finance still checks every payment by hand."}
               {reading === "failed" && "We could not read this receipt automatically. That is fine: you can still submit and finance will check it by hand."}
@@ -205,7 +205,7 @@ export function PaymentForm({ orderUuid, totalCentavos, channels, alreadySubmitt
       <aside className="h-fit rounded-lg border border-zinc-200 p-5 lg:sticky lg:top-6 dark:border-zinc-800">
         <h2 className="text-lg font-semibold">Amount due</h2>
         <p className="mt-2 text-3xl font-semibold tabular-nums">{amount}</p>
-        <p className="mt-2 text-xs text-zinc-500">Pay the full amount in one go if you can. There are no discounts or partial payments.</p>
+        <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">Pay the full amount in one go if you can. There are no discounts or partial payments.</p>
         {error && (
           <p role="alert" className="mt-4 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-200">
             {error}
@@ -218,7 +218,7 @@ export function PaymentForm({ orderUuid, totalCentavos, channels, alreadySubmitt
         >
           {busy ? (step === "checking" ? "Checking receipt…" : "Uploading…") : phase === "error" ? "Try again" : "Submit payment details"}
         </button>
-        <p className="mt-3 text-xs text-zinc-500">Finance checks every payment by hand. Your Order ID is emailed to you after that.</p>
+        <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-400">Finance checks every payment by hand. Your Order ID is emailed to you after that.</p>
       </aside>
     </form>
   );

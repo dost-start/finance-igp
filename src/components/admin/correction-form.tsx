@@ -43,7 +43,7 @@ export function CorrectionForm({ orderUuid, targets }: { orderUuid: string; targ
           <textarea id="correct-reason" name="reason" required rows={2} maxLength={300} className="mt-1 w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm dark:border-zinc-700" />
         </div>
         <Save />
-        <p className="text-xs text-zinc-500">Recorded in the history and audit log with your name. The buyer is not emailed.</p>
+        <p className="text-xs text-zinc-500 dark:text-zinc-400">Recorded in the history and audit log with your name. The buyer is not emailed.</p>
       </form>
     </details>
   );

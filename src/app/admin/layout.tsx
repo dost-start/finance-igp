@@ -11,7 +11,7 @@ async function Who() {
   if (!session?.user?.email) return null;
   return (
     <div className="flex items-center gap-3 text-sm">
-      <span className="text-zinc-500">{session.user.email}</span>
+      <span className="text-zinc-500 dark:text-zinc-400">{session.user.email}</span>
       <form
         action={async () => {
           "use server";

@@ -25,7 +25,7 @@ const VERDICT: Record<OcrResult, { label: string; tone: string }> = {
 function Mark({ check }: { check: FieldCheck }) {
   if (check === "match") return <span className="font-medium text-emerald-700 dark:text-emerald-400">✓ Match</span>;
   if (check === "mismatch") return <span className="font-medium text-red-700 dark:text-red-400">✗ Different</span>;
-  return <span className="text-zinc-500">– Not read</span>;
+  return <span className="text-zinc-500 dark:text-zinc-400">– Not read</span>;
 }
 
 export function OcrPanel({ totalCentavos, typedReference, ocrAmount, ocrReference, ocrResult, duplicates }: Props) {
@@ -58,7 +58,7 @@ export function OcrPanel({ totalCentavos, typedReference, ocrAmount, ocrReferenc
 
       <div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-800">
         <table className="w-full min-w-[28rem] text-left text-sm">
-          <thead className="bg-zinc-50 text-xs text-zinc-500 uppercase dark:bg-zinc-900">
+          <thead className="bg-zinc-50 text-xs text-zinc-500 dark:text-zinc-400 uppercase dark:bg-zinc-900">
             <tr>
               <th className="px-3 py-2 font-medium">Check</th>
               <th className="px-3 py-2 font-medium">Expected</th>
@@ -86,7 +86,7 @@ export function OcrPanel({ totalCentavos, typedReference, ocrAmount, ocrReferenc
           </tbody>
         </table>
       </div>
-      <p className="text-xs text-zinc-500">
+      <p className="text-xs text-zinc-500 dark:text-zinc-400">
         The buyer&apos;s phone read this receipt, so treat it as a hint. It never confirms a payment: compare the receipt yourself before you confirm.
       </p>
     </div>

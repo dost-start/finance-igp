@@ -19,7 +19,7 @@ export function ReviewActions({ orderUuid }: { orderUuid: string }) {
     <div className="space-y-6">
       <form action={confirmPayment.bind(null, orderUuid)}>
         <Submit className="w-full bg-emerald-700 text-white hover:bg-emerald-800 focus-visible:outline-emerald-700">Confirm payment</Submit>
-        <p className="mt-2 text-xs text-zinc-500">Emails the buyer their Order ID and tracking link.</p>
+        <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">Emails the buyer their Order ID and tracking link.</p>
       </form>
 
       <form action={rejectPayment.bind(null, orderUuid)} className="border-t border-zinc-200 pt-6 dark:border-zinc-800">
@@ -39,7 +39,7 @@ export function ReviewActions({ orderUuid }: { orderUuid: string }) {
         <div className="mt-3">
           <Submit className="w-full border border-red-700 text-red-800 hover:bg-red-50 focus-visible:outline-red-700 dark:text-red-300 dark:hover:bg-red-950">Reject payment</Submit>
         </div>
-        <p className="mt-2 text-xs text-zinc-500">Emails the buyer the reason and the ticket form link to send a new receipt.</p>
+        <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">Emails the buyer the reason and the ticket form link to send a new receipt.</p>
       </form>
     </div>
   );

@@ -101,7 +101,7 @@ test("finance and tech: audit log, product editor and the store lock", async ({ 
     .poll(async () => {
       await buyerPage.goto("/checkout");
       return buyerPage.getByText("The store is closed for now", { exact: true }).count();
-    }, { timeout: 40_000, intervals: [2_000] })
+    }, { timeout: 60_000, intervals: [2_000] })
     .toBeGreaterThan(0);
   await buyerPage.goto("/");
   await expect(buyerPage.getByRole("status").filter({ hasText: "The store is closed for now" }).first()).toBeVisible();

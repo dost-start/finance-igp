@@ -69,7 +69,7 @@ export function BulkForm({ children }: { children: ReactNode }) {
           </div>
           <div>
             <label htmlFor="bulk-note" className="text-sm font-medium">
-              Note for the buyers <span className="font-normal text-zinc-500">(optional, shown in the email; required to cancel)</span>
+              Note for the buyers <span className="font-normal text-zinc-500 dark:text-zinc-400">(optional, shown in the email; required to cancel)</span>
             </label>
             <input id="bulk-note" name="note" maxLength={300} autoComplete="off" className="mt-1 w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm dark:border-zinc-700" />
           </div>
@@ -90,7 +90,7 @@ export function BulkForm({ children }: { children: ReactNode }) {
             </>
           )}
         </div>
-        <p className="mt-1 text-xs text-zinc-500">Confirming or rejecting a payment is always done one order at a time, on its own screen. Orders that cannot make the chosen move are skipped and listed here.</p>
+        <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">Confirming or rejecting a payment is always done one order at a time, on its own screen. Orders that cannot make the chosen move are skipped and listed here.</p>
       </div>
     </form>
   );

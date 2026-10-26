@@ -21,7 +21,7 @@ function Field({ id, label, hint, error, children }: { id: string; label: string
       </label>
       {children}
       {hint && !error && (
-        <p id={`${id}-hint`} className="mt-1 text-xs text-zinc-500">
+        <p id={`${id}-hint`} className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
           {hint}
         </p>
       )}
@@ -74,7 +74,7 @@ export function CheckoutForm() {
     return (
       <div className="mt-8 rounded-lg border border-dashed border-zinc-300 p-10 text-center dark:border-zinc-700">
         <p className="font-medium">Your cart is empty.</p>
-        <p className="mt-1 text-sm text-zinc-500">Add something from the shop before checking out.</p>
+        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Add something from the shop before checking out.</p>
         <Link href="/" className="mt-5 inline-block rounded-md bg-sky-800 px-5 py-2.5 text-sm font-semibold text-white hover:bg-sky-900">
           Browse the shop
         </Link>
@@ -190,7 +190,7 @@ export function CheckoutForm() {
               <Image src={i.image ?? "/products/jacket.svg"} alt="" width={56} height={56} unoptimized className="size-14 shrink-0 rounded object-cover" />
               <div className="min-w-0 flex-1">
                 <p className="font-medium">{i.name}</p>
-                <p className="text-zinc-500">
+                <p className="text-zinc-500 dark:text-zinc-400">
                   Size {i.size} · {i.quantity} × {formatPeso(i.unitPriceCentavos)}
                 </p>
               </div>
@@ -200,15 +200,15 @@ export function CheckoutForm() {
         </ul>
         <p className="mt-4 flex justify-between border-t border-zinc-200 pt-4 text-lg font-semibold dark:border-zinc-800">
           <span>
-            Total <span className="text-sm font-normal text-zinc-500">({count} {count === 1 ? "item" : "items"})</span>
+            Total <span className="text-sm font-normal text-zinc-500 dark:text-zinc-400">({count} {count === 1 ? "item" : "items"})</span>
           </span>
           <span className="tabular-nums">{formatPeso(total)}</span>
         </p>
-        <p className="mt-2 text-xs text-zinc-500">You pay this full amount by QR on the next screen. We confirm the final total when you continue.</p>
+        <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">You pay this full amount by QR on the next screen. We confirm the final total when you continue.</p>
         <div className="mt-5">
           <SubmitButton />
         </div>
-        <p className="mt-3 text-center text-xs text-zinc-500">
+        <p className="mt-3 text-center text-xs text-zinc-500 dark:text-zinc-400">
           <Link href="/cart" className="underline underline-offset-4">
             Back to cart
           </Link>

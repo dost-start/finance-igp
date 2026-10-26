@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-12 text-zinc-900 dark:text-zinc-100">
-      <p className="text-sm text-zinc-500">Last updated: October 26, 2026</p>
+      <p className="text-sm text-zinc-500 dark:text-zinc-400">Last updated: October 26, 2026</p>
       <h1 className="mt-2 text-3xl font-semibold tracking-tight">Privacy Notice</h1>
       <p className="mt-4 leading-7">
         START: COLLECTIONS is the official merchandise shop of START-DOST. This notice explains what personal

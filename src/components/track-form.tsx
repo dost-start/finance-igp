@@ -30,7 +30,7 @@ export function TrackForm() {
             className={`${inputClass} font-mono`}
             aria-describedby="orderId-hint"
           />
-          <p id="orderId-hint" className="mt-1 text-xs text-zinc-500">
+          <p id="orderId-hint" className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
             It starts with R and is in the email we sent after finance confirmed your payment.
           </p>
         </div>

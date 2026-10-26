@@ -28,7 +28,7 @@ async function Payment({ params }: { params: PageProps<"/pay/[uuid]">["params"] 
     return (
       <div className="mt-6 max-w-xl rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
         <p className="font-medium">This order is no longer open for payment.</p>
-        <p className="mt-2 text-sm text-zinc-500">If you have questions, use the merch ticket form linked in your emails.</p>
+        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">If you have questions, use the merch ticket form linked in your emails.</p>
         <Link href="/" className="mt-4 inline-block text-sm underline underline-offset-4">
           Back to the shop
         </Link>
@@ -53,7 +53,7 @@ export default function PayPage({ params }: PageProps<"/pay/[uuid]">) {
   return (
     <main>
       <h1 className="text-3xl font-semibold tracking-tight">Payment</h1>
-      <Suspense fallback={<p className="mt-6 text-sm text-zinc-500">Loading your order…</p>}>
+      <Suspense fallback={<p className="mt-6 text-sm text-zinc-500 dark:text-zinc-400">Loading your order…</p>}>
         <Payment params={params} />
       </Suspense>
     </main>

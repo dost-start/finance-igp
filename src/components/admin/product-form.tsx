@@ -47,7 +47,7 @@ export function ProductForm({ productId, initial }: { productId: string; initial
           Price in pesos
         </label>
         <input id="price" name="price" inputMode="decimal" defaultValue={v.price} className={inputClass} aria-invalid={errors.price ? true : undefined} aria-describedby="price-hint price-error" />
-        <p id="price-hint" className="mt-1 text-xs text-zinc-500">
+        <p id="price-hint" className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
           Like 450 or 450.50. Buyers are charged this at checkout. Orders already placed keep their price.
         </p>
         {errors.price && (
@@ -59,7 +59,7 @@ export function ProductForm({ productId, initial }: { productId: string; initial
 
       <fieldset>
         <legend className="text-sm font-medium">Sizes</legend>
-        <p className="mt-1 text-xs text-zinc-500">Untick &ldquo;Available&rdquo; to show a size as sold out. Use one row named &ldquo;One size&rdquo; for items without sizes.</p>
+        <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">Untick &ldquo;Available&rdquo; to show a size as sold out. Use one row named &ldquo;One size&rdquo; for items without sizes.</p>
         <ul className="mt-2 space-y-2">
           {sizes.map((s, i) => (
             <li key={i} className="flex items-center gap-3">
@@ -94,7 +94,7 @@ export function ProductForm({ productId, initial }: { productId: string; initial
         <input type="checkbox" name="active" defaultChecked={v.active} className="mt-0.5 size-4" />
         <span>
           <span className="font-medium">On sale</span>
-          <span className="block text-xs text-zinc-500">Untick to hide this product from the shop. It can be put back at any time.</span>
+          <span className="block text-xs text-zinc-500 dark:text-zinc-400">Untick to hide this product from the shop. It can be put back at any time.</span>
         </span>
       </label>
 
