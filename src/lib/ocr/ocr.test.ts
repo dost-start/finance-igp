@@ -8,6 +8,40 @@ const LANDBANK = "LANDBANK Transfer\nTotal Amount Debited PHP 1,350.00\nService 
 const GOTYME = "GoTyme Bank\nYou sent\nP2,100.50\nTransaction ID GT-9988-7766-5544\nBalance P5,400.00";
 const NOISY = "Amcunt\nPHP 570.00\nRef 1002938475610";
 
+// Real GCash screenshots read with tesseract (found by QA): the reference was blurred, so the word
+// after the label must not be taken as the reference; a history list must not give one amount.
+const GCASH_BLURRED = "Sent via GCash\nAmount 800.00\nTotal Amount Sent P800.00\nGCash Reference Number\nTara\nJ 1319 (gco2e)";
+const HISTORY_LIST = "Transaction History\nSend Money -100.00\nOnline Payment - Auto ... -1,500.00\nSend Money +1,500.00\nSend Money -10.00";
+
+describe("receipts that are not a clean receipt", () => {
+  it("keeps the amount but returns no reference when the number after the label is a word", () => {
+    expect(extractAmount(GCASH_BLURRED)).toBe(80000);
+    expect(extractReference(GCASH_BLURRED)).toBeNull();
+  });
+  it("gives no reference for 'History' after a Transaction label", () => {
+    expect(extractReference(HISTORY_LIST)).toBeNull();
+  });
+  it("gives no single amount for a transaction history list", () => {
+    expect(extractAmount(HISTORY_LIST)).toBeNull();
+  });
+  it("still reads a lone signed amount on a detail screen", () => {
+    expect(extractAmount("Amount\n-800.00\nReference No. 8012 345 678 901")).toBe(80000);
+  });
+  it("rejects labelled references that are short or have no digits, but keeps long ones", () => {
+    expect(extractReference("Reference No. ABCDEFGHIJ")).toBeNull();
+    expect(extractReference("Reference No. 1234567")).toBeNull();
+    expect(extractReference("Reference No. 12345678")).toBe("12345678");
+  });
+  it("still finds the typed reference even when the label is unreadable", () => {
+    expect(extractReference(GCASH_BLURRED.replace("Tara", "8012345678901"), "8012345678901")).toBe("8012345678901");
+    expect(extractReference("Rfrence Nmbr\n8012345678901 x", "8012 345 678 901")).toBe("8012 345 678 901");
+  });
+  it("makes a blurred-reference receipt half read, so the verdict is unreadable and not a false mismatch", () => {
+    const reading = { status: "read" as const, amountCentavos: extractAmount(GCASH_BLURRED), reference: extractReference(GCASH_BLURRED) };
+    expect(judgeOcr(reading, { totalCentavos: 80000, typedReference: "8012345678901" })).toBe("unreadable");
+  });
+});
+
 describe("money parsing", () => {
   it("reads pesos with commas and decimals into centavos", () => {
     expect(parseCentavos("450.00")).toBe(45000);

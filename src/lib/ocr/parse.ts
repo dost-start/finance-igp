@@ -30,7 +30,10 @@ const NEGATIVE = /fee|charge|balance|available|change|tax|vat|discount|points/i;
 const DECIMAL_AMOUNT = /(?:\d{1,3}(?:,\d{3})+|\d+)\.\d{2}(?!\d)(?!\s?[AaPp][Mm])/g;
 const SIGNED_AMOUNT = /(?:PHP|Php|PhP|₱|\bP)\s?(\d{1,3}(?:,\d{3})+|\d+)(?![\d.,\w])/g;
 
-type Candidate = { centavos: number; labelled: boolean; excluded: boolean };
+type Candidate = { centavos: number; labelled: boolean; excluded: boolean; signed: boolean };
+
+// "-1,500.00" or "+100.00": a signed amount is a line in a transaction list, not a receipt total.
+const SIGN_BEFORE = /[-+−]\s*$/;
 
 export function amountCandidates(text: string): Candidate[] {
   const lines = text.split(/\r?\n|\|/).map((l) => l.trim());
@@ -48,7 +51,8 @@ export function amountCandidates(text: string): Candidate[] {
       const before = line.slice(0, at);
       const excluded = NEGATIVE.test(before) || (NEGATIVE.test(prev) && !POSITIVE.test(before));
       const labelled = !excluded && (POSITIVE.test(before) || POSITIVE.test(prev));
-      if (!out.some((c) => c.centavos === centavos && c.labelled === labelled && c.excluded === excluded)) out.push({ centavos, labelled, excluded });
+      const signed = SIGN_BEFORE.test(before);
+      if (!out.some((c) => c.centavos === centavos && c.labelled === labelled && c.excluded === excluded && c.signed === signed)) out.push({ centavos, labelled, excluded, signed });
     }
   });
   return out;
@@ -57,7 +61,10 @@ export function amountCandidates(text: string): Candidate[] {
 // The amount finance should see: the first value near an "Amount/Total/Sent" label, otherwise the
 // only amount on the receipt, otherwise nothing (several unlabelled amounts is a guess).
 export function extractAmount(text: string): number | null {
-  const usable = amountCandidates(text).filter((c) => !c.excluded);
+  const all = amountCandidates(text);
+  // Several different signed amounts means a transaction history list: no single amount is "the" amount.
+  if (new Set(all.filter((c) => c.signed).map((c) => c.centavos)).size >= 2) return null;
+  const usable = all.filter((c) => !c.excluded);
   const labelled = usable.find((c) => c.labelled);
   if (labelled) return labelled.centavos;
   const distinct = [...new Set(usable.map((c) => c.centavos))];
@@ -66,11 +73,18 @@ export function extractAmount(text: string): number | null {
 
 const REFERENCE_LABEL = /(?:ref(?:erence)?|trace|txn|transaction|confirmation)\s*(?:no\.?|number|num\.?|id|code|#)?\s*[:.#-]?\s*(.*)$/i;
 
+// Bank and e-wallet reference numbers always contain digits and are long (GCash: 13 digits). A word
+// that merely follows the label ("Tara", "History") is not one, so it is rejected and the receipt is
+// reported as not fully read instead of producing a false mismatch.
+const MIN_LABELLED_REFERENCE = 8;
+
 function cleanReference(raw: string): string | null {
   const m = /^[A-Za-z0-9][A-Za-z0-9\- ]{2,38}/.exec(raw.trim());
   if (!m) return null;
   const value = m[0].trim().replace(/\s+/g, " ");
-  return normalizeReference(value).length >= 4 ? value : null;
+  // Every space-separated piece must hold a digit: "8012 345 678 901" and "GT-9988-7766" pass, "Send Money -100" does not.
+  const allPiecesHaveDigits = value.split(" ").every((piece) => /\d/.test(piece));
+  return allPiecesHaveDigits && normalizeReference(value).length >= MIN_LABELLED_REFERENCE ? value : null;
 }
 
 // The reference number: the one the buyer typed if it appears anywhere on the receipt (strongest
