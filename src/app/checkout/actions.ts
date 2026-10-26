@@ -6,7 +6,11 @@ import { FIELD_NAMES, checkoutSchema } from "@/lib/checkout";
 import { lineTotal } from "@/lib/money";
 import { formatOrderId } from "@/lib/order-id";
 import { lastFour, normalizePhone } from "@/lib/phone";
+import { headers } from "next/headers";
+import { checkoutKey, checkoutLimit, isBlocked, recordHit } from "@/lib/rate-limit";
 import { isStoreLocked } from "@/lib/store";
+import { dbLimitStore } from "@/lib/track";
+import { visitorAddress } from "@/lib/visitor";
 import { STORE_CLOSED_MESSAGE } from "@/lib/store-lock";
 
 export type CheckoutState =
@@ -57,6 +61,13 @@ export async function createOrder(_prev: CheckoutState | null, formData: FormDat
     const [existing] = await db.select({ id: schema.orders.id }).from(schema.orders).where(eq(schema.orders.idempotencyKey, input.idempotencyKey)).limit(1);
     if (existing) return { ok: true, orderUuid: existing.id };
 
+    // One visitor cannot create orders without limit (see checkoutLimit). A retry of an order that
+    // already exists, above, is never counted or blocked.
+    const limit = checkoutLimit();
+    const rule = [{ key: checkoutKey(visitorAddress(await headers())), max: limit.max }];
+    const counter = dbLimitStore();
+    if (await isBlocked(counter, rule, limit.windowSeconds)) return fail("There have been many orders from this connection in a short time, so please wait a few minutes and try again.", values);
+
     // The server is the price authority: look every item up and recompute the total.
     const ids = [...new Set(input.items.map((i) => i.productId))];
     const rows = await db.select().from(schema.products).where(inArray(schema.products.id, ids));
@@ -105,6 +116,7 @@ export async function createOrder(_prev: CheckoutState | null, formData: FormDat
       await tx.insert(schema.statusEvents).values({ orderUuid: order.id, status: "order_received" });
       return order.id;
     });
+    await recordHit(counter, rule, limit.windowSeconds).catch(() => undefined);
     return { ok: true, orderUuid };
   } catch (e) {
     // Two taps racing on the same key: the loser finds the winner's order.

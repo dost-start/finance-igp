@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { isBlocked, orderKey, recordFailure, TRACK_MAX_PER_ORDER, TRACK_MAX_PER_VISITOR, visitorKey, type LimitRule } from "@/lib/rate-limit";
 import { dbLimitStore, trackByDetails } from "@/lib/track";
+import { visitorAddress } from "@/lib/visitor";
 import { trackFormSchema, type TrackedOrder } from "@/lib/tracking-view";
 
 export type TrackState = { ok: true; order: TrackedOrder } | { ok: false; message: string; values: { orderId: string; last4: string } };
@@ -19,7 +20,7 @@ export async function lookupOrder(_prev: TrackState | null, formData: FormData):
 
   try {
     const h = await headers();
-    const address = h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip") || "unknown";
+    const address = visitorAddress(h);
     const rules: LimitRule[] = [
       { key: visitorKey(address), max: TRACK_MAX_PER_VISITOR },
       { key: orderKey(parsed.data.orderId), max: TRACK_MAX_PER_ORDER },

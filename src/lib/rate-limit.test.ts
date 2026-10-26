@@ -45,3 +45,43 @@ describe("tracking rate limit", () => {
     expect(orderKey("R13000001")).toBe("order:R13000001");
   });
 });
+
+import { CHECKOUT_DEFAULT_MAX, CHECKOUT_DEFAULT_WINDOW_MINUTES, checkoutKey, checkoutLimit, recordHit } from "./rate-limit";
+import { visitorAddress } from "./visitor";
+
+describe("checkout order limit", () => {
+  it("uses generous defaults, because students share a university network", () => {
+    expect(checkoutLimit({})).toEqual({ max: CHECKOUT_DEFAULT_MAX, windowSeconds: CHECKOUT_DEFAULT_WINDOW_MINUTES * 60 });
+  });
+  it("can be changed with settings, and ignores bad values", () => {
+    expect(checkoutLimit({ CHECKOUT_RATE_MAX: "50", CHECKOUT_RATE_WINDOW_MINUTES: "10" })).toEqual({ max: 50, windowSeconds: 600 });
+    for (const bad of ["", "0", "-3", "abc", "1.5", "99999999"]) {
+      expect(checkoutLimit({ CHECKOUT_RATE_MAX: bad, CHECKOUT_RATE_WINDOW_MINUTES: bad })).toEqual({ max: CHECKOUT_DEFAULT_MAX, windowSeconds: CHECKOUT_DEFAULT_WINDOW_MINUTES * 60 });
+    }
+    expect(checkoutLimit({ CHECKOUT_RATE_MAX: "10001" }).max).toBe(CHECKOUT_DEFAULT_MAX); // above the ceiling
+  });
+  it("blocks the visitor who has made the allowed number of orders, and nobody else", async () => {
+    const store = memoryStore();
+    const mine = [{ key: checkoutKey("203.0.113.9"), max: 3 }];
+    const other = [{ key: checkoutKey("198.51.100.4"), max: 3 }];
+    for (let i = 0; i < 2; i++) await recordHit(store, mine);
+    expect(await isBlocked(store, mine)).toBe(false);
+    await recordHit(store, mine);
+    expect(await isBlocked(store, mine)).toBe(true);
+    expect(await isBlocked(store, other)).toBe(false);
+  });
+  it("keeps checkout counters apart from tracking counters and never stores the raw address", () => {
+    expect(checkoutKey("203.0.113.9")).toMatch(/^checkout:[0-9a-f]{32}$/);
+    expect(checkoutKey("203.0.113.9")).not.toBe(visitorKey("203.0.113.9"));
+    expect(checkoutKey("203.0.113.9")).not.toContain("203.0.113.9");
+  });
+});
+
+describe("visitorAddress", () => {
+  const headers = (h: Record<string, string>) => ({ get: (k: string) => h[k.toLowerCase()] ?? null });
+  it("takes the first forwarded address, else the real address, else unknown", () => {
+    expect(visitorAddress(headers({ "x-forwarded-for": "203.0.113.9, 10.0.0.1" }))).toBe("203.0.113.9");
+    expect(visitorAddress(headers({ "x-real-ip": "198.51.100.4" }))).toBe("198.51.100.4");
+    expect(visitorAddress(headers({}))).toBe("unknown");
+  });
+});

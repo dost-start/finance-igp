@@ -15,8 +15,8 @@
     "db:check": "tsx --env-file=.env.local src/db/check.ts",
     "db:seed-qr": "tsx --env-file=.env.local src/db/seed-qr.ts",
     "e2e": "playwright test",
-    "predev": "node scripts/copy-ocr-assets.mjs",
-    "prebuild": "node scripts/copy-ocr-assets.mjs"
+    "predev": "node scripts/copy-ocr-assets.mjs && node scripts/list-email-images.mjs",
+    "prebuild": "node scripts/copy-ocr-assets.mjs && node scripts/list-email-images.mjs"
   },
   "dependencies": {
     "@tesseract.js-data/eng": "^1.0.0",

@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { NextResponse, type NextRequest } from "next/server";
 import { createDb } from "@/db/client";
-import { products } from "@/db/schema";
+import { orders, products } from "@/db/schema";
 import { createSlugCache } from "@/lib/slug-cache";
 import { TOKEN_SHAPE } from "@/lib/tracking-view";
 
@@ -11,16 +11,20 @@ import { TOKEN_SHAPE } from "@/lib/tracking-view";
 // It fails open: if the database is unreachable the request goes through to the page as before.
 let db: ReturnType<typeof createDb>["db"] | undefined;
 
+function getDb() {
+  const url = process.env.DATABASE_URL;
+  if (!url) throw new Error("DATABASE_URL is not set");
+  return (db ??= createDb(url).db);
+}
+
 const slugs = createSlugCache({
   load: async () => {
-    const url = process.env.DATABASE_URL;
-    if (!url) throw new Error("DATABASE_URL is not set");
-    db ??= createDb(url).db;
-    const rows = await db.select({ slug: products.slug }).from(products).where(eq(products.active, true));
+    const rows = await getDb().select({ slug: products.slug }).from(products).where(eq(products.active, true));
     return rows.map((r) => r.slug);
   },
 });
 
+const UUID_SHAPE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const SLUG_SHAPE = /^[a-z0-9-]{1,80}$/;
 const FILE_EXTENSION = /\.[a-z0-9]{2,5}$/i;
 
@@ -41,6 +45,24 @@ export async function proxy(request: NextRequest) {
     return NextResponse.rewrite(new URL("/not-found-404", request.url), { status: 404, headers: { "Cache-Control": "no-store" } });
   }
 
+  // Payment pages: an address that is not a real order is a real 404. The id is checked against the
+  // database (one small lookup); if the database cannot be reached the page is let through, as before.
+  if (request.nextUrl.pathname.startsWith("/pay/")) {
+    const id = request.nextUrl.pathname.split("/")[2] ?? "";
+    let exists = true;
+    if (UUID_SHAPE.test(id)) {
+      try {
+        exists = (await getDb().select({ id: orders.id }).from(orders).where(eq(orders.id, id.toLowerCase())).limit(1)).length > 0;
+      } catch {
+        exists = true;
+      }
+    } else {
+      exists = false;
+    }
+    if (exists) return NextResponse.next();
+    return NextResponse.rewrite(new URL("/not-found-404", request.url), { status: 404, headers: { "Cache-Control": "no-store" } });
+  }
+
   const slug = request.nextUrl.pathname.split("/")[2] ?? "";
   // /products/<name>.svg and friends are the product images in public/, not product pages.
   if (FILE_EXTENSION.test(slug)) return NextResponse.next();
@@ -53,4 +75,4 @@ export async function proxy(request: NextRequest) {
   });
 }
 
-export const config = { matcher: ["/products/:slug", "/track/:token", "/admin/:path*"] };
+export const config = { matcher: ["/products/:slug", "/pay/:uuid", "/track/:token", "/admin/:path*"] };
