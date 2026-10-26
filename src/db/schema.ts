@@ -176,4 +176,13 @@ export const rateLimits = pgTable("rate_limits", {
   windowStart: timestamp("window_start", { withTimezone: true }).notNull().defaultNow(),
 }).enableRLS();
 
+// Store-wide switches, one row per setting. Today: "store_locked" = "true" | "false" (PRD FR07.05).
+// Written only by signed-in admins, read by the server on every order and payment.
+export const storeSettings = pgTable("store_settings", {
+  key: text("key").primaryKey(),
+  value: text("value").notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedBy: uuid("updated_by").references(() => adminAccounts.id),
+}).enableRLS();
+
 export const nextOrderNumber = sql`nextval('order_number_seq')`;

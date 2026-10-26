@@ -1,4 +1,4 @@
-import { cacheLife } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 import { and, asc, eq } from "drizzle-orm";
 import { getDb, schema } from "@/db";
 
@@ -7,6 +7,7 @@ import { getDb, schema } from "@/db";
 export async function getActiveProducts() {
   "use cache";
   cacheLife("minutes");
+  cacheTag("catalog"); // the product editor expires this tag so a saved edit shows at once
   return getDb()
     .select({
       id: schema.products.id,
@@ -25,6 +26,7 @@ export async function getActiveProducts() {
 export async function getProductBySlug(slug: string) {
   "use cache";
   cacheLife("minutes");
+  cacheTag("catalog");
   const [product] = await getDb()
     .select()
     .from(schema.products)

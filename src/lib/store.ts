@@ -1,0 +1,18 @@
+import "server-only";
+import { eq } from "drizzle-orm";
+import { getDb, schema } from "@/db";
+import { STORE_LOCK_KEY, parseLocked } from "./store-lock";
+
+// The real answer, read from the database every time. Order creation and receipt upload use this, so
+// closing the store takes effect for them at once.
+export async function isStoreLocked(): Promise<boolean> {
+  const [row] = await getDb().select({ value: schema.storeSettings.value }).from(schema.storeSettings).where(eq(schema.storeSettings.key, STORE_LOCK_KEY)).limit(1);
+  return parseLocked(row?.value);
+}
+
+export async function saveStoreLocked(locked: boolean, adminId: string): Promise<void> {
+  await getDb()
+    .insert(schema.storeSettings)
+    .values({ key: STORE_LOCK_KEY, value: locked ? "true" : "false", updatedBy: adminId })
+    .onConflictDoUpdate({ target: schema.storeSettings.key, set: { value: locked ? "true" : "false", updatedAt: new Date(), updatedBy: adminId } });
+}

@@ -6,6 +6,8 @@ import { FIELD_NAMES, checkoutSchema } from "@/lib/checkout";
 import { lineTotal } from "@/lib/money";
 import { formatOrderId } from "@/lib/order-id";
 import { lastFour, normalizePhone } from "@/lib/phone";
+import { isStoreLocked } from "@/lib/store";
+import { STORE_CLOSED_MESSAGE } from "@/lib/store-lock";
 
 export type CheckoutState =
   | { ok: true; orderUuid: string }
@@ -19,6 +21,9 @@ export async function createOrder(_prev: CheckoutState | null, formData: FormDat
   const values: Record<string, string> = {};
   for (const f of TEXT_FIELDS) values[f] = String(formData.get(f) ?? "");
   values.consent = formData.get("consent") === "on" ? "on" : "";
+
+  // The store lock is checked here, against the database, every time: no order is created while it is closed.
+  if (await isStoreLocked()) return fail(STORE_CLOSED_MESSAGE, values);
 
   let items: unknown = [];
   try {

@@ -5,6 +5,8 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { z } from "zod";
 import { PaymentForm } from "@/components/payment-form";
+import { StoreClosed } from "@/components/store-closed";
+import { isStoreLocked } from "@/lib/store";
 import { getDb, schema } from "@/db";
 
 export const metadata: Metadata = { title: "Payment", robots: { index: false } };
@@ -33,6 +35,10 @@ async function Payment({ params }: { params: PageProps<"/pay/[uuid]">["params"] 
       </div>
     );
   }
+
+  // While the store is locked a payment cannot be started. A buyer who already submitted their receipt
+  // keeps seeing their confirmation.
+  if (order.status === "order_received" && (await isStoreLocked())) return <StoreClosed />;
 
   const channels = await db
     .select({ key: schema.paymentChannels.key, label: schema.paymentChannels.label, hasQr: sql<boolean>`${schema.paymentChannels.qrDriveFileId} is not null` })

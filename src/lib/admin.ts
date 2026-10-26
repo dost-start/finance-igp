@@ -17,17 +17,25 @@ export async function requireAdmin(): Promise<Admin> {
   return admin;
 }
 
+// Only the Technology team (product and price editing). Finance members are sent back to the order
+// list with a plain message instead of an error page.
+export async function requireTech(): Promise<Admin> {
+  const admin = await requireAdmin();
+  if (admin.role !== "tech") redirect("/admin?notice=tech_only");
+  return admin;
+}
+
 type Tx = Pick<ReturnType<typeof getDb>, "insert">;
 
 // Every admin write leaves an audit row: who, what, which order, before and after.
 export async function writeAudit(
   tx: Tx,
-  entry: { adminId: string; action: string; orderUuid: string; before?: unknown; after?: unknown },
+  entry: { adminId: string; action: string; orderUuid?: string; before?: unknown; after?: unknown },
 ) {
   await tx.insert(schema.auditLogs).values({
     adminId: entry.adminId,
     action: entry.action,
-    orderUuid: entry.orderUuid,
+    orderUuid: entry.orderUuid ?? null,
     before: entry.before ?? null,
     after: entry.after ?? null,
   });

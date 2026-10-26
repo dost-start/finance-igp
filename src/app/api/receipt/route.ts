@@ -8,6 +8,8 @@ import { judgeOcr, readingFromFields } from "@/lib/ocr/judge";
 import { amountField } from "@/lib/ocr/parse";
 import { CHANNEL_KEY, IMAGE_EXTENSION, MAX_RECEIPT_BYTES, checkReceipt, ocrFieldsSchema, referenceSchema } from "@/lib/receipt";
 import { getFileStore } from "@/lib/storage";
+import { isStoreLocked } from "@/lib/store";
+import { STORE_CLOSED_MESSAGE } from "@/lib/store-lock";
 
 const reply = (status: number, body: Record<string, unknown>) =>
   Response.json(body, { status, headers: { "Cache-Control": "no-store" } });
@@ -27,6 +29,8 @@ function sameOrigin(request: Request): boolean {
 // the buyer just retries the upload on the same page.
 export async function POST(request: Request) {
   if (!sameOrigin(request)) return reply(403, { error: "forbidden" });
+  // Store lock: no payment is accepted while the store is closed (423 = locked).
+  if (await isStoreLocked()) return reply(423, { error: "store_closed", message: STORE_CLOSED_MESSAGE });
 
   let form: FormData;
   try {

@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import { CartLink } from "@/components/cart-link";
 import { MobileCartBar } from "@/components/mobile-cart-bar";
+import { StoreBanner } from "@/components/store-banner";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-30 focus:rounded focus:bg-white focus:px-3 focus:py-2 focus:text-black">
           Skip to content
         </a>
+        <StoreBanner />
         <header className="border-b border-zinc-200 dark:border-zinc-800">
           <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4">
             <Link href="/" className="text-base font-semibold tracking-tight sm:text-lg">

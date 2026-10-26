@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { BulkForm } from "@/components/admin/bulk-form";
+import { StoreSwitch } from "@/components/admin/store-switch";
+import { isStoreLocked } from "@/lib/store";
 import { OcrBadge } from "@/components/admin/ocr-badge";
 import { SelectAll } from "@/components/admin/select-all";
 import { StatusBadge } from "@/components/admin/status-badge";
@@ -192,7 +194,9 @@ async function Orders({ searchParams }: { searchParams: PageProps<"/admin">["sea
   const sp = await searchParams;
   const f = parseFilters(sp);
   const done = Array.isArray(sp.done) ? sp.done[0] : sp.done;
-  const [{ rows, total }, products, summary] = await Promise.all([listOrders(f), productOptions(), waitingSummary()]);
+  const notice = Array.isArray(sp.notice) ? sp.notice[0] : sp.notice;
+  const store = Array.isArray(sp.store) ? sp.store[0] : sp.store;
+  const [{ rows, total }, products, summary, locked] = await Promise.all([listOrders(f), productOptions(), waitingSummary(), isStoreLocked()]);
 
   return (
     <>
@@ -201,7 +205,18 @@ async function Orders({ searchParams }: { searchParams: PageProps<"/admin">["sea
           {done === "confirmed" ? "Payment confirmed." : done === "rejected" ? "Payment rejected." : "Saved."} No more orders are waiting.
         </p>
       )}
+      {notice === "tech_only" && (
+        <p role="alert" className="mb-6 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-100">
+          Editing products is only for the Technology team. Ask them if a product, price or size needs to change.
+        </p>
+      )}
+      {store && (
+        <p role="status" className="mb-6 rounded-md border border-emerald-300 bg-emerald-50 p-3 text-sm text-emerald-900 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-100">
+          {store === "closed" ? "The store is closed. Buyers cannot place orders or send payments until you reopen it." : "The store is open again."}
+        </p>
+      )}
       <h1 className="text-2xl font-semibold tracking-tight">Orders</h1>
+      <StoreSwitch locked={locked} />
       <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
         <Link href="/admin?pay=verifying" className="font-medium underline underline-offset-4">
           {summary.waiting} waiting for verification

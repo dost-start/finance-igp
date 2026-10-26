@@ -6,8 +6,8 @@ export const ADMIN_EMAIL = "ethandreizbaltazar0@gmail.com"; // seeded in admin_a
 export const PHONE = "09171234567";
 
 // Signs finance in without Google, using a session signed with the test-only secret.
-export async function signInAdmin(context: BrowserContext) {
-  const session = await encode({ token: { email: ADMIN_EMAIL, name: "E2E Admin", sub: "e2e" }, secret: E2E_AUTH_SECRET, salt: "authjs.session-token", maxAge: 1800 });
+export async function signInAdmin(context: BrowserContext, email: string = ADMIN_EMAIL) {
+  const session = await encode({ token: { email, name: "E2E Admin", sub: "e2e" }, secret: E2E_AUTH_SECRET, salt: "authjs.session-token", maxAge: 1800 });
   await context.addCookies([{ name: "authjs.session-token", value: session, url: `http://localhost:${E2E_PORT}` }]);
 }
 

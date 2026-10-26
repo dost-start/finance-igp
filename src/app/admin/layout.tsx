@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { auth, signOut } from "@/auth";
+import { findActiveAdmin } from "@/lib/admin-accounts";
 
 export const metadata: Metadata = { title: { default: "Admin", template: "%s | Admin" }, robots: { index: false, follow: false } };
 
@@ -25,6 +26,18 @@ async function Who() {
   );
 }
 
+// The Products link is only for the Technology team: finance members never see it.
+async function ProductsLink() {
+  const session = await auth();
+  const admin = await findActiveAdmin(session?.user?.email);
+  if (admin?.role !== "tech") return null;
+  return (
+    <Link href="/admin/products" className="underline-offset-4 hover:underline">
+      Products
+    </Link>
+  );
+}
+
 export default function AdminLayout({ children }: LayoutProps<"/admin">) {
   return (
     <div>
@@ -40,6 +53,12 @@ export default function AdminLayout({ children }: LayoutProps<"/admin">) {
             <Link href="/admin/emails" className="underline-offset-4 hover:underline">
               Email log
             </Link>
+            <Link href="/admin/audit" className="underline-offset-4 hover:underline">
+              Audit log
+            </Link>
+            <Suspense fallback={null}>
+              <ProductsLink />
+            </Suspense>
           </nav>
         </div>
         <Suspense fallback={null}>
