@@ -13,7 +13,7 @@ One complete order can travel the whole path: a buyer orders and uploads a recei
 - A product grid with photo, name and price (placeholder items and images for now).
 - A product page where you pick a size and quantity, then add to cart.
 - A cart you can edit, with a running total.
-- Checkout: name, university and university address, home address (Google Maps link plus landmark), delivery method, contact number, email typed twice.
+- Checkout: name, university and university address, home address (Google Maps link plus landmark), contact number, email typed twice.
 - A summary with the exact total, then the payment screen: your QR codes, the amount due, and the upload form (receipt image, bank, reference number).
 - The message: "Your Order & Tracking ID will be sent once your payment has been finalized by the Finance Team."
 - An email right after submitting (Email 1: order received, no Order ID yet).

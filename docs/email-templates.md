@@ -30,7 +30,7 @@ Revision of finance's 9 templates to match the PRD (S2026-05012, Appendix F). Te
 
 | Variable | Filled by |
 |---|---|
-| `{{buyer_name}}`, `{{order_id}}`, `{{tracking_link}}`, `{{items}}`, `{{delivery_method}}`, `{{delivery_address}}`, `{{total}}`, `{{status_date}}` | System |
+| `{{buyer_name}}`, `{{order_id}}`, `{{tracking_link}}`, `{{items}}`, `{{delivery_address}}`, `{{total}}`, `{{status_date}}` | System |
 | `{{store_link}}`, `{{ticket_form_link}}`, `{{refund_timeframe}}`, `{{submission_deadline}}` | Config, set by Tech/Finance (not per order) |
 | `{{cancel_reason}}` | Finance, free text, required when canceling |
 | `{{reject_reason}}` | Finance, dropdown, required when rejecting |
@@ -56,7 +56,6 @@ We received your order submission. Our finance team is verifying your payment. Y
 **Order Summary**
 {{items}}
 Total Amount Due: {{total}}
-Method of Delivery: {{delivery_method}}
 Delivery Address: {{delivery_address}}
 
 Our finance team reviews payment submissions within 24–48 hours. You will receive a confirmation email with your Order ID and tracking link after finance verifies your payment.
