@@ -30,11 +30,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </a>
         <header className="border-b border-zinc-200 dark:border-zinc-800">
           <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4">
-            <Link href="/" className="text-lg font-semibold tracking-tight">
+            <Link href="/" className="text-base font-semibold tracking-tight sm:text-lg">
               START: COLLECTIONS
             </Link>
-            <nav className="flex items-center gap-5 text-sm">
-              <Link href="/track" className="underline-offset-4 hover:underline">
+            <nav className="flex items-center gap-4 text-sm sm:gap-5">
+              <Link href="/track" className="whitespace-nowrap underline-offset-4 hover:underline">
                 Track order
               </Link>
               <CartLink />

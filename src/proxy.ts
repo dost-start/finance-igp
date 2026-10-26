@@ -22,6 +22,7 @@ const slugs = createSlugCache({
 });
 
 const SLUG_SHAPE = /^[a-z0-9-]{1,80}$/;
+const FILE_EXTENSION = /\.[a-z0-9]{2,5}$/i;
 
 const SESSION_COOKIES = ["authjs.session-token", "__Secure-authjs.session-token"];
 
@@ -41,6 +42,8 @@ export async function proxy(request: NextRequest) {
   }
 
   const slug = request.nextUrl.pathname.split("/")[2] ?? "";
+  // /products/<name>.svg and friends are the product images in public/, not product pages.
+  if (FILE_EXTENSION.test(slug)) return NextResponse.next();
   if (SLUG_SHAPE.test(slug) && (await slugs.has(slug))) return NextResponse.next();
 
   // Rewrite to a route that does not exist: Next renders its not-found page with status 404.

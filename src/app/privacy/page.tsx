@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Privacy Notice | START: COLLECTIONS",
+  title: "Privacy Notice",
   description: "How START-DOST handles the personal data you give when ordering merchandise.",
 };
 
