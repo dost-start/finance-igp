@@ -9,6 +9,7 @@ const PHONE = "09171234567";
 const ADMIN_EMAIL = "ethandreizbaltazar0@gmail.com"; // seeded in admin_accounts
 const ONE_PIXEL_PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==", "base64");
 
+const START = new Date();
 const sql = postgres(process.env.DATABASE_URL ?? "", { prepare: false, max: 1 });
 
 test.afterAll(async () => {
@@ -16,6 +17,7 @@ test.afterAll(async () => {
   await sql`delete from orders where email = ${EMAIL}`;
   await sql`delete from email_logs where recipient = ${EMAIL}`;
   await sql`delete from rate_limits`;
+  await sql`delete from audit_logs where created_at >= ${START}`;
   const [{ n }] = await sql`select count(*)::int as n from orders`;
   if (n === 0) await sql`select setval('order_number_seq', 1, false)`;
   await sql.end();
@@ -74,7 +76,7 @@ test("buyer orders and pays, finance confirms, buyer tracks the order", async ({
   await expect(page.getByRole("heading", { name: order.order_id })).toBeVisible();
   await expect(page.getByAltText(/receipt/i)).toBeVisible();
   await page.getByRole("button", { name: "Confirm payment" }).click();
-  await expect(page.getByText("Payment confirmed")).toBeVisible();
+  await expect(page.getByRole("status").filter({ hasText: "Payment confirmed." })).toBeVisible();
   const [confirmed] = await sql`select status, tracking_token_hash from orders where id = ${orderUuid}`;
   expect(confirmed.status).toBe("payment_confirmation");
   expect(confirmed.tracking_token_hash).toMatch(/^[0-9a-f]{64}$/);

@@ -8,11 +8,13 @@ const RUN = Date.now();
 const email = (n: string) => `e2e-ocr-${n}-${RUN}@example.test`;
 const REF = "8012345678901";
 
+const START = new Date();
 const sql = postgres(process.env.DATABASE_URL ?? "", { prepare: false, max: 1 });
 
 test.afterAll(async () => {
   await sql`delete from orders where email like ${`e2e-ocr-%-${RUN}@example.test`}`;
   await sql`delete from email_logs where recipient like ${`e2e-ocr-%-${RUN}@example.test`}`;
+  await sql`delete from audit_logs where created_at >= ${START}`;
   const [{ n }] = await sql`select count(*)::int as n from orders`;
   if (n === 0) await sql`select setval('order_number_seq', 1, false)`;
   await sql.end();

@@ -71,3 +71,98 @@ describe("Email 9 (payment rejected)", () => {
     expect(REJECT_REASONS).toEqual(["Unreadable receipt", "Incorrect amount", "Invalid reference number"]);
   });
 });
+
+import { STATUS_EMAIL_STATUSES, cleanNote, isStatusEmailStatus, renderStatusEmail, statusEmailConfig } from "./templates";
+
+describe("Emails 3 to 8 (status updates)", () => {
+  const base = {
+    buyerName: "Juan Dela Cruz",
+    orderId: "R13000001",
+    totalCentavos: 99000,
+    universityAddress: "Quezon City",
+    homeAddressLink: "https://maps.app.goo.gl/x",
+    homeLandmark: "Near the chapel",
+    at: new Date("2026-11-13T02:00:00Z"),
+  };
+  const config = { siteUrl: "https://shop.example", refundTimeframe: "5 to 7 business days" };
+  const form = "https://forms.example/ticket";
+  const render = (s: (typeof STATUS_EMAIL_STATUSES)[number], note?: string) => renderStatusEmail(s, { ...base, note }, form, config);
+
+  it("covers exactly the six statuses after confirmation, each with its own template name", () => {
+    expect(STATUS_EMAIL_STATUSES).toEqual(["in_production", "out_for_shipping", "received_successfully", "canceled", "refund_in_process", "refund_successful"]);
+    expect(STATUS_EMAIL_STATUSES.map((s) => render(s).template)).toEqual(["3-in-production", "4-out-for-shipping", "5-order-delivered", "6-canceled", "7-refund-in-process", "8-refund-successful"]);
+    expect(isStatusEmailStatus("in_production")).toBe(true);
+    expect(isStatusEmailStatus("payment_confirmation")).toBe(false);
+  });
+
+  it("uses the approved subjects", () => {
+    expect(render("in_production").content.subject).toBe("START: COLLECTIONS - In Production");
+    expect(render("out_for_shipping").content.subject).toBe("START: COLLECTIONS - Out for Shipping");
+    expect(render("received_successfully").content.subject).toBe("Order Delivered: Thank You for Supporting START: COLLECTIONS");
+    expect(render("canceled").content.subject).toBe("START: COLLECTIONS - Order Canceled");
+    expect(render("refund_in_process").content.subject).toBe("START: COLLECTIONS - Refund in Process");
+    expect(render("refund_successful").content.subject).toBe("START: COLLECTIONS - Refund Successful");
+  });
+
+  it("names the buyer and the Order ID in every email and stays no-reply", () => {
+    for (const s of STATUS_EMAIL_STATUSES) {
+      const { text } = render(s).content;
+      expect(text).toContain("Hello Juan Dela Cruz,");
+      expect(text).toContain("Order ID: R13000001");
+      expect(text).toContain("no-reply address. Please do not reply.");
+      expect(text).toContain(form);
+    }
+  });
+
+  it("puts finance's note on its own line when given, and leaves no gap when not", () => {
+    expect(render("in_production", "Batch 2 of 3").content.text).toContain("\nNote from finance: Batch 2 of 3\n");
+    const none = render("in_production").content.text;
+    expect(none).not.toContain("Note from finance");
+    expect(none).not.toContain("undefined");
+    expect(none).not.toMatch(/\{\{/);
+  });
+
+  it("links to the tracking page rather than a personal link", () => {
+    expect(render("in_production").content.text).toContain("https://shop.example/track");
+    expect(render("out_for_shipping").content.text).toContain("https://shop.example/track");
+  });
+
+  it("shows the delivery details in the shipping email", () => {
+    const { text } = render("out_for_shipping").content;
+    expect(text).toContain("Delivery Address: Quezon City");
+    expect(text).toContain("https://maps.app.goo.gl/x");
+    expect(text).toContain("Near the chapel");
+  });
+
+  it("uses the note as the cancellation reason, with a fallback", () => {
+    expect(render("canceled", "Out of stock").content.text).toContain("Reason for Cancellation: Out of stock");
+    expect(render("canceled").content.text).toContain("Reason for Cancellation: Canceled by the finance team");
+    expect(render("canceled").content.text).toContain("https://shop.example");
+  });
+
+  it("states the refund amount and the fixed timeframe", () => {
+    const e7 = render("refund_in_process").content.text;
+    expect(e7).toContain("Refund Amount: ₱990");
+    expect(e7).toContain("Refund Timeframe: 5 to 7 business days");
+    expect(render("refund_successful").content.text).toContain("Amount Sent: ₱990");
+    expect(render("refund_successful").content.text).toContain("Date Sent: November 13, 2026");
+  });
+
+  it("falls back gracefully while the ticket form link is missing", () => {
+    const { text } = renderStatusEmail("received_successfully", base, null, config).content;
+    expect(text).toContain("merch ticket form link will be added soon");
+    expect(text).toContain("link coming soon");
+  });
+
+  it("reads config from the environment with a stand-in refund timeframe", () => {
+    expect(statusEmailConfig({ NEXT_PUBLIC_SITE_URL: "https://x.example/" })).toEqual({ siteUrl: "https://x.example", refundTimeframe: "5 to 7 business days" });
+    expect(statusEmailConfig({ REFUND_TIMEFRAME: "3 business days" }).refundTimeframe).toBe("3 business days");
+  });
+
+  it("tidies a note: one paragraph, 300 characters at most, empty becomes nothing", () => {
+    expect(cleanNote("  hello \n\n  world  ")).toBe("hello world");
+    expect(cleanNote("x".repeat(500))).toHaveLength(300);
+    expect(cleanNote("   ")).toBeNull();
+    expect(cleanNote(null)).toBeNull();
+  });
+});

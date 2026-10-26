@@ -1,6 +1,7 @@
 "use server";
 
 import { and, asc, eq, ne } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { after } from "next/server";
 import { z } from "zod";
@@ -8,8 +9,9 @@ import { getDb, schema } from "@/db";
 import type { OrderStatus } from "@/db/schema";
 import { requireAdmin, writeAudit } from "@/lib/admin";
 import { sendOrderEmail } from "@/lib/email/send";
-import { REJECT_REASONS, rejectionDeadline, renderEmail2, renderEmail9, ticketFormUrl, type RejectReason } from "@/lib/email/templates";
-import { canTransition, generalNextStatuses } from "@/lib/status";
+import { REJECT_REASONS, STATUS_EMAIL_STATUSES, cleanNote, rejectionDeadline, renderEmail2, renderEmail9, ticketFormUrl, type RejectReason } from "@/lib/email/templates";
+import { changeStatus, sendStatusEmails, type ChangedOrder } from "@/lib/status-change";
+import { canTransition, STATUS_LABEL } from "@/lib/status";
 import { mintTrackingToken, trackingUrl } from "@/lib/tracking";
 
 const uuid = z.uuid();
@@ -115,25 +117,54 @@ export async function rejectPayment(orderUuid: string, formData: FormData) {
 }
 
 // One step forward after confirmation (production, shipping, received, cancel and the refund steps).
-// Emails for these steps arrive in Sprint 2, so none is sent here yet.
-export async function setOrderStatus(orderUuid: string, to: OrderStatus) {
+// Finance can add a note: it is saved in the order's history and printed in the buyer's email.
+export async function setOrderStatus(orderUuid: string, to: OrderStatus, formData: FormData) {
   const admin = await requireAdmin();
   if (!uuid.safeParse(orderUuid).success) redirect("/admin");
-  const order = await loadOrder(orderUuid);
-  if (!order) redirect("/admin");
-  if (!generalNextStatuses(order.status).includes(to)) stale(orderUuid);
+  const note = String(formData.get("note") ?? "");
+  if (to === "canceled" && !cleanNote(note)) redirect(`/admin/orders/${orderUuid}?notice=cancel_reason`);
 
-  const ok = await getDb().transaction(async (tx) => {
-    const moved = await tx
-      .update(schema.orders)
-      .set({ status: to })
-      .where(and(eq(schema.orders.id, orderUuid), eq(schema.orders.status, order.status)))
-      .returning({ id: schema.orders.id });
-    if (moved.length === 0) return false;
-    await tx.insert(schema.statusEvents).values({ orderUuid, status: to, changedBy: admin.id });
-    await writeAudit(tx, { adminId: admin.id, action: "status.change", orderUuid, before: { status: order.status }, after: { status: to } });
-    return true;
-  });
-  if (!ok) stale(orderUuid);
+  const result = await changeStatus(admin, orderUuid, to, note);
+  if (!result.ok) {
+    if (result.reason === "missing") redirect("/admin");
+    stale(orderUuid);
+  }
+  after(() => sendStatusEmails([result.order]));
   redirect(`/admin/orders/${orderUuid}?done=status`);
+}
+
+export type BulkState = { ok: boolean; message: string; skipped?: string[] } | null;
+
+const BULK_MAX = 100;
+const BULK_TARGETS: readonly string[] = STATUS_EMAIL_STATUSES;
+
+// Move many selected orders to the same next status. Each order is checked on its own: one that
+// cannot make that move (wrong current status) is skipped and listed, the rest go through. Every
+// buyer gets the email for the new status, with the same optional note.
+export async function bulkSetStatus(_prev: BulkState, formData: FormData): Promise<BulkState> {
+  const admin = await requireAdmin();
+  const ids = [...new Set(formData.getAll("ids").map(String))];
+  const to = String(formData.get("to") ?? "");
+  const note = String(formData.get("note") ?? "");
+
+  if (ids.length === 0) return { ok: false, message: "Select at least one order first." };
+  if (ids.length > BULK_MAX) return { ok: false, message: `Select at most ${BULK_MAX} orders at a time.` };
+  if (!ids.every((id) => uuid.safeParse(id).success)) return { ok: false, message: "Something was wrong with the selection. Reload the page and try again." };
+  if (!BULK_TARGETS.includes(to)) return { ok: false, message: "Choose the status to move the orders to." };
+  if (to === "canceled" && !cleanNote(note)) return { ok: false, message: "Add the reason for canceling: the buyers see it in their email." };
+
+  const changed: ChangedOrder[] = [];
+  const skipped: string[] = [];
+  for (const id of ids) {
+    const r = await changeStatus(admin, id, to as OrderStatus, note);
+    if (r.ok) changed.push(r.order);
+    else if (r.reason === "not_allowed") skipped.push(`${r.orderId} is ${STATUS_LABEL[r.from]}, which cannot move to ${STATUS_LABEL[to as OrderStatus]}`);
+    else skipped.push("An order in the selection no longer exists");
+  }
+  if (changed.length > 0) after(() => sendStatusEmails(changed));
+  revalidatePath("/admin");
+
+  const label = STATUS_LABEL[to as OrderStatus];
+  const head = changed.length > 0 ? `${changed.length} ${changed.length === 1 ? "order" : "orders"} moved to ${label}. Buyers are being emailed.` : "No orders were changed.";
+  return { ok: changed.length > 0, message: skipped.length > 0 ? `${head} ${skipped.length} skipped.` : head, skipped };
 }

@@ -129,3 +129,208 @@ export function renderEmail9(d: { buyerName: string; reason: RejectReason; deadl
   ].join("\n");
   return { subject: "[Action Required] START: COLLECTIONS - Payment Rejected", text };
 }
+
+// ---------------------------------------------------------------------------------------------
+// Emails 3 to 8: one per status finance moves an order to after payment is confirmed. Wording is
+// from docs/email-templates.md. Finance can add an optional note when changing a status; it is
+// printed on its own line. Only a hash of the tracking token is stored, so these emails link to
+// the tracking page (Order ID plus last 4 digits) and not to a personal link; the link in Email 2
+// keeps working.
+export const STATUS_EMAIL_STATUSES = ["in_production", "out_for_shipping", "received_successfully", "canceled", "refund_in_process", "refund_successful"] as const;
+export type StatusEmailStatus = (typeof STATUS_EMAIL_STATUSES)[number];
+export const isStatusEmailStatus = (s: string): s is StatusEmailStatus => (STATUS_EMAIL_STATUSES as readonly string[]).includes(s);
+
+export type StatusEmailData = {
+  buyerName: string;
+  orderId: string;
+  totalCentavos: number;
+  universityAddress: string;
+  homeAddressLink: string;
+  homeLandmark: string;
+  note?: string | null;
+  at: Date; // when the status was set
+};
+
+export type StatusEmailConfig = { siteUrl: string; refundTimeframe: string };
+
+// One fixed refund timeframe for all orders (finance question Q3). Until finance answers, a stand-in.
+export const DEFAULT_REFUND_TIMEFRAME = "5 to 7 business days";
+
+export function statusEmailConfig(env: Record<string, string | undefined> = process.env): StatusEmailConfig {
+  return {
+    siteUrl: (env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, ""),
+    refundTimeframe: env.REFUND_TIMEFRAME?.trim() || DEFAULT_REFUND_TIMEFRAME,
+  };
+}
+
+// Finance-typed text goes into the email body, so keep it to one tidy paragraph.
+export function cleanNote(note: string | null | undefined): string | null {
+  const t = (note ?? "").replace(/\s+/g, " ").trim().slice(0, 300);
+  return t === "" ? null : t;
+}
+
+const noteLine = (note: string | null | undefined): string[] => {
+  const n = cleanNote(note);
+  return n ? [`Note from finance: ${n}`] : [];
+};
+
+export function renderStatusEmail(
+  status: StatusEmailStatus,
+  d: StatusEmailData,
+  ticketUrl: string | null,
+  config: StatusEmailConfig = statusEmailConfig(),
+): { template: string; content: EmailContent } {
+  const trackUrl = `${config.siteUrl}/track`;
+  const form = ticketUrl ?? "(the merch ticket form link will be added soon)";
+  const when = formatManila(d.at);
+  const sign = (team: string) => ["Best regards,", team, "", "--", footer(ticketUrl)];
+  const lines = (parts: (string | string[])[]) => parts.flat().join("\n");
+
+  switch (status) {
+    case "in_production":
+      return {
+        template: "3-in-production",
+        content: {
+          subject: "START: COLLECTIONS - In Production",
+          text: lines([
+            `Hello ${d.buyerName},`,
+            "",
+            "Our team started production on your START: COLLECTIONS order.",
+            "",
+            "Production Notice",
+            `Order ID: ${d.orderId}`,
+            "Order Status: In Production",
+            `Tracking Page: ${trackUrl} (use your Order ID and the last 4 digits of your contact number)`,
+            noteLine(d.note),
+            "",
+            "Your START: COLLECTIONS item represents intellect, regional pride, and belonging in the DOST technoscholar network. We will email you again when your order ships.",
+            "",
+            sign("START: COLLECTIONS Team"),
+          ]),
+        },
+      };
+    case "out_for_shipping":
+      return {
+        template: "4-out-for-shipping",
+        content: {
+          subject: "START: COLLECTIONS - Out for Shipping",
+          text: lines([
+            `Hello ${d.buyerName},`,
+            "",
+            "Your START: COLLECTIONS order left our facility and is on the way to your address. Soon you will use or wear a symbol of our unified technoscholar community.",
+            "",
+            "Shipping Notice",
+            `Order ID: ${d.orderId}`,
+            `Tracking Page: ${trackUrl} (use your Order ID and the last 4 digits of your contact number)`,
+            `Delivery Address: ${d.universityAddress}`,
+            `Home Address (map link): ${d.homeAddressLink}`,
+            `Landmark: ${d.homeLandmark}`,
+            noteLine(d.note),
+            "",
+            "Please keep your phone line open for updates from the delivery rider.",
+            "",
+            sign("START: COLLECTIONS Team"),
+          ]),
+        },
+      };
+    case "received_successfully":
+      return {
+        template: "5-order-delivered",
+        content: {
+          subject: "Order Delivered: Thank You for Supporting START: COLLECTIONS",
+          text: lines([
+            `Hello ${d.buyerName},`,
+            "",
+            "Our finance team marked your START: COLLECTIONS order as received.",
+            "",
+            "Thank you for buying from START: COLLECTIONS. Your purchase supports START-DOST projects and connects you with fellow DOST technoscholars across the Philippines. Whenever you use or wear your item, peers across the country will recognize you as part of our community.",
+            "",
+            "Order Summary",
+            `Order ID: ${d.orderId}`,
+            "Order Status: Received Successfully",
+            `Date Completed: ${when}`,
+            noteLine(d.note),
+            "",
+            `If you need help with your order, submit a request through the merch ticket form within 2 days: ${form}`,
+            "",
+            sign("START: COLLECTIONS Team"),
+          ]),
+        },
+      };
+    case "canceled":
+      return {
+        template: "6-canceled",
+        content: {
+          subject: "START: COLLECTIONS - Order Canceled",
+          text: lines([
+            `Hello ${d.buyerName},`,
+            "",
+            "Our finance team canceled your confirmed START: COLLECTIONS order.",
+            "",
+            "Cancellation Notice",
+            `Order ID: ${d.orderId}`,
+            `Reason for Cancellation: ${cleanNote(d.note) ?? "Canceled by the finance team"}`,
+            "",
+            "Next Steps",
+            "1. Our finance team will start your refund process and send a separate email with your refund schedule.",
+            `2. Visit ${config.siteUrl} if you want to submit a new START: COLLECTIONS order.`,
+            `3. If you have questions about this notice, submit them through the merch ticket form with your Order ID: ${form}`,
+            "",
+            "Thank you for your patience and support for the DOST technoscholar network.",
+            "",
+            sign("START: COLLECTIONS Finance Team"),
+          ]),
+        },
+      };
+    case "refund_in_process":
+      return {
+        template: "7-refund-in-process",
+        content: {
+          subject: "START: COLLECTIONS - Refund in Process",
+          text: lines([
+            `Hello ${d.buyerName},`,
+            "",
+            "Our finance team started the refund for your START: COLLECTIONS order.",
+            "",
+            "Refund Schedule and Details",
+            `Order ID: ${d.orderId}`,
+            `Refund Amount: ${formatPeso(d.totalCentavos)}`,
+            "Refund Destination: the account you provided in the refund form",
+            `Refund Timeframe: ${config.refundTimeframe}`,
+            noteLine(d.note),
+            "",
+            "Refund Process from Finance",
+            "1. Finance validates your payment record and receiving account details.",
+            "2. Finance approves and schedules the payout transfer.",
+            "3. Finance sends the funds.",
+            "",
+            `If you need to update your receiving account details, submit the change through the merch ticket form: ${form}`,
+            "",
+            sign("START: COLLECTIONS Finance Team"),
+          ]),
+        },
+      };
+    case "refund_successful":
+      return {
+        template: "8-refund-successful",
+        content: {
+          subject: "START: COLLECTIONS - Refund Successful",
+          text: lines([
+            `Hello ${d.buyerName},`,
+            "",
+            "Our finance team sent the refund for your START: COLLECTIONS order.",
+            "",
+            "Refund Details from Finance",
+            `Order ID: ${d.orderId}`,
+            `Amount Sent: ${formatPeso(d.totalCentavos)}`,
+            `Date Sent: ${when}`,
+            noteLine(d.note),
+            "",
+            "Check your account balance to confirm receipt of the funds. We hope to connect with you again on future START: COLLECTIONS releases.",
+            "",
+            sign("START: COLLECTIONS Finance Team"),
+          ]),
+        },
+      };
+  }
+}

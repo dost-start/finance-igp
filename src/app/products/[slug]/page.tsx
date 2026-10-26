@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { AddToCart } from "@/components/add-to-cart";
 import { getActiveProducts, getProductBySlug } from "@/lib/catalog";
 import { formatPeso } from "@/lib/money";
@@ -17,7 +18,9 @@ export async function generateMetadata({ params }: PageProps<"/products/[slug]">
   return { title: product?.name ?? "Product" };
 }
 
-export default async function ProductPage({ params }: PageProps<"/products/[slug]">) {
+// The address part is read inside Suspense, as Next requires, so the page shell (breadcrumb space
+// and layout) can show at once. Unknown product addresses never get here: src/proxy.ts answers 404.
+async function ProductContent({ params }: { params: PageProps<"/products/[slug]">["params"] }) {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
   if (!product) notFound();
@@ -66,5 +69,13 @@ export default async function ProductPage({ params }: PageProps<"/products/[slug
         </div>
       </div>
     </main>
+  );
+}
+
+export default function ProductPage({ params }: PageProps<"/products/[slug]">) {
+  return (
+    <Suspense fallback={<div role="status" aria-busy="true" className="mt-8 h-96 animate-pulse rounded-lg bg-zinc-100 dark:bg-zinc-900"><span className="sr-only">Loading product…</span></div>}>
+      <ProductContent params={params} />
+    </Suspense>
   );
 }

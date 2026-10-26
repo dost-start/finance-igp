@@ -21,6 +21,7 @@ export const metadata: Metadata = { title: "Review order" };
 const NOTICE: Record<string, string> = {
   changed: "Someone else already changed this order, so nothing was saved. Here is its current state.",
   reason: "Choose a reason before rejecting.",
+  cancel_reason: "Add the reason for canceling. The buyer reads it in their email.",
 };
 const DONE: Record<string, string> = { confirmed: "Payment confirmed. Here is the next order waiting.", rejected: "Payment rejected. Here is the next order waiting.", status: "Status updated." };
 
