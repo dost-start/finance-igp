@@ -168,4 +168,12 @@ export const paymentChannels = pgTable("payment_channels", {
   sortOrder: integer("sort_order").notNull().default(0),
 }).enableRLS();
 
+// Failed order-tracking attempts per hashed key (visitor address or Order ID) inside a time window,
+// so the last-4-digits lookup cannot be guessed (PRD FR05.05). Written by the server only.
+export const rateLimits = pgTable("rate_limits", {
+  key: text("key").primaryKey(),
+  failures: integer("failures").notNull().default(0),
+  windowStart: timestamp("window_start", { withTimezone: true }).notNull().defaultNow(),
+}).enableRLS();
+
 export const nextOrderNumber = sql`nextval('order_number_seq')`;

@@ -33,7 +33,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <Link href="/" className="text-lg font-semibold tracking-tight">
               START: COLLECTIONS
             </Link>
-            <CartLink />
+            <nav className="flex items-center gap-5 text-sm">
+              <Link href="/track" className="underline-offset-4 hover:underline">
+                Track order
+              </Link>
+              <CartLink />
+            </nav>
           </div>
         </header>
         <div id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">

@@ -3,6 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createDb } from "@/db/client";
 import { products } from "@/db/schema";
 import { createSlugCache } from "@/lib/slug-cache";
+import { TOKEN_SHAPE } from "@/lib/tracking-view";
 
 // Under Cache Components the first request for a product URL that was never prerendered streams
 // its page after sending 200, so notFound() alone gives a soft 404 on that first hit. This proxy
@@ -33,6 +34,12 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/admin/signin", request.url));
   }
 
+  // Tracking links carry a 64-character hex token. Anything else is a real 404 without touching the database.
+  if (request.nextUrl.pathname.startsWith("/track/")) {
+    if (TOKEN_SHAPE.test(request.nextUrl.pathname.split("/")[2] ?? "")) return NextResponse.next();
+    return NextResponse.rewrite(new URL("/not-found-404", request.url), { status: 404, headers: { "Cache-Control": "no-store" } });
+  }
+
   const slug = request.nextUrl.pathname.split("/")[2] ?? "";
   if (SLUG_SHAPE.test(slug) && (await slugs.has(slug))) return NextResponse.next();
 
@@ -43,4 +50,4 @@ export async function proxy(request: NextRequest) {
   });
 }
 
-export const config = { matcher: ["/products/:slug", "/admin/:path*"] };
+export const config = { matcher: ["/products/:slug", "/track/:token", "/admin/:path*"] };

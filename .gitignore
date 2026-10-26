@@ -12,3 +12,7 @@ node_modules/
 *.log
 
 tsconfig.tsbuildinfo
+
+# Playwright output
+test-results/
+playwright-report/
