@@ -43,25 +43,28 @@ async function Review({ params, searchParams }: { params: PageProps<"/admin/orde
   const db = getDb();
   const [order] = await db.select().from(schema.orders).where(eq(schema.orders.id, id)).limit(1);
   if (!order) notFound();
-  const [proof] = await db.select().from(schema.paymentProofs).where(eq(schema.paymentProofs.orderUuid, id)).limit(1);
-  const items = await db
-    .select({ name: schema.products.name, size: schema.orderItems.size, quantity: schema.orderItems.quantity, unit: schema.orderItems.unitPriceCentavos })
-    .from(schema.orderItems)
-    .innerJoin(schema.products, eq(schema.products.id, schema.orderItems.productId))
-    .where(eq(schema.orderItems.orderUuid, id));
-  const events = await db
-    .select({ status: schema.statusEvents.status, at: schema.statusEvents.createdAt, note: schema.statusEvents.note, by: schema.adminAccounts.email })
-    .from(schema.statusEvents)
-    .leftJoin(schema.adminAccounts, eq(schema.adminAccounts.id, schema.statusEvents.changedBy))
-    .where(eq(schema.statusEvents.orderUuid, id))
-    .orderBy(asc(schema.statusEvents.createdAt));
-  const [next] = await db
-    .select({ id: schema.orders.id })
-    .from(schema.orders)
-    .innerJoin(schema.paymentProofs, eq(schema.paymentProofs.orderUuid, schema.orders.id))
-    .where(and(eq(schema.orders.status, "pending_payment"), ne(schema.orders.id, id)))
-    .orderBy(asc(schema.paymentProofs.createdAt))
-    .limit(1);
+  // These four do not depend on each other, so they run together instead of one round trip after another.
+  const [[proof], items, events, [next]] = await Promise.all([
+    db.select().from(schema.paymentProofs).where(eq(schema.paymentProofs.orderUuid, id)).limit(1),
+    db
+      .select({ name: schema.products.name, size: schema.orderItems.size, quantity: schema.orderItems.quantity, unit: schema.orderItems.unitPriceCentavos })
+      .from(schema.orderItems)
+      .innerJoin(schema.products, eq(schema.products.id, schema.orderItems.productId))
+      .where(eq(schema.orderItems.orderUuid, id)),
+    db
+      .select({ status: schema.statusEvents.status, at: schema.statusEvents.createdAt, note: schema.statusEvents.note, by: schema.adminAccounts.email })
+      .from(schema.statusEvents)
+      .leftJoin(schema.adminAccounts, eq(schema.adminAccounts.id, schema.statusEvents.changedBy))
+      .where(eq(schema.statusEvents.orderUuid, id))
+      .orderBy(asc(schema.statusEvents.createdAt)),
+    db
+      .select({ id: schema.orders.id })
+      .from(schema.orders)
+      .innerJoin(schema.paymentProofs, eq(schema.paymentProofs.orderUuid, schema.orders.id))
+      .where(and(eq(schema.orders.status, "pending_payment"), ne(schema.orders.id, id)))
+      .orderBy(asc(schema.paymentProofs.createdAt))
+      .limit(1),
+  ]);
 
   const canReview = order.status === "pending_payment" && !!proof;
   const mapOk = order.homeAddressLink.startsWith("https://");

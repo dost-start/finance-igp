@@ -1,5 +1,6 @@
 import nodemailer, { type Transporter } from "nodemailer";
 import { getDb, schema } from "@/db";
+import { toHtml } from "./html";
 import type { EmailContent } from "./templates";
 
 // Gmail SMTP sender. Every attempt is written to email_logs, including failures and skips, so
@@ -25,6 +26,7 @@ export async function sendOrderEmail(input: { orderUuid: string; template: strin
         to: input.to,
         subject: input.content.subject,
         text: input.content.text,
+        html: toHtml(input.content.text),
         headers: { "Auto-Submitted": "auto-generated" },
       });
     }
