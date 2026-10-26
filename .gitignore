@@ -1,0 +1,12 @@
+# secrets: never commit real values
+.env
+.env.*
+!.env.example
+
+# local data and tooling
+.data/
+node_modules/
+.next/
+.vercel/
+.DS_Store
+*.log
