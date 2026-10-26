@@ -11,7 +11,7 @@ import { requireAdmin, writeAudit } from "@/lib/admin";
 import { emailBudget } from "@/lib/email/budget";
 import { checkBudget } from "@/lib/email/limit";
 import { sendOrderEmail } from "@/lib/email/send";
-import { REJECT_REASONS, STATUS_EMAIL_STATUSES, cleanNote, missingSetting, rejectionDeadline, rejectionDeadlineHours, renderEmail2, renderEmail9, ticketFormUrl, type RejectReason } from "@/lib/email/templates";
+import { REJECT_REASONS, STATUS_EMAIL_STATUSES, cleanNote, rejectionDeadline, renderEmail2, renderEmail9, ticketFormUrl, type RejectReason } from "@/lib/email/templates";
 import { changeStatus, correctStatus, sendStatusEmails, type ChangedOrder } from "@/lib/status-change";
 import { canTransition, STATUS_LABEL } from "@/lib/status";
 import { mintTrackingToken, trackingUrl } from "@/lib/tracking";
@@ -101,8 +101,6 @@ export async function rejectPayment(orderUuid: string, formData: FormData) {
   if (!uuid.safeParse(orderUuid).success) redirect("/admin");
   const reason = String(formData.get("reason") ?? "") as RejectReason;
   if (!REJECT_REASONS.includes(reason)) redirect(`/admin/orders/${orderUuid}?notice=reason`);
-  const deadlineHours = rejectionDeadlineHours();
-  if (deadlineHours === null) redirect(`/admin/orders/${orderUuid}?notice=deadline_unset`);
   const order = await loadOrder(orderUuid);
   if (!order) redirect("/admin");
   if (!canTransition(order.status, "payment_rejected")) stale(orderUuid);
@@ -122,7 +120,7 @@ export async function rejectPayment(orderUuid: string, formData: FormData) {
   if (!ok) stale(orderUuid);
 
   after(async () => {
-    const content = renderEmail9({ buyerName: order.buyerName, reason, deadline: rejectionDeadline(new Date(), deadlineHours) }, ticketFormUrl());
+    const content = renderEmail9({ buyerName: order.buyerName, reason, deadline: rejectionDeadline(new Date()) }, ticketFormUrl());
     await sendOrderEmail({ orderUuid, template: "9-payment-rejected", to: order.email, content });
   });
   await goNext("rejected", orderUuid);
@@ -135,7 +133,6 @@ export async function setOrderStatus(orderUuid: string, to: OrderStatus, formDat
   if (!uuid.safeParse(orderUuid).success) redirect("/admin");
   const note = String(formData.get("note") ?? "");
   if (to === "canceled" && !cleanNote(note)) redirect(`/admin/orders/${orderUuid}?notice=cancel_reason`);
-  if (to === "refund_in_process" && missingSetting("refund_in_process")) redirect(`/admin/orders/${orderUuid}?notice=refund_unset`);
   await emailRoomOrRedirect(orderUuid);
 
   const result = await changeStatus(admin, orderUuid, to, note);
@@ -180,8 +177,6 @@ export async function bulkSetStatus(_prev: BulkState, formData: FormData): Promi
   if (!ids.every((id) => uuid.safeParse(id).success)) return { ok: false, message: "Something was wrong with the selection. Reload the page and try again." };
   if (!BULK_TARGETS.includes(to)) return { ok: false, message: "Choose the status to move the orders to." };
   if (to === "canceled" && !cleanNote(note)) return { ok: false, message: "Add the reason for canceling: the buyers see it in their email." };
-  const unset = to === "refund_in_process" ? missingSetting("refund_in_process") : null;
-  if (unset) return { ok: false, message: unset };
   const room = checkBudget(await emailBudget(), ids.length);
   if (!room.ok) return { ok: false, message: room.message };
 

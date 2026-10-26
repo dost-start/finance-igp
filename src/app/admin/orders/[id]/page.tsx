@@ -15,7 +15,7 @@ import { requireAdmin } from "@/lib/admin";
 import { findDuplicateReferences } from "@/lib/duplicates";
 import { emailBudget } from "@/lib/email/budget";
 import { checkBudget } from "@/lib/email/limit";
-import { SETTING_MISSING, formatManila, missingSetting } from "@/lib/email/templates";
+import { formatManila } from "@/lib/email/templates";
 import { formatPeso } from "@/lib/money";
 import { correctionTargets, generalNextStatuses, STATUS_LABEL } from "@/lib/status";
 
@@ -25,8 +25,6 @@ const NOTICE: Record<string, string> = {
   changed: "Someone else already changed this order, so nothing was saved. Here is its current state.",
   reason: "Choose a reason before rejecting.",
   cancel_reason: "Add the reason for canceling. The buyer reads it in their email.",
-  deadline_unset: SETTING_MISSING.rejectionDeadline,
-  refund_unset: SETTING_MISSING.refundTimeframe,
   correction_reason: "Say what went wrong before saving a correction.",
 };
 const DONE: Record<string, string> = { confirmed: "Payment confirmed. Here is the next order waiting.", rejected: "Payment rejected. Here is the next order waiting.", status: "Status updated.", corrected: "Status corrected and recorded. The buyer was not emailed." };
@@ -208,14 +206,14 @@ async function Review({ params, searchParams }: { params: PageProps<"/admin/orde
           <h2 className="text-lg font-semibold">Decision</h2>
           {canReview ? (
             <div className="mt-4">
-              <ReviewActions orderUuid={order.id} rejectBlocked={missingSetting("reject_payment")} />
+              <ReviewActions orderUuid={order.id} />
             </div>
           ) : order.status === "order_received" ? (
             <p className="mt-3 text-sm text-zinc-500">The buyer has not uploaded a receipt yet, so there is nothing to verify.</p>
           ) : (
             <div className="mt-3">
               <p className="mb-3 text-sm text-zinc-500">This order is {STATUS_LABEL[order.status]}. Move it one step forward:</p>
-              <StatusControl orderUuid={order.id} options={generalNextStatuses(order.status)} refundBlocked={missingSetting("refund_in_process")} />
+              <StatusControl orderUuid={order.id} options={generalNextStatuses(order.status)} />
               <CorrectionForm orderUuid={order.id} targets={correctionTargets(order.status)} />
             </div>
           )}

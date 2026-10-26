@@ -29,7 +29,8 @@ describe("receipts that are not a clean receipt", () => {
   });
   it("rejects labelled references that are short or have no digits, but keeps long ones", () => {
     expect(extractReference("Reference No. ABCDEFGHIJ")).toBeNull();
-    expect(extractReference("Reference No. 1234567")).toBeNull();
+    expect(extractReference("Reference No. 12345")).toBeNull();
+    expect(extractReference("Transaction ID 123456")).toBeNull(); // 6 digits only count straight after Reference/Ref
     expect(extractReference("Reference No. 12345678")).toBe("12345678");
   });
   it("still finds the typed reference even when the label is unreadable", () => {
@@ -130,5 +131,42 @@ describe("judging a reading", () => {
     expect(readingFromFields("read", "450.00", " 8012345678901 ")).toEqual({ status: "read", amountCentavos: 45000, reference: "8012345678901" });
     expect(readingFromFields("hacked", "450.00", "x").status).toBeNull();
     expect(readingFromFields(null, null, "")).toEqual({ status: null, amountCentavos: null, reference: null });
+  });
+});
+
+// Real receipts read with tesseract (found by QA). The label's line can carry the date and time after the number.
+describe("references on real receipts", () => {
+  it("stops at the date and time that follow a GCash 'Ref No.'", () => {
+    const text = "Sent via GCash\nAmount 1.00\nTotal Amount Sent P1.00\nRef No. 0046567041072 Oct 27,2026 12:33 AM\nSend Again";
+    expect(extractReference(text)).toBe("0046567041072");
+    expect(extractAmount(text)).toBe(100);
+  });
+  it("reads a GCash 'Reference Number' and a GoTyme 'Reference No.'", () => {
+    expect(extractReference("Express Send\nReference Number 0046346647561")).toBe("0046346647561");
+    expect(extractReference("GoTyme Bank\nReference No. CAR261026120058269857\nStatus Successful")).toBe("CAR261026120058269857");
+  });
+  it("reads the 6-digit MariBank and InstaPay references straight after a Reference label", () => {
+    expect(extractReference("Maribank\nReference Number 181965")).toBe("181965");
+    expect(extractReference("Maribank\nReference Number 322312")).toBe("322312");
+    expect(extractReference("Reference Number\n181965")).toBe("181965"); // value on the next line
+  });
+  it("understands the other ways a label is written", () => {
+    expect(extractReference("Ref. No. 0046567041072")).toBe("0046567041072");
+    expect(extractReference("Ref # 0046567041072")).toBe("0046567041072");
+    expect(extractReference("Reference ID: 0046567041072")).toBe("0046567041072");
+    expect(extractReference("Confirmation No. CNF12345678")).toBe("CNF12345678");
+  });
+  it("never takes a date, a time or a word as the reference", () => {
+    for (const text of ["Ref No. Oct 27,2026 12:33 AM", "Ref No. 27/10/2026", "Ref No. 2026-10-27", "Ref No. 12:33 AM", "Reference Number 27 Oct 2026", "Reference Number\nTara", "Transaction History"]) {
+      expect(extractReference(text), text).toBeNull();
+    }
+  });
+  it("still returns the typed reference when it is on the receipt, whatever the label", () => {
+    expect(extractReference("Ref No. Oct 27,2026\n0046567041072", "0046567041072")).toBe("0046567041072");
+  });
+  it("a 6-digit reference is judged against what was typed", () => {
+    const reading = { status: "read" as const, amountCentavos: 57000, reference: extractReference("Amount PHP 570.00\nReference Number 181965") };
+    expect(judgeOcr(reading, { totalCentavos: 57000, typedReference: "181965" })).toBe("match");
+    expect(judgeOcr(reading, { totalCentavos: 57000, typedReference: "181966" })).toBe("mismatch");
   });
 });

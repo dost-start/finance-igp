@@ -18,8 +18,8 @@ Revision of finance's 9 templates to match the PRD (S2026-05012, Appendix F). Te
 
 - **Q1 (email 1):** Is it correct that no shipping fee is charged in the system (shipping is either included in prices or handled outside)?
 - **Q2 (email 1):** Can finance promise to review payments within **24–48 hours**? If not, we remove the line.
-- **Q3 (email 7):** Please give one fixed **refund timeframe**. It is set once in the system, not per order. Until finance gives it, moving an order to Refund in Process is switched off, so no buyer gets an invented or blank promise.
-- **Q4 (email 9):** Please give one fixed **submission deadline rule** (a number of hours after rejection). The system computes the date. Until finance gives it, Reject payment is switched off, so no buyer gets an invented deadline.
+- **Q3 (email 7):** Answered by finance, final: the refund timeframe is **5 to 7 business days**. It is set once in the system (`REFUND_TIMEFRAME`), not per order.
+- **Q4 (email 9):** Answered by finance, final: the submission deadline is **48 hours after the rejection**. The system computes the date (`REJECTION_DEADLINE_HOURS`).
 - **Q5 (email 9):** The rejection reason is a dropdown: *Unreadable receipt / Incorrect amount / Invalid reference number*. Add or remove options?
 - **Q6 (email 9):** Since the buyer has no Order ID yet, the ticket form should also ask for their **contact number** so finance can match the new receipt to the right order. Can the form be updated?
 - **Q7 (emails 7, 8):** Refund channel and account details come from the refund Google Form and are not stored in the system. Finance adds the transaction reference number in the note box on email 8 if you want it included. OK?

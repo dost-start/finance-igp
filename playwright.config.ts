@@ -32,9 +32,6 @@ export default defineConfig({
       SMTP_PASS: "",
       AUTH_SECRET: E2E_AUTH_SECRET,
       NEXT_PUBLIC_SITE_URL: `http://localhost:${E2E_PORT}`,
-      // Values finance has not given yet, set to obvious test values so the actions that need them can run.
-      REFUND_TIMEFRAME: "E2E TEST TIMEFRAME",
-      REJECTION_DEADLINE_HOURS: "10",
       EMAIL_DAILY_LIMIT: "5", // small on purpose: the status-flow test fills it with fake "sent" rows to check the guard
     },
   },

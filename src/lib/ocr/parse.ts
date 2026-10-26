@@ -71,20 +71,41 @@ export function extractAmount(text: string): number | null {
   return distinct.length === 1 ? distinct[0] : null;
 }
 
-const REFERENCE_LABEL = /(?:ref(?:erence)?|trace|txn|transaction|confirmation)\s*(?:no\.?|number|num\.?|id|code|#)?\s*[:.#-]?\s*(.*)$/i;
+// Labels that introduce a reference number: Ref No., Ref. No., Reference No./Number/ID, Ref #,
+// Transaction/Confirmation/Trace No. The value is whatever follows on the same line (or the next line).
+const REFERENCE_LABEL = /\b(ref(?:erence)?|trace|txn|transaction|confirmation|conf)\b\.?\s*(?:(?:no|number|num|id|code)\b\.?|#)?\s*[:.#-]?\s*(.*)$/i;
 
-// Bank and e-wallet reference numbers always contain digits and are long (GCash: 13 digits). A word
-// that merely follows the label ("Tara", "History") is not one, so it is rejected and the receipt is
-// reported as not fully read instead of producing a false mismatch.
-const MIN_LABELLED_REFERENCE = 8;
+// A reference is never a date or a time, so reading stops at one ("Ref No. 0046567041072 Oct 27,2026 12:33 AM").
+const MONTH_WORD = /^(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?,?$/i;
+const DATE_LIKE = /^\d{1,4}[/-]\d{1,2}[/-]\d{1,4}$/;
+const TIME_LIKE = /^\d{1,2}:\d{2}(:\d{2})?$/;
+const AM_PM = /^(am|pm)$/i;
+const isDateOrTime = (t: string): boolean => MONTH_WORD.test(t) || DATE_LIKE.test(t) || TIME_LIKE.test(t) || AM_PM.test(t);
 
-function cleanReference(raw: string): string | null {
-  const m = /^[A-Za-z0-9][A-Za-z0-9\- ]{2,38}/.exec(raw.trim());
-  if (!m) return null;
-  const value = m[0].trim().replace(/\s+/g, " ");
-  // Every space-separated piece must hold a digit: "8012 345 678 901" and "GT-9988-7766" pass, "Send Money -100" does not.
-  const allPiecesHaveDigits = value.split(" ").every((piece) => /\d/.test(piece));
-  return allPiecesHaveDigits && normalizeReference(value).length >= MIN_LABELLED_REFERENCE ? value : null;
+// Bank and e-wallet references always contain digits and are long (GCash: 13 digits, GoTyme: letters
+// and digits). A word that merely follows the label ("Tara", "History") is not one, so it is rejected
+// and the receipt is reported as not fully read instead of producing a false mismatch. Two short
+// forms exist: MariBank and InstaPay references are 6 digits, accepted only straight after a
+// "Reference" or "Ref" label.
+const MIN_REFERENCE = 8;
+const MIN_REFERENCE_DIGITS_ONLY = 6;
+
+function cleanReference(raw: string, labelIsReference: boolean): string | null {
+  const tokens = raw.trim().split(/\s+/);
+  const first = tokens[0] ?? "";
+  if (!/^[A-Za-z0-9][A-Za-z0-9-]*$/.test(first) || !/\d/.test(first) || isDateOrTime(first)) return null;
+  const group = [first];
+  // Numbers are printed in groups ("8012 345 678 901"): keep following digit groups, stop at anything else.
+  if (/^\d+$/.test(first)) {
+    for (const t of tokens.slice(1)) {
+      if (!/^\d{3,}$/.test(t) || isDateOrTime(t)) break;
+      group.push(t);
+    }
+  }
+  const value = group.join(" ");
+  const digitsOnly = /^\d+$/.test(value.replace(/\s/g, ""));
+  const minimum = digitsOnly && labelIsReference ? MIN_REFERENCE_DIGITS_ONLY : MIN_REFERENCE;
+  return normalizeReference(value).length >= minimum ? value : null;
 }
 
 // The reference number: the one the buyer typed if it appears anywhere on the receipt (strongest
@@ -98,9 +119,10 @@ export function extractReference(text: string, typed?: string): string | null {
   for (let i = 0; i < lines.length; i++) {
     const m = REFERENCE_LABEL.exec(lines[i]);
     if (!m) continue;
-    const here = cleanReference(m[1]);
+    const labelIsReference = /^ref/i.test(m[1]);
+    const here = cleanReference(m[2], labelIsReference);
     if (here) return here;
-    const next = lines[i + 1] ? cleanReference(lines[i + 1]) : null;
+    const next = lines[i + 1] ? cleanReference(lines[i + 1], labelIsReference) : null;
     if (next) return next;
   }
   return null;
