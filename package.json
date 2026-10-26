@@ -1,6 +1,6 @@
 {
   "name": "start-shop",
-  "version": "0.1.0",
+  "version": "0.2.2",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -16,7 +16,8 @@
     "db:seed-qr": "tsx --env-file=.env.local src/db/seed-qr.ts",
     "e2e": "playwright test",
     "predev": "node scripts/copy-ocr-assets.mjs",
-    "prebuild": "node scripts/copy-ocr-assets.mjs"
+    "prebuild": "node scripts/copy-ocr-assets.mjs",
+    "changelog": "tsx scripts/write-changelog.mts"
   },
   "dependencies": {
     "@tesseract.js-data/eng": "^1.0.0",

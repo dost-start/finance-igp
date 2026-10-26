@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import { getDb, schema } from "@/db";
+import { CURRENT_VERSION } from "@/lib/changelog";
 
 // Uptime and deploy check. Reports only counts and status, never connection details.
 export async function GET() {
@@ -8,12 +9,12 @@ export async function GET() {
     await db.execute(sql`select 1`);
     const [{ count }] = await db.select({ count: sql<number>`count(*)::int` }).from(schema.products);
     return Response.json(
-      { status: "ok", database: "connected", products: count },
+      { status: "ok", version: CURRENT_VERSION, database: "connected", products: count },
       { headers: { "Cache-Control": "no-store" } },
     );
   } catch {
     return Response.json(
-      { status: "error", database: "unreachable" },
+      { status: "error", version: CURRENT_VERSION, database: "unreachable" },
       { status: 503, headers: { "Cache-Control": "no-store" } },
     );
   }

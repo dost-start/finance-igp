@@ -1,6 +1,6 @@
 # Sprint 1 + 2 full-system QA report
 
-**Date:** 2026-10-27/28  |  **Target:** https://start-shop-six.vercel.app (production) plus the local Playwright suite (same code, same database, email switched off)  |  **Checked against:** `docs/sprints/sprint-1.md`, `docs/sprints/sprint-2.md`, PRD S2026-05012 (NF01 to NF10)
+**Date:** 2026-10-27  |  **Target:** https://start-shop-six.vercel.app (production) plus the local Playwright suite (same code, same database, email switched off)  |  **Checked against:** `docs/sprints/sprint-1.md`, `docs/sprints/sprint-2.md`, PRD S2026-05012 (NF01 to NF10)
 
 ## Result
 
@@ -45,7 +45,7 @@ The branded email layout (2F) was cancelled at Ethan's request and reverted; ema
 | Unauthenticated access (production) | PASS | `/admin/*` 307; export and admin receipts 401; QR route 404 without a real open order; `.env`, `.git`, source files 404; wrong HTTP methods 405 |
 | Every admin action, route and page | PASS | Code check: all 7 server actions, both admin routes and all 6 admin pages start with a sign-in check; product editor and its action require the Technology role |
 | Review, confirm, reject, bulk, corrections, cancel and refund | PASS | See demo steps |
-| All 9 emails | PASS (content and real delivery) | All nine have been read in a real inbox (Emails 3 to 8 as [TEST] sends approved by Ethan on 2026-10-28). Unit tests: wording, subjects, Order ID only from Email 2 on, no-reply notice, links, finance's note, final refund timeframe and deadline settings; HTML copy keeps every line and escapes buyer text |
+| All 9 emails | PASS (content and real delivery) | All nine have been read in a real inbox (Emails 3 to 8 as [TEST] sends approved by Ethan on 2026-10-27). Unit tests: wording, subjects, Order ID only from Email 2 on, no-reply notice, links, finance's note, final refund timeframe and deadline settings; HTML copy keeps every line and escapes buyer text |
 | Email log and daily limit | PASS | Failures and skipped emails visible; with the limit reached, an action that needs an email is refused before anything changes, and sending itself stops |
 | Product editor (tech only) | PASS | Finance redirected with a plain message and never sees the link; bad price and duplicate sizes explained, typed values kept; saved edit shows in the shop at once; hidden product leaves the shop |
 | Tracking and rate limits | PASS | Order ID plus last 4 digits; wrong digits, unconfirmed and unknown orders give the same message; locks after repeated failures; one visitor cannot create unlimited orders (see open item 6) |
@@ -65,7 +65,7 @@ Earlier in the same QA effort (reported separately): product images 404 caused b
 
 ## Left open
 
-1. ~~Emails 3 to 8 not delivered through real Gmail.~~ **Closed 2026-10-28:** all six were sent through the real Gmail connection to Ethan's address (subjects prefixed [TEST], not logged), rendered by the app's own templates, and Ethan checked them and said they are okay. Emails 1, 2 and 9 were delivered for real earlier, so all nine emails have now been seen in a real inbox.
+1. ~~Emails 3 to 8 not delivered through real Gmail.~~ **Closed 2026-10-27:** all six were sent through the real Gmail connection to Ethan's address (subjects prefixed [TEST], not logged), rendered by the app's own templates, and Ethan checked them and said they are okay. Emails 1, 2 and 9 were delivered for real earlier, so all nine emails have now been seen in a real inbox.
 2. **NF08 on real receipts.** 92% is on synthetic receipts, which are cleaner than real ones. Real screenshots from GCash, Landbank, GoTyme and MariBank are still needed to confirm the 90% target.
 3. **NF03 load test (500 concurrent) and NF07 daily backups** are Sprint 3 items and were not done.
 4. **Page weight and 3G.** About 700 KB uncompressed per page; on a 0.75 Mbps, 300 ms connection cart and checkout take about 3.3 to 3.5 s to finish painting. Worth a look in Sprint 3 (image sizes, JavaScript split).

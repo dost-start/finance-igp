@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { auth, signOut } from "@/auth";
 import { findActiveAdmin } from "@/lib/admin-accounts";
+import { CURRENT_VERSION } from "@/lib/changelog";
 
 export const metadata: Metadata = { title: { default: "Admin", template: "%s | Admin" }, robots: { index: false, follow: false } };
 
@@ -59,6 +60,9 @@ export default function AdminLayout({ children }: LayoutProps<"/admin">) {
             <Suspense fallback={null}>
               <ProductsLink />
             </Suspense>
+            <Link href="/admin/changelog" className="underline-offset-4 hover:underline">
+              Release notes <span className="text-zinc-500 dark:text-zinc-400">v{CURRENT_VERSION}</span>
+            </Link>
           </nav>
         </div>
         <Suspense fallback={null}>
