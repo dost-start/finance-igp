@@ -22,7 +22,17 @@ const slugs = createSlugCache({
 
 const SLUG_SHAPE = /^[a-z0-9-]{1,80}$/;
 
+const SESSION_COOKIES = ["authjs.session-token", "__Secure-authjs.session-token"];
+
 export async function proxy(request: NextRequest) {
+  // Admin area, first gate: no session cookie at all means straight to sign-in with a real
+  // redirect. This is only a quick check. Every admin page, action and file route still verifies
+  // the session against the admin_accounts table.
+  if (request.nextUrl.pathname.startsWith("/admin")) {
+    if (request.nextUrl.pathname === "/admin/signin" || SESSION_COOKIES.some((c) => request.cookies.has(c))) return NextResponse.next();
+    return NextResponse.redirect(new URL("/admin/signin", request.url));
+  }
+
   const slug = request.nextUrl.pathname.split("/")[2] ?? "";
   if (SLUG_SHAPE.test(slug) && (await slugs.has(slug))) return NextResponse.next();
 
@@ -33,4 +43,4 @@ export async function proxy(request: NextRequest) {
   });
 }
 
-export const config = { matcher: "/products/:slug" };
+export const config = { matcher: ["/products/:slug", "/admin/:path*"] };

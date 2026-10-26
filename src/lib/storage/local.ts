@@ -9,14 +9,14 @@ export function createLocalStore(dir = path.join(process.cwd(), ".data", "files"
     async put({ mime, bytes }) {
       await mkdir(dir, { recursive: true });
       const id = crypto.randomUUID();
-      await writeFile(path.join(dir, id), bytes);
-      await writeFile(path.join(dir, `${id}.mime`), mime);
+      await writeFile(path.join(/*turbopackIgnore: true*/ dir, id), bytes);
+      await writeFile(path.join(/*turbopackIgnore: true*/ dir, `${id}.mime`), mime);
       return id;
     },
     async get(id): Promise<StoredFile | null> {
       if (!safe(id)) return null;
       try {
-        const [bytes, mime] = await Promise.all([readFile(path.join(dir, id)), readFile(path.join(dir, `${id}.mime`), "utf8")]);
+        const [bytes, mime] = await Promise.all([readFile(path.join(/*turbopackIgnore: true*/ dir, id)), readFile(path.join(/*turbopackIgnore: true*/ dir, `${id}.mime`), "utf8")]);
         return { bytes: new Uint8Array(bytes), mime };
       } catch {
         return null;
