@@ -16,3 +16,6 @@ tsconfig.tsbuildinfo
 # Playwright output
 test-results/
 playwright-report/
+
+# Receipt-reading engine copied from node_modules at dev/build time
+public/ocr/

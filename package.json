@@ -14,9 +14,12 @@
     "db:seed": "tsx --env-file=.env.local src/db/seed.ts",
     "db:check": "tsx --env-file=.env.local src/db/check.ts",
     "db:seed-qr": "tsx --env-file=.env.local src/db/seed-qr.ts",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "predev": "node scripts/copy-ocr-assets.mjs",
+    "prebuild": "node scripts/copy-ocr-assets.mjs"
   },
   "dependencies": {
+    "@tesseract.js-data/eng": "^1.0.0",
     "drizzle-orm": "^0.45.4",
     "next": "16.4.3",
     "next-auth": "5.0.0-beta.32",
@@ -25,6 +28,7 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "server-only": "^0.0.1",
+    "tesseract.js": "^5.1.1",
     "zod": "^4.6.7"
   },
   "devDependencies": {

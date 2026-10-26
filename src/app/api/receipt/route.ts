@@ -4,7 +4,9 @@ import { z } from "zod";
 import { getDb, schema } from "@/db";
 import { renderEmail1, ticketFormUrl } from "@/lib/email/templates";
 import { sendOrderEmail } from "@/lib/email/send";
-import { CHANNEL_KEY, IMAGE_EXTENSION, MAX_RECEIPT_BYTES, checkReceipt, referenceSchema } from "@/lib/receipt";
+import { judgeOcr, readingFromFields } from "@/lib/ocr/judge";
+import { amountField } from "@/lib/ocr/parse";
+import { CHANNEL_KEY, IMAGE_EXTENSION, MAX_RECEIPT_BYTES, checkReceipt, ocrFieldsSchema, referenceSchema } from "@/lib/receipt";
 import { getFileStore } from "@/lib/storage";
 
 const reply = (status: number, body: Record<string, unknown>) =>
@@ -37,6 +39,11 @@ export async function POST(request: Request) {
   const channelKey = String(form.get("channel") ?? "");
   const reference = referenceSchema.safeParse(String(form.get("reference") ?? ""));
   const file = form.get("receipt");
+  const ocr = ocrFieldsSchema.safeParse({
+    status: form.get("ocrStatus") ?? undefined,
+    amount: form.get("ocrAmount") ?? undefined,
+    reference: form.get("ocrReference") ?? undefined,
+  });
 
   if (!z.uuid().safeParse(orderUuid).success || !CHANNEL_KEY.test(channelKey)) return reply(400, { error: "bad_request" });
   if (!reference.success) return reply(422, { error: "reference", message: reference.error.issues[0].message });
@@ -72,8 +79,21 @@ export async function POST(request: Request) {
   }
 
   try {
+    // The reading comes from the buyer's phone, so it is only a hint for finance. Bad or missing
+    // values simply mean "not checked"; they never block the submit. The verdict is worked out here
+    // from the order's real total and the typed reference, never taken from the browser.
+    const reading = ocr.success ? readingFromFields(ocr.data.status ?? null, ocr.data.amount ?? null, ocr.data.reference ?? null) : null;
+    const ocrResult = reading ? judgeOcr(reading, { totalCentavos: order.totalCentavos, typedReference: reference.data }) : "not_checked";
     await db.transaction(async (tx) => {
-      await tx.insert(schema.paymentProofs).values({ orderUuid: order.id, channel: channel.key, referenceNumber: reference.data, driveFileId: fileId });
+      await tx.insert(schema.paymentProofs).values({
+        orderUuid: order.id,
+        channel: channel.key,
+        referenceNumber: reference.data,
+        driveFileId: fileId,
+        ocrAmount: reading?.amountCentavos != null ? amountField(reading.amountCentavos) : null,
+        ocrReference: reading?.reference ?? null,
+        ocrResult,
+      });
       const moved = await tx
         .update(schema.orders)
         .set({ status: "pending_payment" })

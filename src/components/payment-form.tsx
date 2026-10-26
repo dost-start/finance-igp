@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { downscaleImage } from "@/lib/image-resize";
 import { formatPeso } from "@/lib/money";
+import { startReading, type ReceiptReader } from "@/lib/ocr/client";
+import { buildReading } from "@/lib/ocr/reading";
 
 type Channel = { key: string; label: string; hasQr: boolean };
 type Props = { orderUuid: string; totalCentavos: number; channels: Channel[]; alreadySubmitted: boolean };
@@ -21,7 +23,35 @@ export function PaymentForm({ orderUuid, totalCentavos, channels, alreadySubmitt
   const [file, setFile] = useState<File | null>(null);
   const [phase, setPhase] = useState<Phase>(alreadySubmitted ? "done" : "idle");
   const [error, setError] = useState("");
+  const [reading, setReading] = useState<"idle" | "reading" | "done" | "failed">("idle");
+  const [step, setStep] = useState<"checking" | "uploading">("uploading");
   const submitting = useRef(false);
+  // The receipt is shrunk and read on the phone as soon as it is chosen, so both are usually done by submit time.
+  const prepared = useRef<Promise<Blob> | null>(null);
+  const reader = useRef<ReceiptReader | null>(null);
+
+  function onFileChange(chosen: File | null) {
+    reader.current?.cancel();
+    reader.current = null;
+    prepared.current = null;
+    setFile(chosen);
+    setReading("idle");
+    if (!chosen) return;
+    const shrunk = downscaleImage(chosen);
+    shrunk.catch(() => {}); // a failure is reported at submit time
+    prepared.current = shrunk;
+    setReading("reading");
+    shrunk.then(
+      (blob) => {
+        const r = startReading(blob);
+        reader.current = r;
+        void r.result.then((raw) => {
+          if (reader.current === r) setReading(raw.status === "read" ? "done" : "failed");
+        });
+      },
+      () => setReading("failed"),
+    );
+  }
 
   const selected = channels.find((c) => c.key === channel);
   const amount = formatPeso(totalCentavos);
@@ -51,17 +81,26 @@ export function PaymentForm({ orderUuid, totalCentavos, channels, alreadySubmitt
 
     submitting.current = true;
     setPhase("working");
+    setStep("checking");
     try {
       let blob: Blob;
       try {
-        blob = await downscaleImage(file);
+        blob = await (prepared.current ?? downscaleImage(file));
       } catch {
         throw new Error("We could not read that image. Try a screenshot of your receipt instead.");
       }
+      // Wait for the automatic reading, but never longer than its own 15 second limit, and never fail on it.
+      const raw = await (reader.current ?? startReading(blob)).result;
+      const read = buildReading(raw, reference.trim());
+      setStep("uploading");
+
       const fd = new FormData();
       fd.set("orderUuid", orderUuid);
       fd.set("channel", channel);
       fd.set("reference", reference);
+      fd.set("ocrStatus", read.status);
+      if (read.amount) fd.set("ocrAmount", read.amount);
+      if (read.reference) fd.set("ocrReference", read.reference);
       fd.set("receipt", new File([blob], "receipt.jpg", { type: "image/jpeg" }));
 
       const res = await fetch("/api/receipt", { method: "POST", body: fd });
@@ -147,12 +186,17 @@ export function PaymentForm({ orderUuid, totalCentavos, channels, alreadySubmitt
               name="receipt"
               type="file"
               accept="image/jpeg,image/png,image/webp,image/*"
-              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+              onChange={(e) => onFileChange(e.target.files?.[0] ?? null)}
               className="mt-1 block w-full text-sm file:mr-3 file:rounded-md file:border-0 file:bg-zinc-200 file:px-4 file:py-2 file:text-sm file:font-medium dark:file:bg-zinc-800"
-              aria-describedby="receipt-hint"
+              aria-describedby="receipt-hint receipt-reading"
             />
             <p id="receipt-hint" className="mt-1 text-xs text-zinc-500">
               A screenshot works best. Paid in several transactions? Combine the screenshots into one image first. Large images are shrunk on your phone before upload.
+            </p>
+            <p id="receipt-reading" role="status" className="mt-1 min-h-4 text-xs text-zinc-500">
+              {reading === "reading" && "Reading your receipt on your phone to help finance check it…"}
+              {reading === "done" && "Receipt read on your phone. Finance still checks every payment by hand."}
+              {reading === "failed" && "We could not read this receipt automatically. That is fine: you can still submit and finance will check it by hand."}
             </p>
           </div>
         </fieldset>
@@ -172,7 +216,7 @@ export function PaymentForm({ orderUuid, totalCentavos, channels, alreadySubmitt
           disabled={busy}
           className="mt-5 w-full rounded-md bg-sky-800 px-5 py-3 text-sm font-semibold text-white hover:bg-sky-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 disabled:cursor-wait disabled:opacity-70"
         >
-          {busy ? "Uploading…" : phase === "error" ? "Try again" : "Submit payment details"}
+          {busy ? (step === "checking" ? "Checking receipt…" : "Uploading…") : phase === "error" ? "Try again" : "Submit payment details"}
         </button>
         <p className="mt-3 text-xs text-zinc-500">Finance checks every payment by hand. Your Order ID is emailed to you after that.</p>
       </aside>

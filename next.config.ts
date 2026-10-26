@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 
 // Baseline security headers for every route. A full Content-Security-Policy with nonces is
 // added in Sprint 3 hardening; this partial one already blocks framing and base/form hijacks.
+// When that CSP is written it must allow the receipt reader: worker-src 'self' blob: and
+// script-src 'wasm-unsafe-eval' (tesseract.js runs a WebAssembly engine in a worker from /ocr).
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "DENY" },

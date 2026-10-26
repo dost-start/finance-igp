@@ -34,3 +34,19 @@ export const referenceSchema = z
   .regex(/^[A-Za-z0-9 \-_/]+$/, "Use only letters, numbers, spaces and dashes");
 
 export const CHANNEL_KEY = /^[a-z0-9]{2,20}$/;
+
+// What the buyer's phone reports about reading the receipt. Anything odd fails validation and the
+// order simply gets no reading, so a strange value can never block a submit.
+export const ocrFieldsSchema = z.object({
+  status: z.enum(["read", "unreadable", "timeout", "skipped"]).optional(),
+  amount: z
+    .string()
+    .regex(/^\d{1,9}(\.\d{2})?$/)
+    .optional(),
+  reference: z
+    .string()
+    .trim()
+    .max(60)
+    .regex(/^[A-Za-z0-9 \-_/]+$/)
+    .optional(),
+});

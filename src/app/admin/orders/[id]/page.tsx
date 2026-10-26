@@ -4,12 +4,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { z } from "zod";
+import { OcrPanel } from "@/components/admin/ocr-panel";
 import { ReceiptViewer } from "@/components/admin/receipt-viewer";
 import { ReviewActions } from "@/components/admin/review-actions";
 import { StatusBadge } from "@/components/admin/status-badge";
 import { StatusControl } from "@/components/admin/status-control";
 import { getDb, schema } from "@/db";
 import { requireAdmin } from "@/lib/admin";
+import { findDuplicateReferences } from "@/lib/duplicates";
 import { formatManila } from "@/lib/email/templates";
 import { formatPeso } from "@/lib/money";
 import { generalNextStatuses, STATUS_LABEL } from "@/lib/status";
@@ -44,7 +46,7 @@ async function Review({ params, searchParams }: { params: PageProps<"/admin/orde
   const [order] = await db.select().from(schema.orders).where(eq(schema.orders.id, id)).limit(1);
   if (!order) notFound();
   // These four do not depend on each other, so they run together instead of one round trip after another.
-  const [[proof], items, events, [next]] = await Promise.all([
+  const [[proof], items, events, [next], duplicates] = await Promise.all([
     db.select().from(schema.paymentProofs).where(eq(schema.paymentProofs.orderUuid, id)).limit(1),
     db
       .select({ name: schema.products.name, size: schema.orderItems.size, quantity: schema.orderItems.quantity, unit: schema.orderItems.unitPriceCentavos })
@@ -64,6 +66,7 @@ async function Review({ params, searchParams }: { params: PageProps<"/admin/orde
       .where(and(eq(schema.orders.status, "pending_payment"), ne(schema.orders.id, id)))
       .orderBy(asc(schema.paymentProofs.createdAt))
       .limit(1),
+    findDuplicateReferences(id),
   ]);
 
   const canReview = order.status === "pending_payment" && !!proof;
@@ -115,8 +118,19 @@ async function Review({ params, searchParams }: { params: PageProps<"/admin/orde
               <Fact label="Reference typed">
                 <span className="font-mono">{proof?.referenceNumber ?? "-"}</span>
               </Fact>
-              <Fact label="Automatic reading">Not checked yet. Receipt reading arrives in Sprint 2, so check the amount and reference by eye.</Fact>
             </dl>
+            {proof && (
+              <div className="mt-4">
+                <OcrPanel
+                  totalCentavos={order.totalCentavos}
+                  typedReference={proof.referenceNumber}
+                  ocrAmount={proof.ocrAmount}
+                  ocrReference={proof.ocrReference}
+                  ocrResult={proof.ocrResult}
+                  duplicates={duplicates}
+                />
+              </div>
+            )}
           </section>
 
           <section>

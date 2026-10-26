@@ -29,7 +29,7 @@ export default function PrivacyPage() {
 
       <h2 className="mt-8 text-xl font-semibold">Why we collect it</h2>
       <ul className="mt-3 list-disc space-y-1 pl-6 leading-7">
-        <li>To check that your payment matches your order.</li>
+        <li>To check that your payment matches your order. To help with this, your phone reads the amount and reference number on your receipt image before you submit it. The reading happens on your device, and only the two values it finds are sent with your order. Finance still checks every payment by hand.</li>
         <li>To prepare and deliver your merchandise.</li>
         <li>To email you about your order status, and to let you track it.</li>
       </ul>
