@@ -31,8 +31,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </a>
         <StoreBanner />
         <header className="border-b border-zinc-200 dark:border-zinc-800">
-          <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4">
-            <Link href="/" className="whitespace-nowrap text-[13px] font-semibold tracking-tight min-[380px]:text-sm sm:text-lg">
+          <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-1.5 px-4 py-4 min-[400px]:gap-3">
+            <Link href="/" className="whitespace-nowrap text-[13px] font-semibold tracking-tight min-[400px]:text-sm sm:text-lg">
               START: COLLECTIONS
             </Link>
             <nav className="flex items-center gap-2.5 text-sm min-[380px]:gap-3 sm:gap-5">
