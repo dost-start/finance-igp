@@ -32,10 +32,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <StoreBanner />
         <header className="border-b border-zinc-200 dark:border-zinc-800">
           <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4">
-            <Link href="/" className="text-base font-semibold tracking-tight sm:text-lg">
+            <Link href="/" className="whitespace-nowrap text-[13px] font-semibold tracking-tight min-[380px]:text-sm sm:text-lg">
               START: COLLECTIONS
             </Link>
-            <nav className="flex items-center gap-4 text-sm sm:gap-5">
+            <nav className="flex items-center gap-2.5 text-sm min-[380px]:gap-3 sm:gap-5">
               <Link href="/shop" className="whitespace-nowrap underline-offset-4 hover:underline">
                 Shop
               </Link>

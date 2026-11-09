@@ -3,6 +3,11 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  /* One accent for the whole app: links, primary buttons, focus. Tailwind sky stays the source. */
+  --accent: #075985;
+  --accent-soft: #e0f2fe;
+  --focus: #0369a1;
+  color-scheme: light;
 }
 
 @theme inline {
@@ -16,6 +21,10 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --accent: #7dd3fc;
+    --accent-soft: #082f49;
+    --focus: #38bdf8;
+    color-scheme: dark;
   }
 }
 
@@ -23,4 +32,78 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+/* Headings break evenly instead of leaving one word alone on the last line. */
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+p,
+li {
+  text-wrap: pretty;
+}
+
+/* Money, counts and dates line up in columns and do not jitter as values change. */
+table,
+time,
+[data-numeric] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Browser surfaces take the palette: selection, focus, scrollbars. */
+::selection {
+  background: var(--accent-soft);
+  color: var(--foreground);
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Placeholders stay readable (4.5:1 or better) in both schemes. */
+::placeholder {
+  color: color-mix(in srgb, var(--foreground) 58%, var(--background));
+  opacity: 1;
+}
+
+input,
+select,
+textarea {
+  accent-color: var(--accent);
+  caret-color: var(--accent);
+}
+
+html {
+  scrollbar-color: color-mix(in srgb, var(--foreground) 28%, transparent) transparent;
+  scrollbar-width: thin;
+  scroll-padding-top: 1rem;
+}
+
+/* Buttons and links step down a hair on press so a tap feels received. */
+button:not(:disabled),
+a[class*="rounded-md"][class*="bg-"] {
+  transition:
+    background-color 150ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+button:not(:disabled):active,
+a[class*="rounded-md"][class*="bg-"]:active {
+  transform: translateY(1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

@@ -53,8 +53,7 @@ export function Landing({ lineup }: { lineup: LineupItem[] }) {
   return (
     <main>
       <section className="mx-auto max-w-3xl pt-6 text-center sm:pt-12">
-        <p className="text-sm font-medium tracking-widest text-sky-800 uppercase dark:text-sky-300">START-DOST presents</p>
-        <h1 className="mt-3 text-4xl font-semibold tracking-tight sm:text-6xl">START: COLLECTIONS</h1>
+        <h1 className="text-4xl font-semibold tracking-tight sm:text-6xl">START: COLLECTIONS</h1>
         <p className="mt-4 text-lg text-zinc-700 dark:text-zinc-300">The official merchandise of the DOST technoscholar community. Wear what you stand for.</p>
 
         {!known && <div role="status" aria-busy="true" className="mx-auto mt-10 h-28 max-w-lg animate-pulse rounded-lg bg-zinc-100 dark:bg-zinc-900"><span className="sr-only">Loading the launch countdown…</span></div>}
