@@ -29,6 +29,7 @@ const STICKERS: [string, string, string][] = [
   ["05", "START-DOST Star Sticker", "Star"],
   ["07", "United, We Innovate Sticker", "Innovate"],
   ["08", "Techno Scholars Unite Sticker", "Techno Scholars"],
+  ["19", "Just Start Monitor Sticker", "Just Start Monitor"],
   ["09", "Waving Star Sticker", "Waving Star"],
   ["10", "Start Now Monitor Sticker", "Start Now"],
   ["11", "90% Vibes 10% Code Sticker", "Vibes"],
