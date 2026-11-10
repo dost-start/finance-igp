@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: { default: "START: COLLECTIONS", template: "%s | START: COLLECTIONS" },
+  title: { default: "START: Collections", template: "START: Collections | %s" },
   description: "The official merchandise shop of START-DOST.",
 };
 
