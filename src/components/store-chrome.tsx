@@ -57,65 +57,59 @@ export function StoreChrome({ children }: { children: ReactNode }) {
       <div id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
         {children}
       </div>
-      {/* The brand close, on the brand's dark ground in both schemes: a closing line, the vector wordmark, link
-          columns, and a bottom bar with the theme switch. The corner quarter circles are tiles of the START mark,
-          as in the shop hero. */}
+      {/* The brand close, on the brand's dark ground in both schemes: a closing line, the vector wordmark, two rows
+          of links, and a bottom bar with the theme switch, under a thin blue and yellow brand stripe. */}
       <footer className="relative isolate overflow-hidden bg-zinc-950 text-zinc-100" style={{ "--si-ink": "#f1f3f4" } as CSSProperties}>
-        <div aria-hidden="true" className="absolute -right-12 -top-12 -z-10 size-28 rounded-bl-full bg-brand-yellow sm:-right-16 sm:-top-16 sm:size-56" />
-        <div aria-hidden="true" className="absolute -bottom-24 left-[42%] -z-10 hidden size-36 rounded-t-full bg-brand-blue sm:block" />
-        <div aria-hidden="true" className="absolute -bottom-16 -left-16 -z-10 size-32 rounded-tr-full bg-white/[0.06]" />
+        {/* A thin brand stripe along the top edge: blue, then yellow. */}
+        <div aria-hidden="true" className="flex h-1.5">
+          <span className="flex-[3] bg-brand-blue" />
+          <span className="flex-1 bg-brand-yellow" />
+        </div>
 
-        {/* pb-28 on phones keeps the bottom bar clear of the fixed phone cart bar. */}
-        <div className="mx-auto w-full max-w-6xl px-4 pb-28 pt-10 sm:pb-6 sm:pt-12">
-          <p className="max-w-2xl text-2xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-            Science and Technology <span className="text-brand-yellow">for the people</span>
-          </p>
+        {/* Compact: the closing line and the wordmark share a row, the links run across, and pb-28 on phones keeps the
+            bottom bar clear of the fixed phone cart bar. */}
+        <div className="mx-auto w-full max-w-6xl px-4 pb-28 pt-8 sm:pb-5 sm:pt-10">
+          <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+            <p className="text-2xl font-extrabold leading-tight tracking-tight sm:text-3xl">
+              Science and Technology <span className="text-brand-yellow">for the people</span>
+            </p>
+            <span className="block aspect-[1742/400] h-7 sm:h-8" role="img" aria-label="START" dangerouslySetInnerHTML={{ __html: WORD_SVG }} />
+          </div>
 
-          <div className="mt-8 grid gap-8 sm:mt-10 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr]">
-            <div>
-              <span className="block aspect-[1742/400] h-8 sm:h-9" role="img" aria-label="START" dangerouslySetInnerHTML={{ __html: WORD_SVG }} />
-              <p className="mt-3 max-w-xs text-sm text-zinc-400">
-                The official merchandise of START-DOST: Scholars Transforming Advancement and Research for Technology.
-              </p>
-            </div>
-            <nav aria-label="Shop">
-              <h2 className="text-sm font-semibold text-white">Shop</h2>
-              <ul className="mt-3 space-y-2 text-sm text-zinc-400">
-                {[
+          <div className="mt-7 space-y-2.5 text-sm">
+            {[
+              {
+                label: "Shop",
+                links: [
                   { href: "/shop", label: "All merch" },
                   { href: "/shop#apparel", label: "Apparel" },
                   { href: "/shop#lanyards", label: "Lanyards" },
                   { href: "/shop#pins", label: "Pins" },
                   { href: "/shop#stickers", label: "Stickers" },
-                ].map((l) => (
-                  <li key={l.href}>
-                    <Link href={l.href} className="decoration-brand-yellow decoration-2 underline-offset-4 transition-colors hover:text-white hover:underline">
-                      {l.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-            <nav aria-label="Help">
-              <h2 className="text-sm font-semibold text-white">Help</h2>
-              <ul className="mt-3 space-y-2 text-sm text-zinc-400">
-                {[
+                ],
+              },
+              {
+                label: "Help",
+                links: [
                   { href: "/track", label: "Track your order" },
                   { href: "/cart", label: "Your cart" },
                   { href: "/privacy", label: "Privacy Notice" },
-                ].map((l) => (
-                  <li key={l.href}>
-                    <Link href={l.href} className="decoration-brand-yellow decoration-2 underline-offset-4 transition-colors hover:text-white hover:underline">
-                      {l.label}
-                    </Link>
-                  </li>
+                ],
+              },
+            ].map((group) => (
+              <nav key={group.label} aria-label={group.label} className="flex flex-wrap items-baseline gap-x-5 gap-y-1.5">
+                <h2 className="w-12 shrink-0 font-semibold text-white">{group.label}</h2>
+                {group.links.map((l) => (
+                  <Link key={l.href} href={l.href} className="text-zinc-400 decoration-brand-yellow decoration-2 underline-offset-4 transition-colors hover:text-white hover:underline">
+                    {l.label}
+                  </Link>
                 ))}
-              </ul>
-            </nav>
+              </nav>
+            ))}
           </div>
 
-          <div className="mt-10 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-white/10 pt-5 text-sm text-zinc-400" data-theme="dark">
-            <p>© START-DOST. Made by technoscholars, for technoscholars.</p>
+          <div className="mt-7 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-white/10 pt-4 text-xs text-zinc-400" data-theme="dark">
+            <p>© START-DOST: Scholars Transforming Advancement and Research for Technology. Made by technoscholars, for technoscholars.</p>
             <ThemeSwitch />
           </div>
         </div>
