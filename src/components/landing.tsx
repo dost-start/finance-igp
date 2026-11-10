@@ -136,12 +136,6 @@ export function Landing({ lineup }: { lineup: LineupItem[] }) {
                   </svg>
                   Opens {formatLaunch(launchAt)}
                 </p>
-                <p className="mt-5 text-sm font-medium">
-                  Already ordered?{" "}
-                  <Link href="/track" className="font-bold underline underline-offset-4 focus-visible:outline-zinc-950">
-                    Track your order
-                  </Link>
-                </p>
               </div>
             )}
 
