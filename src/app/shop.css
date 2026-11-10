@@ -87,6 +87,26 @@ html:has(.shop-page) {
   animation-play-state: paused;
 }
 
+/* Shared depth, so containers do not sit flat on the page: panels (the blue heroes) get a deep blue-tinted
+   shadow, cards (product photo frames, the sticker strip, the gallery) a soft neutral one that deepens on hover. */
+.lift-panel {
+  box-shadow: 0 30px 60px -28px rgb(0 87 178 / 0.55), 0 12px 24px -16px rgb(18 18 18 / 0.25);
+}
+.lift-card {
+  box-shadow: 0 12px 28px -14px rgb(18 18 18 / 0.28), 0 2px 6px -2px rgb(18 18 18 / 0.08);
+  transition: box-shadow 300ms ease, transform 300ms ease;
+}
+.group:hover .lift-card,
+.lift-card.lift-hover:hover {
+  box-shadow: 0 22px 44px -18px rgb(18 18 18 / 0.38), 0 4px 10px -4px rgb(18 18 18 / 0.1);
+}
+:root[data-theme="dark"] .lift-panel {
+  box-shadow: 0 30px 60px -28px rgb(0 0 0 / 0.8);
+}
+:root[data-theme="dark"] .lift-card {
+  box-shadow: 0 12px 28px -14px rgb(0 0 0 / 0.7);
+}
+
 /* The hero collage drifts up and down slowly, each piece out of step with the others. */
 .shop-float {
   animation: shop-float 6s ease-in-out infinite;

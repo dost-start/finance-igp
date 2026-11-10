@@ -43,7 +43,7 @@ export function ProductGallery({ name, images, fit }: { name: string; images: Ga
       }}
       className="relative rounded-3xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-700"
     >
-      <div className="relative aspect-square w-full overflow-hidden rounded-3xl bg-product-backdrop">
+      <div className="lift-card relative aspect-square w-full overflow-hidden rounded-3xl bg-product-backdrop">
         {images.map((img, i) => (
           <Image
             key={img.url + i}
@@ -92,7 +92,7 @@ export function ProductGallery({ name, images, fit }: { name: string; images: Ga
                 onClick={() => setIndex(i)}
                 aria-label={`Show photo ${i + 1} of ${count}`}
                 aria-current={i === index ? "true" : undefined}
-                className={`relative size-16 overflow-hidden rounded-xl bg-product-backdrop transition sm:size-20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 ${
+                className={`lift-card relative size-16 overflow-hidden rounded-xl bg-product-backdrop transition sm:size-20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 ${
                   i === index ? "ring-2 ring-zinc-950 ring-offset-2 ring-offset-background dark:ring-zinc-100" : "opacity-60 hover:opacity-100"
                 }`}
               >

@@ -54,7 +54,7 @@ export function CartView() {
       <>
         <Heading />
         {/* Blue Nova is the brand book's mascot for informational screens. */}
-        <section className="relative isolate mt-8 overflow-hidden rounded-3xl bg-brand-blue px-6 py-10 text-zinc-950 sm:px-10">
+        <section className="lift-panel relative isolate mt-8 overflow-hidden rounded-3xl bg-brand-blue px-6 py-10 text-zinc-950 sm:px-10">
           <div aria-hidden="true" className="absolute -right-10 -top-10 -z-10 size-40 rounded-bl-full bg-brand-yellow sm:size-56" />
           <div aria-hidden="true" className="shop-dots absolute inset-0 -z-10" />
           <div className="grid items-center gap-6 sm:grid-cols-[1fr_auto]">

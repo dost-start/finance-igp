@@ -27,7 +27,7 @@ export function ProductCard({ p }: { p: CardProduct }) {
         href={`/products/${p.slug}`}
         className="group block rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-700"
       >
-        <div className="relative overflow-hidden rounded-2xl bg-product-backdrop transition-shadow duration-300 group-hover:shadow-xl group-hover:shadow-zinc-900/15">
+        <div className="lift-card relative overflow-hidden rounded-2xl bg-product-backdrop">
           <Image
             src={p.images[0]?.url ?? "/products/jacket.svg"}
             alt={p.name}

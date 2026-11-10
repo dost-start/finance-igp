@@ -100,7 +100,7 @@ export function Landing({ lineup }: { lineup: LineupItem[] }) {
     <main data-landing="">
       {/* Hero: the brand-blue panel of the shop page (tiles of the START mark in the corners, a dot grid, circuit art),
           with Yellow Nova, the brand book's mascot for countdowns and hype posts, hosting the launch. */}
-      <section className="relative isolate overflow-hidden rounded-3xl bg-brand-blue text-zinc-950">
+      <section className="lift-panel relative isolate overflow-hidden rounded-3xl bg-brand-blue text-zinc-950">
         <div aria-hidden="true" className="absolute -right-10 -top-10 -z-10 size-56 rounded-bl-full bg-brand-yellow sm:size-80" />
         <div aria-hidden="true" className="absolute -bottom-20 right-[22%] -z-10 size-56 rounded-t-full bg-white/20 sm:size-72" />
         <div aria-hidden="true" className="shop-dots absolute inset-0 -z-10" />
@@ -180,7 +180,7 @@ export function Landing({ lineup }: { lineup: LineupItem[] }) {
               {lineup.map((p) => {
                 const tile = (
                   <>
-                    <div className="relative overflow-hidden rounded-2xl bg-product-backdrop transition-shadow duration-300 group-hover:shadow-xl group-hover:shadow-zinc-900/15">
+                    <div className="lift-card relative overflow-hidden rounded-2xl bg-product-backdrop">
                       <Image src={p.image} alt={p.name} width={600} height={600} unoptimized className="aspect-square w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]" />
                       {live && p.soldOut && <span className="absolute left-3 top-3 rounded-full bg-zinc-950 px-2.5 py-1 text-xs font-semibold text-white">Sold out</span>}
                       <span className="absolute bottom-3 right-3 rounded-full bg-white/90 px-2.5 py-1 text-sm font-semibold tabular-nums text-zinc-950 shadow-sm backdrop-blur">

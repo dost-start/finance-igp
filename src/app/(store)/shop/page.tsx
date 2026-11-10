@@ -39,7 +39,7 @@ export default async function Shop() {
       {/* Hero: a brand-blue panel. The big quarter circles are the tiles of the START mark; the collage on the
           right is real products, tilted like things laid out on a desk, drifting gently. The text side stays short:
           title and one button. */}
-      <section className="relative isolate overflow-hidden rounded-3xl bg-brand-blue text-zinc-950">
+      <section className="lift-panel relative isolate overflow-hidden rounded-3xl bg-brand-blue text-zinc-950">
         <div aria-hidden="true" className="absolute -right-10 -top-10 -z-10 size-56 rounded-bl-full bg-brand-yellow sm:size-80" />
         <div aria-hidden="true" className="absolute -bottom-20 right-[20%] -z-10 size-56 rounded-t-full bg-white/20 sm:size-72" />
         {/* A fine dot grid gives the flat blue some texture. */}
@@ -141,7 +141,7 @@ export default async function Shop() {
             <li key={s.id} className="shrink-0">
               <a
                 href={`#${s.id}`}
-                className="flex items-center gap-2 rounded-full border border-zinc-200 bg-white/75 px-4 py-2 text-sm font-semibold shadow-sm backdrop-blur-md transition-colors hover:border-brand-yellow hover:bg-brand-yellow hover:text-zinc-950 dark:border-zinc-700 dark:bg-zinc-900/75 dark:hover:border-brand-yellow dark:hover:bg-brand-yellow"
+                className="flex items-center gap-2 rounded-full border border-zinc-200 bg-white/75 px-4 py-2 text-sm font-semibold shadow-[0_6px_16px_-8px_rgb(18_18_18/0.3)] backdrop-blur-md transition-colors hover:border-brand-yellow hover:bg-brand-yellow hover:text-zinc-950 dark:border-zinc-700 dark:bg-zinc-900/75 dark:hover:border-brand-yellow dark:hover:bg-brand-yellow"
               >
                 {s.label}
                 <span className="rounded-full bg-zinc-900/10 px-1.5 text-xs tabular-nums dark:bg-white/15">{s.items.length}</span>
@@ -153,7 +153,7 @@ export default async function Shop() {
 
       {/* An endless strip of sticker art, like a laptop lid. Decorative: every sticker is also on its shelf below. */}
       {stickers.length > 3 && (
-        <div aria-hidden="true" className="shop-rail -mx-4 mt-8 overflow-hidden border-y border-zinc-200 py-4 dark:border-zinc-800">
+        <div aria-hidden="true" className="shop-rail lift-card mt-8 overflow-hidden rounded-2xl bg-white py-4 dark:bg-zinc-900">
           <div className="shop-track">
             {[...stickers, ...stickers].map((p, i) => (
               <div key={`${p.id}-${i}`} className="shrink-0 px-4 sm:px-6">
