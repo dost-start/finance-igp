@@ -152,3 +152,14 @@ a[class*="rounded-full"][class*="bg-"]:active {
     scroll-behavior: auto !important;
   }
 }
+
+/* Theme switch animation (src/components/theme-switch.tsx): the new theme is revealed by a growing circle, so the
+   default cross-fade of the root view transition is turned off while a theme switch runs. */
+:root[data-theme-switching]::view-transition-old(root),
+:root[data-theme-switching]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+:root[data-theme-switching]::view-transition-new(root) {
+  z-index: 1;
+}

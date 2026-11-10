@@ -28,9 +28,35 @@ function subscribe(onChange: () => void) {
   };
 }
 
+const resolve = (choice: Choice): "dark" | "light" =>
+  choice === "dark" || (choice === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
+
 function apply(choice: Choice) {
-  const dark = choice === "dark" || (choice === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
-  document.documentElement.dataset.theme = dark ? "dark" : "light";
+  document.documentElement.dataset.theme = resolve(choice);
+}
+
+// Switching by hand animates: the new theme spreads out as a circle from the button that was pressed (View
+// Transitions API). Browsers without it, people who ask for reduced motion, and picks that do not change the
+// colours (System when the device already matches) switch at once.
+function applyAnimated(choice: Choice, from: { x: number; y: number }) {
+  const root = document.documentElement;
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!document.startViewTransition || reduce || root.dataset.theme === resolve(choice)) {
+    apply(choice);
+    return;
+  }
+  const radius = Math.hypot(Math.max(from.x, window.innerWidth - from.x), Math.max(from.y, window.innerHeight - from.y));
+  root.dataset.themeSwitching = "";
+  const transition = document.startViewTransition(() => apply(choice));
+  transition.ready
+    .then(() => {
+      root.animate(
+        { clipPath: [`circle(0px at ${from.x}px ${from.y}px)`, `circle(${radius}px at ${from.x}px ${from.y}px)`] },
+        { duration: 650, easing: "cubic-bezier(0.65, 0, 0.35, 1)", pseudoElement: "::view-transition-new(root)" },
+      );
+    })
+    .catch(() => {});
+  transition.finished.finally(() => delete root.dataset.themeSwitching);
 }
 
 export function ThemeSwitch() {
@@ -46,14 +72,14 @@ export function ThemeSwitch() {
     return () => mq.removeEventListener("change", handler);
   }, []);
 
-  const pick = (value: Choice) => {
+  const pick = (value: Choice, from: { x: number; y: number }) => {
     try {
       if (value === "system") localStorage.removeItem("theme");
       else localStorage.setItem("theme", value);
     } catch {
       /* private mode: the choice lasts until the page closes */
     }
-    apply(value);
+    applyAnimated(value, from);
     window.dispatchEvent(new Event("theme-change"));
   };
 
@@ -63,7 +89,10 @@ export function ThemeSwitch() {
         <button
           key={c.value}
           type="button"
-          onClick={() => pick(c.value)}
+          onClick={(e) => {
+            const r = e.currentTarget.getBoundingClientRect();
+            pick(c.value, { x: r.left + r.width / 2, y: r.top + r.height / 2 });
+          }}
           aria-pressed={choice === c.value}
           className={`rounded px-2.5 py-1 font-medium focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-sky-700 ${choice === c.value ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900" : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"}`}
         >
