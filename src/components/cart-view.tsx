@@ -86,7 +86,7 @@ export function CartView() {
           {items.map((i) => {
             const key = { productId: i.productId, size: i.size };
             return (
-              <li key={`${i.productId}:${i.size}`} className="flex gap-4 rounded-2xl border border-zinc-200 bg-white p-3 sm:gap-5 sm:p-4 dark:border-zinc-800 dark:bg-zinc-900">
+              <li key={`${i.productId}:${i.size}`} className="flex gap-4 rounded-2xl border border-zinc-200/70 bg-white p-3 shadow-[0_10px_30px_-12px_rgb(18_18_18/0.18)] transition-shadow hover:shadow-[0_16px_40px_-14px_rgb(18_18_18/0.28)] sm:gap-5 sm:p-4 dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-[0_10px_30px_-12px_rgb(0_0_0/0.6)]">
                 <Link href={`/products/${i.slug}`} className="shrink-0" aria-hidden="true" tabIndex={-1}>
                   <Image src={i.image ?? "/products/jacket.svg"} alt="" width={128} height={128} unoptimized className={`size-24 rounded-xl bg-product-backdrop sm:size-28 ${isCutoutImage(i.image) ? "object-contain p-2.5" : "object-cover"}`} />
                 </Link>
@@ -145,7 +145,7 @@ export function CartView() {
         </ul>
 
         {/* The summary on the brand's dark ground, with the yellow call to action. */}
-        <aside className="relative isolate overflow-hidden rounded-3xl bg-zinc-950 p-6 text-zinc-100">
+        <aside className="relative isolate overflow-hidden rounded-3xl bg-zinc-950 p-6 text-zinc-100 shadow-[0_24px_50px_-18px_rgb(18_18_18/0.55)] dark:shadow-[0_24px_50px_-18px_rgb(0_0_0/0.8)] dark:ring-1 dark:ring-white/10">
           <div aria-hidden="true" className="absolute -right-8 -top-8 -z-10 size-24 rounded-bl-full bg-brand-blue" />
           <h2 className="text-lg font-bold">Order summary</h2>
           <dl className="mt-5 space-y-2 text-sm">
