@@ -20,7 +20,7 @@ export default function PrivacyPage() {
 
       <h2 className="mt-8 text-xl font-semibold">What we collect</h2>
       <ul className="mt-3 list-disc space-y-1 pl-6 leading-7">
-        <li>Your name, university and university address.</li>
+        <li>Your name, university or college and its address.</li>
         <li>Your home address (a map link and a landmark), contact number and email address.</li>
         <li>The items, sizes and quantities you order, and your order total.</li>
         <li>Your payment receipt image, the payment channel you used and your reference number.</li>

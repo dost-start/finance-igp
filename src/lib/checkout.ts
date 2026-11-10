@@ -29,8 +29,8 @@ export const checkoutItemSchema = z.object({
 export const checkoutSchema = z
   .object({
     name: z.string().trim().min(2, "Enter your full name").max(120),
-    university: z.string().trim().min(2, "Enter your university").max(160),
-    universityAddress: z.string().trim().min(5, "Enter your university address").max(300),
+    university: z.string().trim().min(2, "Enter the full name of your university or college").max(160),
+    universityAddress: z.string().trim().min(5, "Enter your university or college address").max(300),
     regionCode: z.string().refine(isRegionCode, "Choose the region of your university"),
     homeAddressLink: z
       .string()

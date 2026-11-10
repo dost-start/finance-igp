@@ -190,8 +190,8 @@ async function Review({ params, searchParams }: { params: PageProps<"/admin/orde
             <Fact label="Name">{order.buyerName}</Fact>
             <Fact label="Email">{order.email}</Fact>
             <Fact label="Contact number">{order.contactNumber}</Fact>
-            <Fact label="University">{order.university}</Fact>
-            <Fact label="University address">{order.universityAddress}</Fact>
+            <Fact label="Name of University/College">{order.university}</Fact>
+            <Fact label="University/College Address">{order.universityAddress}</Fact>
             <Fact label="Home address">
               {mapOk ? (
                 <a href={order.homeAddressLink} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">

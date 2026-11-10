@@ -16,7 +16,7 @@ export async function GET(request: Request) {
   const filters = parseFilters(Object.fromEntries(new URL(request.url).searchParams));
   const rows = await exportOrders(filters);
 
-  const header = ["Order ID", "Status", "Buyer", "Email", "Contact number", "University", "University address", "Home address (map link)", "Landmark", "Items", "Total (PHP)", "Paid via", "Reference typed", "Receipt reading", "Amount read", "Verified by", "Ordered at", "Link"];
+  const header = ["Order ID", "Status", "Buyer", "Email", "Contact number", "University/College", "University/College address", "Home address (map link)", "Landmark", "Items", "Total (PHP)", "Paid via", "Reference typed", "Receipt reading", "Amount read", "Verified by", "Ordered at", "Link"];
   const body = rows.map((r) => [
     r.orderId,
     STATUS_LABEL[r.status],

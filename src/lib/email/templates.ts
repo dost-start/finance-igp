@@ -37,7 +37,7 @@ export function renderEmail1(d: Email1Data, ticketUrl: string | null): EmailCont
     "Order Summary",
     lines,
     `Total Amount Due: ${formatPeso(d.totalCentavos)}`,
-    `University Address: ${d.universityAddress}`,
+    `University/College Address: ${d.universityAddress}`,
     `Home Address (map link): ${d.homeAddressLink}`,
     `Landmark: ${d.homeLandmark}`,
     "",

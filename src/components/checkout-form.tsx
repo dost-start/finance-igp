@@ -3,12 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useRef, type ReactNode } from "react";
+import { useActionState, useEffect, useRef, useState, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 import { createOrder, type CheckoutState } from "@/app/(store)/checkout/actions";
 import { useCart } from "@/lib/cart-store";
 import { formatPeso } from "@/lib/money";
 import { REGIONS } from "@/lib/regions";
+import { expandSchoolAbbreviation } from "@/lib/school-abbreviations";
 
 const inputClass =
   "mt-1 w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm outline-none focus-visible:border-sky-700 focus-visible:ring-2 focus-visible:ring-sky-700/40 aria-[invalid=true]:border-red-600 dark:border-zinc-700";
@@ -31,6 +32,45 @@ function Field({ id, label, hint, error, children }: { id: string; label: string
         </p>
       )}
     </div>
+  );
+}
+
+// The school name is typed freely, so when it looks like an abbreviation (UP, DLSU, FEU...) we offer the full
+// name as a tap-to-accept suggestion. The input stays uncontrolled-looking but is controlled so we can fill it.
+function UniversityInput({ initial, error }: { initial: string; error?: string }) {
+  const [value, setValue] = useState(initial);
+  const suggestion = expandSchoolAbbreviation(value);
+  return (
+    <Field
+      id="university"
+      label="Name of University/College"
+      hint="Please type the full name, not the abbreviation (for example, “University of the Philippines Diliman”, not “UPD”)."
+      error={error}
+    >
+      <input
+        id="university"
+        name="university"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        autoComplete="organization"
+        className={inputClass}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? "university-error" : "university-hint"}
+      />
+      {suggestion && (
+        <p className="mt-1 text-sm" role="status">
+          Do you mean{" "}
+          <button
+            type="button"
+            onClick={() => setValue(suggestion)}
+            className="font-semibold text-sky-800 underline underline-offset-2 hover:text-sky-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 dark:text-sky-300"
+          >
+            {suggestion}
+          </button>
+          ?
+        </p>
+      )}
+    </Field>
   );
 }
 
@@ -112,10 +152,8 @@ export function CheckoutForm() {
           <Field id="name" label="Full name" error={err("name")}>
             <input id="name" name="name" autoComplete="name" defaultValue={val("name")} className={inputClass} {...aria("name")} />
           </Field>
-          <Field id="university" label="University" error={err("university")}>
-            <input id="university" name="university" defaultValue={val("university")} className={inputClass} {...aria("university")} />
-          </Field>
-          <Field id="universityAddress" label="University address" error={err("universityAddress")}>
+          <UniversityInput initial={val("university")} error={err("university")} />
+          <Field id="universityAddress" label="University/College Address" error={err("universityAddress")}>
             <input id="universityAddress" name="universityAddress" defaultValue={val("universityAddress")} className={inputClass} {...aria("universityAddress")} />
           </Field>
           <Field id="regionCode" label="Region of your university" hint="This sets the first part of your Order ID." error={err("regionCode")}>
