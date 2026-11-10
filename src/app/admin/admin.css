@@ -1,0 +1,77 @@
+/* The admin sidebar can fold down to an icon rail. The choice lives in <html data-admin-sidebar="collapsed">
+   (set before paint by a small script in the admin layout, saved in localStorage by SidebarToggle). While it is
+   collapsed, pointing at the rail (or tabbing into it) opens it over the page and the names slide out. Phones use
+   the drawer instead, so none of this applies below 1024px. */
+@media (min-width: 1024px) {
+  .admin-shell {
+    transition: grid-template-columns 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  :root[data-admin-sidebar="collapsed"] .admin-shell {
+    grid-template-columns: 5.25rem minmax(0, 1fr);
+  }
+
+  .admin-aside {
+    width: 100%;
+    z-index: 40;
+    transition:
+      width 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 260ms ease;
+  }
+  :root[data-admin-sidebar="collapsed"] .admin-aside:is(:hover, :has(:focus-visible)) {
+    width: 16rem;
+    box-shadow: 28px 0 56px -28px rgb(18 18 18 / 0.35);
+  }
+
+  /* Names, chips and the heading fade and slide out of the way when the rail is folded. */
+  .admin-aside .admin-label {
+    max-width: 14rem;
+    overflow: hidden;
+    white-space: nowrap;
+    opacity: 1;
+    transform: translateX(0);
+    transition:
+      max-width 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 200ms ease 70ms,
+      transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .admin-aside .admin-head {
+    max-height: 1.5rem;
+    overflow: hidden;
+    white-space: nowrap;
+    transition:
+      max-height 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 200ms ease 70ms;
+  }
+  .admin-aside .admin-account {
+    transition: padding 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  :root[data-admin-sidebar="collapsed"] .admin-aside:not(:hover):not(:has(:focus-visible)) .admin-label {
+    max-width: 0;
+    opacity: 0;
+    transform: translateX(-8px);
+    transition:
+      max-width 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 90ms ease,
+      transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  :root[data-admin-sidebar="collapsed"] .admin-aside:not(:hover):not(:has(:focus-visible)) .admin-head {
+    max-height: 0;
+    opacity: 0;
+  }
+  :root[data-admin-sidebar="collapsed"] .admin-aside:not(:hover):not(:has(:focus-visible)) .admin-hide-rail {
+    display: none;
+  }
+  :root[data-admin-sidebar="collapsed"] .admin-aside:not(:hover):not(:has(:focus-visible)) .admin-account {
+    padding-inline: 0.125rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-shell,
+  .admin-aside,
+  .admin-aside .admin-label,
+  .admin-aside .admin-head,
+  .admin-aside .admin-account {
+    transition: none !important;
+  }
+}

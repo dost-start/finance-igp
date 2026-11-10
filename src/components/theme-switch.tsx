@@ -121,14 +121,16 @@ export function ThemeMenu({ icon }: { icon: React.ReactNode }) {
         className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
       >
         {icon}
-        <span>Theme</span>
-        <span className="ml-auto text-xs font-medium text-zinc-400 dark:text-zinc-500">{current}</span>
-        <svg aria-hidden="true" viewBox="0 0 20 20" className={`size-4 shrink-0 text-zinc-400 transition-transform ${open ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M5 8l5 5 5-5" />
-        </svg>
+        <span className="admin-label">Theme</span>
+        <span className="admin-label ml-auto flex items-center gap-2">
+          <span className="text-xs font-medium text-zinc-400 dark:text-zinc-500">{current}</span>
+          <svg aria-hidden="true" viewBox="0 0 20 20" className={`size-4 shrink-0 text-zinc-400 transition-transform ${open ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M5 8l5 5 5-5" />
+          </svg>
+        </span>
       </button>
       {open && (
-        <ul id="theme-menu-list" className="mt-1 space-y-0.5 pl-3">
+        <ul id="theme-menu-list" className="admin-hide-rail mt-1 space-y-0.5 pl-3">
           {CHOICES.map((c) => (
             <li key={c.value}>
               <button

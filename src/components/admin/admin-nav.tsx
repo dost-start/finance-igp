@@ -33,8 +33,8 @@ function NavLink({ href, active, label, children, trailing }: { href: string; ac
       }`}
     >
       {children}
-      <span>{label}</span>
-      {trailing}
+      <span className="admin-label">{label}</span>
+      {trailing && <span className="admin-label ml-auto">{trailing}</span>}
     </Link>
   );
 }
@@ -67,7 +67,7 @@ export function AdminNav({ showProducts, version, storeLocked }: { showProducts:
       </ul>
 
       <div>
-        <p className="px-3 text-[0.7rem] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Manage</p>
+        <p className="admin-head px-3 text-[0.7rem] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Manage</p>
         <ul className="mt-2 space-y-1">
           <li>
             <NavLink
