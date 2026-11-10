@@ -48,7 +48,7 @@ async function ProductContent({ params }: { params: PageProps<"/products/[slug]"
               height={900}
               unoptimized
               priority={idx === 0}
-              className="aspect-square w-full rounded-lg bg-zinc-100 object-cover dark:bg-zinc-900"
+              className={`aspect-square w-full rounded-lg bg-zinc-100 dark:bg-zinc-900 ${product.productType === "sticker" ? "object-contain p-2" : "object-cover"}`}
             />
           ))}
         </div>

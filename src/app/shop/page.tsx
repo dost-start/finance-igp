@@ -28,7 +28,7 @@ export default async function Shop() {
                     width={600}
                     height={600}
                     unoptimized
-                    className="aspect-square w-full object-cover transition-transform group-hover:scale-[1.03]"
+                    className={`aspect-square w-full transition-transform group-hover:scale-[1.03] ${p.productType === "sticker" ? "object-contain p-2" : "object-cover"}`}
                   />
                   {soldOut && <span className="absolute left-2 top-2 rounded bg-zinc-900 px-2 py-0.5 text-xs font-medium text-white">Sold out</span>}
                 </div>
