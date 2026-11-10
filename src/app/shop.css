@@ -1,0 +1,148 @@
+/* Motion for the shop page (src/app/(store)/shop/page.tsx). Everything here is decoration: the page reads the
+   same with it switched off. Plain global CSS with a shop- prefix, because next.config.ts sends every .css file
+   through the Tailwind loader as global CSS (CSS modules are not available). */
+
+/* Jumps within the shop (the hero button and the section pills) glide instead of cutting. Scoped to the shop page;
+   globals.css turns it back off for people who ask for reduced motion. */
+html:has(.shop-page) {
+  scroll-behavior: smooth;
+}
+
+/* The section you jumped to underlines its title in yellow as it arrives. */
+.shop-shelf-title {
+  background-image: linear-gradient(var(--color-brand-yellow), var(--color-brand-yellow));
+  background-repeat: no-repeat;
+  background-position: 0 92%;
+  background-size: 0% 0.22em;
+}
+.shop-shelf:target .shop-shelf-title {
+  animation: shop-mark 700ms cubic-bezier(0.65, 0, 0.35, 1) 350ms forwards;
+}
+@keyframes shop-mark {
+  to { background-size: 100% 0.22em; }
+}
+
+/* The sticker strip scrolls forever; the list is rendered twice so the loop has no seam. */
+.shop-rail {
+  mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+}
+.shop-track {
+  display: flex;
+  width: max-content;
+  animation: shop-scroll 70s linear infinite;
+}
+.shop-rail:hover .shop-track {
+  animation-play-state: paused;
+}
+@keyframes shop-scroll {
+  to { transform: translateX(-50%); }
+}
+
+/* Hero texture: a fine grid of white dots, fading out toward the right so it never fights the collage. */
+.shop-dots {
+  background-image: radial-gradient(rgb(255 255 255 / 0.35) 1.2px, transparent 1.4px);
+  background-size: 22px 22px;
+  mask-image: linear-gradient(to right, black 0%, black 35%, transparent 75%);
+}
+
+/* The circuit art behind the title draws its lines in, then its nodes appear. */
+.shop-circuit path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: shop-trace 1400ms cubic-bezier(0.65, 0, 0.35, 1) 200ms forwards;
+}
+.shop-circuit path:nth-of-type(2) { animation-delay: 450ms; }
+.shop-circuit path:nth-of-type(3) { animation-delay: 650ms; }
+.shop-circuit path:nth-of-type(4) { animation-delay: 800ms; }
+.shop-circuit path:nth-of-type(5) { animation-delay: 950ms; }
+.shop-circuit g {
+  opacity: 0;
+  animation: shop-fade 600ms ease 1300ms forwards;
+}
+@keyframes shop-trace {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes shop-fade {
+  to { opacity: 1; }
+}
+
+/* The yellow step under START: a trapezoid like the pyramid bars, sweeping in from the left. */
+.shop-highlight {
+  clip-path: polygon(3% 0, 97% 0, 100% 100%, 0 100%);
+  transform-origin: left center;
+  transform: scaleX(0);
+  animation: shop-sweep 700ms cubic-bezier(0.22, 1, 0.36, 1) 500ms forwards;
+}
+@keyframes shop-sweep {
+  to { transform: scaleX(1); }
+}
+
+/* While the logo intro covers the page, the hero's own animations wait, so they play when the curtain lifts. */
+:root[data-intro="playing"] .shop-circuit path,
+:root[data-intro="playing"] .shop-circuit g,
+:root[data-intro="playing"] .shop-highlight {
+  animation-play-state: paused;
+}
+
+/* The hero collage drifts up and down slowly, each piece out of step with the others. */
+.shop-float {
+  animation: shop-float 6s ease-in-out infinite;
+}
+@keyframes shop-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Product names get a yellow underline that draws in from the left on hover (or keyboard focus) and slides
+   out to the right when the pointer leaves. A background line, so it follows the text when a name wraps. */
+.shop-name {
+  background-image: linear-gradient(var(--color-brand-yellow), var(--color-brand-yellow));
+  background-repeat: no-repeat;
+  background-position: 100% 100%;
+  background-size: 0% 2px;
+  padding-bottom: 3px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  transition: background-size 350ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+.group:hover .shop-name,
+.group:focus-visible .shop-name {
+  background-position: 0% 100%;
+  background-size: 100% 2px;
+}
+
+/* Shelves rise into place as they scroll into view (browsers without scroll timelines just show them). */
+@supports (animation-timeline: view()) {
+  .shop-reveal {
+    animation: shop-rise linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 40%;
+  }
+}
+@keyframes shop-rise {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shop-circuit path,
+  .shop-circuit g,
+  .shop-highlight {
+    animation: none;
+    stroke-dashoffset: 0;
+    opacity: 1;
+    transform: none;
+  }
+  .shop-shelf:target .shop-shelf-title {
+    animation: none;
+    background-size: 100% 0.22em;
+  }
+  .shop-name {
+    transition: none;
+  }
+  .shop-track,
+  .shop-float,
+  .shop-reveal {
+    animation: none;
+  }
+}

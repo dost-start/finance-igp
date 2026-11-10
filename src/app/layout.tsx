@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
 import "./start-intro.css";
+import "./shop.css";
 import { INTRO_SEEN_KEY } from "@/lib/intro";
 
 // Poppins is the brand book's body face; its ExtraBold stands in for Nexa Black on titles.
@@ -24,13 +25,16 @@ export const metadata: Metadata = {
 // Runs before the first paint so the page never flashes the wrong theme. "theme" is light, dark, or missing (System).
 const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem("theme");var d=t==="dark"||(t!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.dataset.theme=d?"dark":"light"}catch(e){document.documentElement.dataset.theme="light"}})()`;
 
-// Also before the first paint: the logo intro (src/components/start-intro.tsx) plays on the landing page once
-// per browser session, and never for people who ask their device for reduced motion.
-const INTRO_SCRIPT = `(function(){try{if(location.pathname==="/"&&!sessionStorage.getItem("${INTRO_SEEN_KEY}")&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.dataset.intro="playing"}catch(e){}})()`;
+// Also before the first paint: the logo intro (src/components/start-intro.tsx) plays on the landing page or the
+// shop, whichever is opened first, once per browser session, and never for people who ask for reduced motion.
+const INTRO_PATHS = ["/", "/shop"];
+const INTRO_SCRIPT = `(function(){try{if(${JSON.stringify(INTRO_PATHS)}.indexOf(location.pathname)>-1&&!sessionStorage.getItem("${INTRO_SEEN_KEY}")&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.dataset.intro="playing"}catch(e){}})()`;
 
+// data-scroll-behavior="smooth": the shop scrolls smoothly within the page (src/app/shop.css), and this tells
+// Next.js to switch that off during route changes so new pages open at the top instantly.
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${poppins.variable} ${geistMono.variable} h-full antialiased`} suppressHydrationWarning>
+    <html lang="en" data-scroll-behavior="smooth" className={`${poppins.variable} ${geistMono.variable} h-full antialiased`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         <script dangerouslySetInnerHTML={{ __html: INTRO_SCRIPT }} />

@@ -1,5 +1,5 @@
-/* START logo motion: the landing intro (src/components/start-intro.tsx) and the header logo entrance
-   (src/components/store-chrome.tsx). The vector logo itself is src/components/start-intro-svg.ts.
+/* START logo motion: the landing intro (src/components/start-intro.tsx) and the header (src/components/store-chrome.tsx):
+   its logo entrance and how it changes on scroll. The vector logo itself is src/components/start-intro-svg.ts.
 
    The root layout's pre-paint script sets <html data-intro="playing"> on the first visit to "/" in a browser
    session, so the intro starts with the first paint and the page never flashes underneath it. The intro sets
@@ -28,22 +28,81 @@
 .si-hdr-mark {
   animation: si-hdr-mark 550ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-.si-hdr-word {
-  display: inline-block;
-  animation: si-hdr-word 900ms cubic-bezier(0.16, 1, 0.3, 1) 420ms both;
-}
-:root[data-intro="playing"] .si-hdr-mark,
-:root[data-intro="playing"] .si-hdr-word {
+:root[data-intro="playing"] .si-hdr-mark {
   animation-play-state: paused;
 }
 @keyframes si-hdr-mark {
   from { opacity: 0; transform: scale(0.6) rotate(-12deg); }
   to { opacity: 1; transform: none; }
 }
-@keyframes si-hdr-word {
-  from { opacity: 0; transform: translateX(-100%); }
-  30% { opacity: 1; }
-  to { opacity: 1; transform: none; }
+
+/* ---------------------------------------------------------------- header on scroll */
+/* At the top: a plain bar, mark only. Scrolled (<html data-scrolled>, set by src/components/scroll-flag.tsx): the
+   bar lifts into a floating frosted pill and the shop name slides out to the right from behind the mark. */
+.si-header-bar {
+  border: 1px solid transparent;
+  transition:
+    max-width 450ms cubic-bezier(0.22, 1, 0.36, 1),
+    width 450ms cubic-bezier(0.22, 1, 0.36, 1),
+    margin 450ms cubic-bezier(0.22, 1, 0.36, 1),
+    padding 450ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-radius 450ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 300ms ease,
+    border-color 300ms ease,
+    box-shadow 300ms ease;
+}
+:root[data-scrolled] .si-header-bar {
+  /* Exactly the page's content column (max-w-6xl minus its px-4 gutters), so the pill lines up with
+     everything below it. */
+  width: calc(100% - 2rem);
+  max-width: calc(72rem - 2rem);
+  margin-top: 0.75rem;
+  padding-inline: 1rem;
+  border-radius: 1.25rem;
+  border-color: rgb(32 33 36 / 0.08);
+  background-color: rgb(250 250 250 / 0.75);
+  box-shadow: 0 12px 32px -14px rgb(18 18 18 / 0.35);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  backdrop-filter: blur(18px) saturate(1.4);
+}
+:root[data-theme="dark"][data-scrolled] .si-header-bar {
+  border-color: rgb(241 243 244 / 0.1);
+  background-color: rgb(32 33 36 / 0.72);
+  box-shadow: 0 12px 32px -14px rgb(0 0 0 / 0.7);
+}
+
+/* The name opens from zero width (a 0fr to 1fr grid column) while the words slide out from behind the mark. */
+.si-hdr-name {
+  display: grid;
+  grid-template-columns: 0fr;
+  transition: grid-template-columns 500ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.si-hdr-clip {
+  min-width: 0;
+  overflow: hidden;
+}
+.si-hdr-word {
+  display: inline-block;
+  padding-left: 0.6rem;
+  opacity: 0;
+  transform: translateX(-100%);
+  transition:
+    transform 600ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 300ms ease;
+}
+:root[data-scrolled] .si-hdr-name {
+  grid-template-columns: 1fr;
+}
+/* Below this width the name and the nav do not fit in the pill together; phones keep the mark alone. */
+@media (max-width: 559px) {
+  .si-hdr-name {
+    display: none;
+  }
+}
+:root[data-scrolled] .si-hdr-word {
+  opacity: 1;
+  transform: none;
+  transition-delay: 80ms;
 }
 
 /* ---------------------------------------------------------------- landing intro */
@@ -195,8 +254,12 @@
   :root[data-intro="playing"] {
     overflow: visible;
   }
-  .si-hdr-mark,
-  .si-hdr-word {
+  .si-hdr-mark {
     animation: none;
+  }
+  .si-header-bar,
+  .si-hdr-name,
+  .si-hdr-word {
+    transition: none;
   }
 }

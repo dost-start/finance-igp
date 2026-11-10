@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { CartLink } from "@/components/cart-link";
 import { MobileCartBar } from "@/components/mobile-cart-bar";
+import { ScrollFlag } from "@/components/scroll-flag";
 import { MARK_SVG } from "@/components/start-intro-svg";
 import { StoreBanner } from "@/components/store-banner";
 import { ThemeSwitch } from "@/components/theme-switch";
@@ -13,15 +14,23 @@ export function StoreChrome({ children }: { children: ReactNode }) {
   return (
     <div className="flex flex-1 flex-col pb-20 sm:pb-0">
       <StoreBanner />
-      <header className="border-b border-zinc-200 dark:border-zinc-800">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-1.5 px-4 py-3 min-[400px]:gap-3">
-          <Link href="/" className="flex shrink-0 items-center gap-2 whitespace-nowrap text-sm font-extrabold tracking-tight sm:gap-2.5 sm:text-lg">
-            {/* The vector brand mark (its ink follows light/dark). It lands first, then the name slides out to the
-                right from behind it; see src/app/start-intro.css. */}
+      {/* At the top of the page the header is a plain bar with just the START mark (the page itself carries the
+          name). Once the page scrolls it becomes a floating frosted pill and "START: COLLECTIONS" slides out beside
+          the mark; ScrollFlag sets <html data-scrolled> and src/app/start-intro.css does the rest. */}
+      <ScrollFlag />
+      <header className="sticky top-0 z-40">
+        <div className="si-header-bar mx-auto flex w-full max-w-6xl items-center justify-between gap-1.5 px-4 py-3 min-[400px]:gap-3">
+          <Link
+            href="/"
+            aria-label="START: COLLECTIONS home"
+            className="flex shrink-0 items-center whitespace-nowrap text-sm font-extrabold tracking-tight sm:text-lg"
+          >
             <span className="si-hdr-mark relative z-10 block h-7 sm:h-9" dangerouslySetInnerHTML={{ __html: MARK_SVG }} />
-            {/* On the narrowest phones the mark stands alone so the cart stays on screen. */}
-            <span className="overflow-hidden max-[419px]:sr-only">
-              <span className="si-hdr-word">START: COLLECTIONS</span>
+            {/* Phones never show the name (it would push the cart off screen); see .si-hdr-name. */}
+            <span className="si-hdr-name" aria-hidden="true">
+              <span className="si-hdr-clip">
+                <span className="si-hdr-word">START: COLLECTIONS</span>
+              </span>
             </span>
           </Link>
           <nav className="flex items-center gap-2.5 text-sm font-medium min-[380px]:gap-3 sm:gap-5">
