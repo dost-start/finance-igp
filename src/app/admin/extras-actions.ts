@@ -80,7 +80,12 @@ export async function createProduct(_prev: ProductFormState, formData: FormData)
   const errors: ProductEditErrors = parsed.ok ? {} : { ...parsed.errors };
 
   const slug = values.slug.trim() || slugify(values.name);
-  if (!SLUG_SHAPE.test(slug)) errors.slug = "The web address can only have lowercase letters, numbers and single dashes, like tee-design-c";
+  // With no name yet the name error already says what to do; only complain about the address when there is one to complain about.
+  if (!slug) {
+    if (values.name.trim()) errors.slug = "Type a web address: the name has no letters or numbers to make one from";
+  } else if (!SLUG_SHAPE.test(slug)) {
+    errors.slug = "The web address can only have lowercase letters, numbers and single dashes, like tee-design-c";
+  }
   const type = PRODUCT_TYPES.find((t) => t.value === values.type)?.value;
   if (!type) errors.type = "Choose what kind of product it is";
   if (!parsed.ok || Object.keys(errors).length > 0) return { ok: false, errors, values: { ...values, slug } };

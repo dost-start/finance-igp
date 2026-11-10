@@ -125,7 +125,7 @@ describe("product photos", () => {
     const without = parseProductEdit(base);
     expect(without.ok && without.data.images).toBeUndefined();
     const bad = parseProductEdit({ ...base, photos: "../x.jpg" });
-    expect(!bad.ok && bad.errors.photos).toContain("not a photo file name");
+    expect(!bad.ok && bad.errors.photos).toContain("is not a photo");
   });
   it("notes changed photos in the audit log", () => {
     const a = { name: "A", priceCentavos: 100, active: true, sizes: [{ size: "S", available: true }], images: [{ url: "/products/a.jpg", kind: "flat" as const }] };

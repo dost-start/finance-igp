@@ -20,12 +20,18 @@ async function Edit({ params }: { params: PageProps<"/admin/products/[id]">["par
 
   return (
     <>
-      <Link href="/admin/products" className="text-sm underline underline-offset-4">
+      <Link
+        href="/admin/products"
+        className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white/70 px-3.5 py-1.5 text-sm font-semibold text-zinc-700 transition-colors hover:border-brand-yellow hover:bg-brand-yellow hover:text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 dark:border-zinc-700 dark:bg-zinc-900/70 dark:text-zinc-300"
+      >
+        <svg aria-hidden="true" viewBox="0 0 20 20" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 5l-5 5 5 5" />
+        </svg>
         All products
       </Link>
-      <h1 className="mt-4 text-2xl font-semibold tracking-tight">{product.name}</h1>
-      <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-        Address in the shop: <span className="font-mono">/products/{product.slug}</span>. 
+      <h1 className="mt-5 text-3xl font-extrabold tracking-tight sm:text-4xl">{product.name}</h1>
+      <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+        Address in the shop: <span className="font-mono">/products/{product.slug}</span>
       </p>
       <ProductForm productId={product.id} initial={{ name: product.name, priceCentavos: product.priceCentavos, active: product.active, sizes: product.sizes, photos: photosToText(product.images) }} />
     </>

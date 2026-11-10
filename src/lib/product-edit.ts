@@ -31,18 +31,21 @@ export const productEditSchema = z.object({
 export type ProductEdit = { name: string; priceCentavos: number; active: boolean; sizes: ProductSize[]; images?: ProductImage[] };
 export type ProductEditErrors = Partial<Record<"name" | "price" | "sizes" | "photos" | "slug" | "type", string>>;
 
-// Photos are files kept in the site's public/products folder (added with the code, named consistently), so a
-// photo is just a file name. Only plain file names are accepted: no folders, no web addresses, no "..".
+// A photo is either a file in the site's public/products folder (added with the code; just a plain file name) or a
+// photo uploaded in the admin (an address under /api/product-photo/, signed so only our own uploads work; see
+// src/lib/product-photo.ts). Nothing else is accepted: no folders, no outside web addresses, no "..".
 export const MAX_PHOTOS = 6;
 const PHOTO_FILE = /^[A-Za-z0-9][A-Za-z0-9._-]{0,80}\.(jpg|jpeg|png|webp|avif|svg)$/i;
+export const UPLOADED_PHOTO = /^\/api\/product-photo\/[A-Za-z0-9_-]{6,80}\.[0-9a-f]{32}$/;
 
 export function parsePhotos(input: string, existing: ProductImage[] = []): { ok: true; images: ProductImage[] } | { ok: false; message: string } {
   const names = [...new Set(input.split(/[\n,]+/).map((l) => l.trim().replace(/^\/products\//, "")).filter(Boolean))];
   if (names.length > MAX_PHOTOS) return { ok: false, message: `At most ${MAX_PHOTOS} photos` };
-  const bad = names.find((n) => !PHOTO_FILE.test(n) || n.includes(".."));
-  if (bad) return { ok: false, message: `"${bad.slice(0, 40)}" is not a photo file name. Use just the file name, like tee-front.jpg (jpg, png, webp, avif or svg)` };
+  const bad = names.find((n) => !UPLOADED_PHOTO.test(n) && (!PHOTO_FILE.test(n) || n.includes("..")));
+  if (bad) return { ok: false, message: `"${bad.slice(0, 40)}" is not a photo. Upload an image, or use just a file name like tee-front.jpg (jpg, png, webp, avif or svg)` };
   const kindOf = new Map(existing.map((i) => [i.url, i.kind]));
-  return { ok: true, images: names.map((n) => ({ url: `/products/${n}`, kind: kindOf.get(`/products/${n}`) ?? "flat" })) };
+  const urlOf = (n: string) => (UPLOADED_PHOTO.test(n) ? n : `/products/${n}`);
+  return { ok: true, images: names.map((n) => ({ url: urlOf(n), kind: kindOf.get(urlOf(n)) ?? "flat" })) };
 }
 
 export const photosToText = (images: ProductImage[]): string => images.map((i) => i.url.replace(/^\/products\//, "")).join("\n");
