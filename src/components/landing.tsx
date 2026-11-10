@@ -100,7 +100,7 @@ export function Landing({ lineup }: { lineup: LineupItem[] }) {
               const tile = (
                 <>
                   <div className="relative overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-900">
-                    <Image src={p.image} alt={p.name} width={600} height={600} unoptimized className="aspect-square w-full object-contain p-2" />
+                    <Image src={p.image} alt={p.name} width={600} height={600} unoptimized className="aspect-square w-full object-cover" />
                     {live && p.soldOut && <span className="absolute left-2 top-2 rounded bg-zinc-900 px-2 py-0.5 text-xs font-medium text-white">Sold out</span>}
                   </div>
                   <p className="mt-3 text-sm font-medium">{p.name}</p>
