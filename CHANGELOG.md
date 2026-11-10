@@ -2,6 +2,28 @@
 
 What changed in each version of the START: COLLECTIONS shop, newest first. Versions follow major.minor.patch: a new sprint raises the middle number, a fix or polish raises the last. This file is generated from `src/lib/changelog.ts` (run `npm run changelog`); edit that file, not this one.
 
+## 1.0.0: The redesigned shop, payment and admin area (2026-11-11)
+
+### Added
+
+- Checkout now takes you one step at a time: about you, delivery, then email. Each step checks what you typed before the next opens, and a message goes away as soon as you fix that field.
+- The university or college field asks for the full name, and offers "Do you mean ...?" when someone types an abbreviation such as UP, DLSU or HAU (about 1,900 abbreviations known).
+- The two email boxes on checkout tell the buyer straight away whether they match, and the home address label links to Google's guide on copying a Google Maps link.
+- The payment page has two steps: scan and pay (with a Copy amount button), then send the receipt by choosing or dropping a photo. After sending, a new screen explains what happens next.
+- The Payment Confirmed email now shows the buyer's tracking code (the last 4 digits of their contact number) so they can keep it with their Order ID.
+- Technology can upload product photos in the admin (up to 6 per product, reorder, first is the main photo) instead of asking a developer to add files. Photos are kept in the private Drive folder.
+- Products in the admin are grouped by the shop's categories (Apparel, Lanyards, Bags, Pins, Stickers) with a filter, and the add/edit product form is easier to fill in, with tappable kinds and sizes.
+
+### Changed
+
+- The admin area has a sidebar instead of a top menu (a drawer on phones), a clearer Orders screen with a big waiting-for-verification panel, and card layouts on order detail, Help and Release notes.
+- The audit log and email log are grouped by day (Today, Yesterday, then dates), and dates across the admin are shorter, like Nov 3, 2026, 10:27 AM.
+- Checkout and payment keep the plain top header while scrolling, pages ease in, and the cart summary and order summaries are light cards in light mode. The footer no longer repeats the cart link.
+
+### Security
+
+- Product photos are shown through a signed address, so only photos uploaded in the admin can ever be opened that way, never a receipt.
+
 ## 0.3.0: Sprint 3: demo-ready for finance (2026-10-27)
 
 ### Added

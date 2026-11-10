@@ -11,6 +11,24 @@ const KIND_ORDER: ChangeKind[] = ["added", "changed", "fixed", "removed", "secur
 
 export const RELEASES: Release[] = [
   {
+    version: "1.0.0",
+    date: "2026-11-11",
+    title: "The redesigned shop, payment and admin area",
+    changes: [
+      { kind: "added", text: "Checkout now takes you one step at a time: about you, delivery, then email. Each step checks what you typed before the next opens, and a message goes away as soon as you fix that field." },
+      { kind: "added", text: "The university or college field asks for the full name, and offers \"Do you mean ...?\" when someone types an abbreviation such as UP, DLSU or HAU (about 1,900 abbreviations known)." },
+      { kind: "added", text: "The two email boxes on checkout tell the buyer straight away whether they match, and the home address label links to Google's guide on copying a Google Maps link." },
+      { kind: "added", text: "The payment page has two steps: scan and pay (with a Copy amount button), then send the receipt by choosing or dropping a photo. After sending, a new screen explains what happens next." },
+      { kind: "added", text: "The Payment Confirmed email now shows the buyer's tracking code (the last 4 digits of their contact number) so they can keep it with their Order ID." },
+      { kind: "added", text: "Technology can upload product photos in the admin (up to 6 per product, reorder, first is the main photo) instead of asking a developer to add files. Photos are kept in the private Drive folder." },
+      { kind: "added", text: "Products in the admin are grouped by the shop's categories (Apparel, Lanyards, Bags, Pins, Stickers) with a filter, and the add/edit product form is easier to fill in, with tappable kinds and sizes." },
+      { kind: "changed", text: "The admin area has a sidebar instead of a top menu (a drawer on phones), a clearer Orders screen with a big waiting-for-verification panel, and card layouts on order detail, Help and Release notes." },
+      { kind: "changed", text: "The audit log and email log are grouped by day (Today, Yesterday, then dates), and dates across the admin are shorter, like Nov 3, 2026, 10:27 AM." },
+      { kind: "changed", text: "Checkout and payment keep the plain top header while scrolling, pages ease in, and the cart summary and order summaries are light cards in light mode. The footer no longer repeats the cart link." },
+      { kind: "security", text: "Product photos are shown through a signed address, so only photos uploaded in the admin can ever be opened that way, never a receipt." },
+    ],
+  },
+  {
     version: "0.3.0",
     date: "2026-10-27",
     title: "Sprint 3: demo-ready for finance",
