@@ -69,29 +69,6 @@ async function ProductContent({ params }: { params: PageProps<"/products/[slug]"
             />
           </div>
 
-          <ul className="mt-8 space-y-3 text-sm text-zinc-600 dark:text-zinc-400">
-            <li className="flex items-center gap-3">
-              <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300">
-                <svg viewBox="0 0 20 20" className="size-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="m4.5 10.5 3.5 3.5 7.5-8" />
-                </svg>
-              </span>
-              Official START-DOST merchandise
-            </li>
-            <li className="flex items-center gap-3">
-              <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300">
-                <svg viewBox="0 0 20 20" className="size-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M3 6.5h9.5v7H3zM12.5 9H15l2 2.5v2h-4.5M6 15.5a1.25 1.25 0 1 0 0-.01M14.5 15.5a1.25 1.25 0 1 0 0-.01" />
-                </svg>
-              </span>
-              <span>
-                Follow your order any time on{" "}
-                <Link href="/track" className="font-medium text-zinc-900 underline underline-offset-4 dark:text-zinc-100">
-                  Track order
-                </Link>
-              </span>
-            </li>
-          </ul>
         </div>
       </div>
 
