@@ -135,8 +135,8 @@ export default async function Shop() {
       </section>
 
       {/* Jump-to pills, pinned just under the floating header as you scroll the shelves. */}
-      <nav aria-label="Shop sections" className="sticky top-[4.75rem] z-20 mt-8 sm:top-[5.25rem]">
-        <ul className="-mx-1 flex gap-2 overflow-x-auto px-1 py-1 [scrollbar-width:none]">
+      <nav aria-label="Shop sections" className="sticky top-[4.75rem] z-20 mt-5 sm:top-[5.25rem]">
+        <ul className="-mx-1 flex gap-2 overflow-x-auto px-1 py-1 sm:justify-center [scrollbar-width:none]">
           {shelves.map((s) => (
             <li key={s.id} className="shrink-0">
               <a
@@ -153,7 +153,7 @@ export default async function Shop() {
 
       {/* An endless strip of sticker art, like a laptop lid. Decorative: every sticker is also on its shelf below. */}
       {stickers.length > 3 && (
-        <div aria-hidden="true" className="shop-rail lift-card mt-8 overflow-hidden rounded-2xl bg-white py-4 dark:bg-zinc-900">
+        <div aria-hidden="true" className="shop-rail lift-card mt-5 overflow-hidden rounded-2xl bg-white py-4 dark:bg-zinc-900">
           <div className="shop-track">
             {[...stickers, ...stickers].map((p, i) => (
               <div key={`${p.id}-${i}`} className="shrink-0 px-4 sm:px-6">
