@@ -1,6 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
-import { Suspense, type ReactNode } from "react";
+import { Suspense, type CSSProperties, type ReactNode } from "react";
 import { CartLink } from "@/components/cart-link";
 import { MobileCartBar } from "@/components/mobile-cart-bar";
 import { ScrollFlag } from "@/components/scroll-flag";
@@ -13,7 +12,7 @@ import { ThemeSwitch } from "@/components/theme-switch";
 // area has its own frame (src/app/admin/layout.tsx), so finance never sees the cart or the shop links.
 export function StoreChrome({ children }: { children: ReactNode }) {
   return (
-    <div className="flex flex-1 flex-col pb-20 sm:pb-0">
+    <div className="flex flex-1 flex-col">
       <StoreBanner />
       {/* At the top of the page the header is a plain bar with just the START mark (the page itself carries the
           name); right after the logo intro the START wordmark peeks out beside it and tucks back. Once the page scrolls it becomes a floating frosted pill and "START: COLLECTIONS" slides out beside
@@ -58,18 +57,66 @@ export function StoreChrome({ children }: { children: ReactNode }) {
       <div id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
         {children}
       </div>
-      {/* The brand close: the wordmark on the brand's dark ground in both schemes, as on START-DOST pubmat footers. */}
-      <footer className="bg-zinc-900 text-zinc-100">
-        <div className="mx-auto w-full max-w-6xl px-4 pb-8 pt-12">
-          <Image src="/brand/wordmark-white.webp" alt="START: Scholars Transforming Advancement and Research for Technology" width={422} height={140} unoptimized className="h-auto w-56 sm:w-72" />
-          <div className="mt-8 flex flex-wrap items-center justify-between gap-x-6 gap-y-4 text-sm text-zinc-300">
-            <p>The official merchandise of START-DOST. Wear what you stand for.</p>
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2" data-theme="dark">
-              <ThemeSwitch />
-              <Link href="/privacy" className="underline underline-offset-4 hover:text-white">
-                Privacy Notice
-              </Link>
+      {/* The brand close, on the brand's dark ground in both schemes: a closing line, the vector wordmark, link
+          columns, and a bottom bar with the theme switch. The corner quarter circles are tiles of the START mark,
+          as in the shop hero. */}
+      <footer className="relative isolate overflow-hidden bg-zinc-950 text-zinc-100" style={{ "--si-ink": "#f1f3f4" } as CSSProperties}>
+        <div aria-hidden="true" className="absolute -right-16 -top-16 -z-10 size-36 rounded-bl-full bg-brand-yellow sm:-right-24 sm:-top-24 sm:size-96" />
+        <div aria-hidden="true" className="absolute -bottom-32 left-[42%] -z-10 hidden size-56 rounded-t-full bg-brand-blue sm:block" />
+        <div aria-hidden="true" className="absolute -bottom-20 -left-20 -z-10 size-48 rounded-tr-full bg-white/[0.06]" />
+
+        {/* pb-28 on phones keeps the bottom bar clear of the fixed phone cart bar. */}
+        <div className="mx-auto w-full max-w-6xl px-4 pb-28 pt-14 sm:pb-8 sm:pt-20">
+          <p className="max-w-3xl text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl">
+            Science and Technology <span className="text-brand-yellow">for the people</span>
+          </p>
+
+          <div className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr] sm:mt-16">
+            <div>
+              <span className="block aspect-[1742/400] h-10 sm:h-12" role="img" aria-label="START" dangerouslySetInnerHTML={{ __html: WORD_SVG }} />
+              <p className="mt-4 max-w-xs text-sm text-zinc-400">
+                The official merchandise of START-DOST: Scholars Transforming Advancement and Research for Technology.
+              </p>
             </div>
+            <nav aria-label="Shop">
+              <h2 className="text-sm font-semibold text-white">Shop</h2>
+              <ul className="mt-4 space-y-2.5 text-sm text-zinc-400">
+                {[
+                  { href: "/shop", label: "All merch" },
+                  { href: "/shop#apparel", label: "Apparel" },
+                  { href: "/shop#lanyards", label: "Lanyards" },
+                  { href: "/shop#pins", label: "Pins" },
+                  { href: "/shop#stickers", label: "Stickers" },
+                ].map((l) => (
+                  <li key={l.href}>
+                    <Link href={l.href} className="decoration-brand-yellow decoration-2 underline-offset-4 transition-colors hover:text-white hover:underline">
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+            <nav aria-label="Help">
+              <h2 className="text-sm font-semibold text-white">Help</h2>
+              <ul className="mt-4 space-y-2.5 text-sm text-zinc-400">
+                {[
+                  { href: "/track", label: "Track your order" },
+                  { href: "/cart", label: "Your cart" },
+                  { href: "/privacy", label: "Privacy Notice" },
+                ].map((l) => (
+                  <li key={l.href}>
+                    <Link href={l.href} className="decoration-brand-yellow decoration-2 underline-offset-4 transition-colors hover:text-white hover:underline">
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
+
+          <div className="mt-14 flex flex-wrap items-center justify-between gap-x-6 gap-y-4 border-t border-white/10 pt-6 text-sm text-zinc-400" data-theme="dark">
+            <p>© START-DOST. Made by technoscholars, for technoscholars.</p>
+            <ThemeSwitch />
           </div>
         </div>
       </footer>
