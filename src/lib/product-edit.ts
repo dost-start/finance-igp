@@ -63,6 +63,7 @@ export const PRODUCT_TYPES = [
   { value: "jacket", label: "Jacket" },
   { value: "lanyard", label: "Lanyard" },
   { value: "tote", label: "Tote bag" },
+  { value: "pin", label: "Pin" },
   { value: "sticker", label: "Sticker" },
   { value: "other", label: "Other" },
 ] as const;

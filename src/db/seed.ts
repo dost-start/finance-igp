@@ -10,7 +10,6 @@ async function main() {
 
   const productRows = PRODUCTS.map((p, i) => ({
     ...p,
-    images: [{ url: `/products/${p.slug}.svg`, kind: "flat" as const }],
     sortOrder: i,
   }));
   const inserted = await db.insert(products).values(productRows).onConflictDoNothing({ target: products.slug }).returning({ slug: products.slug });
