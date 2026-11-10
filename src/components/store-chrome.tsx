@@ -57,8 +57,8 @@ export function StoreChrome({ children }: { children: ReactNode }) {
       <div id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
         {children}
       </div>
-      {/* The brand close, on the brand's dark ground in both schemes: a closing line, the vector wordmark, two rows
-          of links, and a bottom bar with the theme switch, under a thin blue and yellow brand stripe. */}
+      {/* The brand close, on the brand's dark ground in both schemes: a closing line, the vector wordmark, a row
+          of help links, and a bottom bar with the theme switch, under a thin blue and yellow brand stripe. */}
       <footer className="relative isolate overflow-hidden bg-zinc-950 text-zinc-100" style={{ "--si-ink": "#f1f3f4" } as CSSProperties}>
         {/* A thin brand stripe along the top edge: blue, then yellow. */}
         <div aria-hidden="true" className="flex h-1.5">
@@ -66,7 +66,7 @@ export function StoreChrome({ children }: { children: ReactNode }) {
           <span className="flex-1 bg-brand-yellow" />
         </div>
 
-        {/* Compact: the closing line and the wordmark share a row, the links run across, and pb-28 on phones keeps the
+        {/* Compact: the closing line and the wordmark share a row, the help links run across, and pb-28 on phones keeps the
             bottom bar clear of the fixed phone cart bar. */}
         <div className="mx-auto w-full max-w-6xl px-4 pb-28 pt-8 sm:pb-5 sm:pt-10">
           <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
@@ -76,18 +76,8 @@ export function StoreChrome({ children }: { children: ReactNode }) {
             <span className="block aspect-[1742/400] h-7 sm:h-8" role="img" aria-label="START" dangerouslySetInnerHTML={{ __html: WORD_SVG }} />
           </div>
 
-          <div className="mt-7 space-y-2.5 text-sm">
+          <div className="mt-6 space-y-2.5 text-sm">
             {[
-              {
-                label: "Shop",
-                links: [
-                  { href: "/shop", label: "All merch" },
-                  { href: "/shop#apparel", label: "Apparel" },
-                  { href: "/shop#lanyards", label: "Lanyards" },
-                  { href: "/shop#pins", label: "Pins" },
-                  { href: "/shop#stickers", label: "Stickers" },
-                ],
-              },
               {
                 label: "Help",
                 links: [
