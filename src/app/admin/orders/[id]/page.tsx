@@ -22,18 +22,18 @@ import { correctionTargets, generalNextStatuses, STATUS_LABEL } from "@/lib/stat
 export const metadata: Metadata = { title: "Review order" };
 
 const NOTICE: Record<string, string> = {
-  changed: "Someone else already changed this order, so nothing was saved. Here is its current state.",
+  changed: "Someone else changed this order first. Nothing was saved.",
   reason: "Choose a reason before rejecting.",
-  cancel_reason: "Add the reason for canceling. The buyer reads it in their email.",
+  cancel_reason: "Add the reason for canceling. The buyer reads it in the email.",
   correction_reason: "Say what went wrong before saving a correction.",
 };
-const DONE: Record<string, string> = { confirmed: "Payment confirmed. Here is the next order waiting.", rejected: "Payment rejected. Here is the next order waiting.", status: "Status updated.", corrected: "Status corrected and recorded. The buyer was not emailed." };
+const DONE: Record<string, string> = { confirmed: "Payment confirmed. Next order waiting.", rejected: "Payment rejected. Next order waiting.", status: "Status updated.", corrected: "Status corrected and recorded. The buyer was not emailed." };
 
 function Fact({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-0.5 sm:flex-row sm:gap-4">
-      <dt className="w-40 shrink-0 text-sm text-zinc-500 dark:text-zinc-400">{label}</dt>
-      <dd className="min-w-0 text-sm break-words">{children}</dd>
+    <div>
+      <dt className="text-xs text-zinc-500 dark:text-zinc-400">{label}</dt>
+      <dd className="mt-0.5 min-w-0 text-sm break-words">{children}</dd>
     </div>
   );
 }
@@ -81,11 +81,14 @@ async function Review({ params, searchParams }: { params: PageProps<"/admin/orde
   return (
     <>
       <div className="flex flex-wrap items-center gap-3">
-        <Link href="/admin" className="text-sm underline underline-offset-4">
+        <Link href="/admin" className="inline-flex items-center gap-1 rounded-md text-sm font-medium text-zinc-600 hover:text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 dark:text-zinc-400 dark:hover:text-zinc-50">
+          <svg aria-hidden="true" viewBox="0 0 20 20" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 5l-5 5 5 5" />
+          </svg>
           All orders
         </Link>
         {next && (
-          <Link href={`/admin/orders/${next.id}`} className="ml-auto rounded-md border border-zinc-300 px-3 py-1.5 text-sm font-medium dark:border-zinc-700">
+          <Link href={`/admin/orders/${next.id}`} className="ml-auto rounded-md border border-zinc-300 px-3 py-1.5 text-sm font-medium hover:bg-zinc-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 dark:border-zinc-700 dark:hover:bg-zinc-800">
             Next order waiting
           </Link>
         )}
@@ -107,117 +110,118 @@ async function Review({ params, searchParams }: { params: PageProps<"/admin/orde
         </p>
       )}
 
-      <div className="mt-4 flex flex-wrap items-center gap-3">
+      <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1">
         <h1 className="font-mono text-2xl font-semibold tracking-tight">{order.orderId}</h1>
         <StatusBadge status={order.status} />
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">Submitted {formatManila(proof?.createdAt ?? order.createdAt)}</p>
       </div>
 
-      <div className="mt-6 grid gap-8 lg:grid-cols-[1fr_22rem]">
-        <div className="min-w-0 space-y-8">
-          <section>
-            <h2 className="mb-2 text-lg font-semibold">Receipt</h2>
-            {proof ? <ReceiptViewer src={`/api/admin/receipts/${order.id}`} /> : <p className="rounded-lg border border-dashed border-zinc-300 p-6 text-sm text-zinc-500 dark:text-zinc-400 dark:border-zinc-700">No receipt uploaded yet.</p>}
-          </section>
+      <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_24rem]">
+        <section aria-labelledby="receipt-heading" className="min-w-0">
+          <h2 id="receipt-heading" className="mb-2 text-base font-semibold">
+            Receipt
+          </h2>
+          {proof ? <ReceiptViewer src={`/api/admin/receipts/${order.id}`} /> : <p className="rounded-lg border border-dashed border-zinc-300 p-6 text-sm text-zinc-500 dark:text-zinc-400 dark:border-zinc-700">No receipt uploaded yet.</p>}
+        </section>
 
-          <section>
-            <h2 className="mb-2 text-lg font-semibold">Check against the receipt</h2>
-            <dl className="space-y-2 rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
-              <Fact label="Total the buyer owes">
-                <strong className="text-base tabular-nums">{formatPeso(order.totalCentavos)}</strong>
-              </Fact>
-              <Fact label="Paid via">{proof?.channel ?? "-"}</Fact>
-              <Fact label="Reference typed">
-                <span className="font-mono">{proof?.referenceNumber ?? "-"}</span>
-              </Fact>
-            </dl>
-            {proof && (
+        <div className="space-y-5 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:self-start lg:overflow-y-auto">
+          {proof && (
+            <OcrPanel
+              totalCentavos={order.totalCentavos}
+              typedReference={proof.referenceNumber}
+              channel={proof.channel}
+              ocrAmount={proof.ocrAmount}
+              ocrReference={proof.ocrReference}
+              ocrResult={proof.ocrResult}
+              duplicates={duplicates}
+            />
+          )}
+
+          <aside aria-labelledby="decision-heading" className="rounded-lg border border-zinc-300 p-5 shadow-sm dark:border-zinc-700">
+            <h2 id="decision-heading" className="text-base font-semibold">
+              Decision
+            </h2>
+            {canReview ? (
               <div className="mt-4">
-                <OcrPanel
-                  totalCentavos={order.totalCentavos}
-                  typedReference={proof.referenceNumber}
-                  ocrAmount={proof.ocrAmount}
-                  ocrReference={proof.ocrReference}
-                  ocrResult={proof.ocrResult}
-                  duplicates={duplicates}
-                />
+                <ReviewActions orderUuid={order.id} />
+              </div>
+            ) : order.status === "order_received" ? (
+              <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">The buyer has not uploaded a receipt yet.</p>
+            ) : (
+              <div className="mt-3">
+                <p className="mb-3 text-sm text-zinc-500 dark:text-zinc-400">Now {STATUS_LABEL[order.status]}. Next step:</p>
+                <StatusControl orderUuid={order.id} options={generalNextStatuses(order.status)} />
+                <CorrectionForm orderUuid={order.id} targets={correctionTargets(order.status)} />
               </div>
             )}
-          </section>
-
-          <section>
-            <h2 className="mb-2 text-lg font-semibold">Items</h2>
-            <div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-800">
-              <table className="w-full text-left text-sm">
-                <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
-                  {items.map((i, n) => (
-                    <tr key={n}>
-                      <td className="px-3 py-2">{i.name}</td>
-                      <td className="px-3 py-2 text-zinc-500 dark:text-zinc-400">Size {i.size}</td>
-                      <td className="px-3 py-2 tabular-nums">
-                        {i.quantity} × {formatPeso(i.unit)}
-                      </td>
-                      <td className="px-3 py-2 text-right tabular-nums">{formatPeso(i.unit * i.quantity)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-
-          <section>
-            <h2 className="mb-2 text-lg font-semibold">Buyer</h2>
-            <dl className="space-y-2 rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
-              <Fact label="Name">{order.buyerName}</Fact>
-              <Fact label="Email">{order.email}</Fact>
-              <Fact label="Contact number">{order.contactNumber}</Fact>
-              <Fact label="University">{order.university}</Fact>
-              <Fact label="University address">{order.universityAddress}</Fact>
-              <Fact label="Home address">
-                {mapOk ? (
-                  <a href={order.homeAddressLink} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">
-                    Open in Google Maps
-                  </a>
-                ) : (
-                  "-"
-                )}
-              </Fact>
-              <Fact label="Landmark">{order.homeLandmark}</Fact>
-            </dl>
-          </section>
-
-          <section>
-            <h2 className="mb-2 text-lg font-semibold">History</h2>
-            <ol className="space-y-2 text-sm">
-              {events.map((e, n) => (
-                <li key={n} className="flex flex-wrap gap-x-3">
-                  <span className="w-44 text-zinc-500 dark:text-zinc-400">{formatManila(e.at)}</span>
-                  <span className="font-medium">{STATUS_LABEL[e.status]}</span>
-                  <span className="text-zinc-500 dark:text-zinc-400">
-                    {e.by ? `by ${e.by}` : "by the system"}
-                    {e.note ? `, ${e.note}` : ""}
-                  </span>
-                </li>
-              ))}
-            </ol>
-          </section>
+          </aside>
         </div>
+      </div>
 
-        <aside className="h-fit rounded-lg border border-zinc-200 p-5 lg:sticky lg:top-6 dark:border-zinc-800">
-          <h2 className="text-lg font-semibold">Decision</h2>
-          {canReview ? (
-            <div className="mt-4">
-              <ReviewActions orderUuid={order.id} />
-            </div>
-          ) : order.status === "order_received" ? (
-            <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">The buyer has not uploaded a receipt yet, so there is nothing to verify.</p>
-          ) : (
-            <div className="mt-3">
-              <p className="mb-3 text-sm text-zinc-500 dark:text-zinc-400">This order is {STATUS_LABEL[order.status]}. Move it one step forward:</p>
-              <StatusControl orderUuid={order.id} options={generalNextStatuses(order.status)} />
-              <CorrectionForm orderUuid={order.id} targets={correctionTargets(order.status)} />
-            </div>
-          )}
-        </aside>
+      <div className="mt-10 grid gap-10 border-t border-zinc-200 pt-8 md:grid-cols-2 lg:grid-cols-3 dark:border-zinc-800">
+        <section aria-labelledby="items-heading">
+          <h2 id="items-heading" className="text-base font-semibold">
+            Items
+          </h2>
+          <ul className="mt-3 divide-y divide-zinc-200 text-sm dark:divide-zinc-800">
+            {items.map((i, n) => (
+              <li key={n} className="flex items-start justify-between gap-4 py-2.5">
+                <div className="min-w-0">
+                  <p>{i.name}</p>
+                  <p className="text-zinc-500 dark:text-zinc-400">
+                    Size {i.size} · {i.quantity} × {formatPeso(i.unit)}
+                  </p>
+                </div>
+                <p className="tabular-nums">{formatPeso(i.unit * i.quantity)}</p>
+              </li>
+            ))}
+            <li className="flex items-center justify-between gap-4 py-2.5 font-semibold">
+              <span>Total</span>
+              <span className="tabular-nums">{formatPeso(order.totalCentavos)}</span>
+            </li>
+          </ul>
+        </section>
+
+        <section aria-labelledby="buyer-heading">
+          <h2 id="buyer-heading" className="text-base font-semibold">
+            Buyer
+          </h2>
+          <dl className="mt-3 space-y-3">
+            <Fact label="Name">{order.buyerName}</Fact>
+            <Fact label="Email">{order.email}</Fact>
+            <Fact label="Contact number">{order.contactNumber}</Fact>
+            <Fact label="University">{order.university}</Fact>
+            <Fact label="University address">{order.universityAddress}</Fact>
+            <Fact label="Home address">
+              {mapOk ? (
+                <a href={order.homeAddressLink} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">
+                  Open in Google Maps
+                </a>
+              ) : (
+                "-"
+              )}
+            </Fact>
+            <Fact label="Landmark">{order.homeLandmark}</Fact>
+          </dl>
+        </section>
+
+        <section aria-labelledby="history-heading" className="md:col-span-2 lg:col-span-1">
+          <h2 id="history-heading" className="text-base font-semibold">
+            History
+          </h2>
+          <ol className="mt-3 space-y-4 border-l border-zinc-200 pl-4 text-sm dark:border-zinc-800">
+            {events.map((e, n) => (
+              <li key={n}>
+                <p className="font-medium">{STATUS_LABEL[e.status]}</p>
+                <p className="text-zinc-500 dark:text-zinc-400">{formatManila(e.at)}</p>
+                <p className="text-zinc-500 dark:text-zinc-400">
+                  {e.by ? `by ${e.by}` : "by the system"}
+                  {e.note ? `, ${e.note}` : ""}
+                </p>
+              </li>
+            ))}
+          </ol>
+        </section>
       </div>
     </>
   );

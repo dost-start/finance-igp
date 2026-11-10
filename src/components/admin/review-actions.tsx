@@ -39,7 +39,7 @@ export function ReviewActions({ orderUuid }: { orderUuid: string }) {
         <div className="mt-3">
           <Submit className="w-full border border-red-700 text-red-800 hover:bg-red-50 focus-visible:outline-red-700 dark:text-red-300 dark:hover:bg-red-950">Reject payment</Submit>
         </div>
-        <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">Emails the buyer the reason and the ticket form link to send a new receipt.</p>
+        <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">Emails the buyer the reason and the form to send a new receipt.</p>
       </form>
     </div>
   );

@@ -141,3 +141,16 @@ export async function waitingSummary(): Promise<{ waiting: number; attention: nu
     .leftJoin(schema.paymentProofs, eq(schema.paymentProofs.orderUuid, schema.orders.id));
   return { waiting: row?.waiting ?? 0, attention: row?.attention ?? 0 };
 }
+
+// The order "Review next order" opens: the waiting order that needs a person most (reused reference, then not
+// matching, then unreadable, then the oldest receipt), the same order the list puts first.
+export async function nextWaitingId(): Promise<string | null> {
+  const [row] = await getDb()
+    .select({ id: schema.orders.id })
+    .from(schema.orders)
+    .leftJoin(schema.paymentProofs, eq(schema.paymentProofs.orderUuid, schema.orders.id))
+    .where(eq(schema.orders.status, "pending_payment"))
+    .orderBy(attentionOrder, waitingSince, desc(schema.orders.createdAt))
+    .limit(1);
+  return row?.id ?? null;
+}

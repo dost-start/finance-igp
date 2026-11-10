@@ -43,6 +43,7 @@ test("finance and tech: audit log, product editor and the store lock", async ({ 
   // 1. Finance: sees the audit log, not the product editor.
   await signInAdmin(context, FINANCE);
   await page.goto("/admin");
+  await page.getByRole("button", { name: "More" }).click(); // the logs live in the More menu
   await expect(page.getByRole("link", { name: "Audit log" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Products" })).toHaveCount(0);
   await page.goto("/admin/products");
@@ -74,8 +75,8 @@ test("finance and tech: audit log, product editor and the store lock", async ({ 
   await buyerPage.getByLabel("Confirm email address").fill(BUYER);
   await buyerPage.getByRole("checkbox").check();
 
-  // 3. Finance closes the store.
-  await page.goto("/admin");
+  // 3. Finance closes the store (Store settings, from the pill in the header).
+  await page.goto("/admin/settings");
   await expect(page.getByRole("heading", { name: "The store is open" })).toBeVisible();
   await page.getByRole("button", { name: "Close the store" }).click();
   await expect(page.getByText("The store is closed. Buyers cannot place orders or send payments until you reopen it.")).toBeVisible();
@@ -108,7 +109,7 @@ test("finance and tech: audit log, product editor and the store lock", async ({ 
   await expect(buyerPage.getByRole("status").filter({ hasText: "The store is closed for now" }).first()).toBeVisible();
 
   // 4. Reopen: the pay form is back.
-  await page.goto("/admin");
+  await page.goto("/admin/settings");
   await page.getByRole("button", { name: "Reopen the store" }).click();
   await expect(page.getByText("The store is open again.")).toBeVisible();
   await page.goto(`/pay/${ORDER_UUID}`);

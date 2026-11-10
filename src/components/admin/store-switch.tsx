@@ -4,12 +4,12 @@ import { setStoreLock } from "@/app/admin/extras-actions";
 // an order or send a payment; finance keeps working on the orders already in.
 export function StoreSwitch({ locked }: { locked: boolean }) {
   return (
-    <section aria-label="Store status" className={`mt-5 rounded-lg border p-4 ${locked ? "border-amber-400 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/40" : "border-zinc-200 dark:border-zinc-800"}`}>
+    <section aria-label="Store status" className={`rounded-lg border p-5 ${locked ? "border-amber-400 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/40" : "border-zinc-200 dark:border-zinc-800"}`}>
       <div className="flex flex-wrap items-center gap-4">
         <div className="min-w-0 flex-1">
           <h2 className="text-sm font-semibold">{locked ? "The store is CLOSED" : "The store is open"}</h2>
           <p className="mt-0.5 text-sm text-zinc-600 dark:text-zinc-400">
-            {locked ? "Buyers see a friendly closed message and cannot place orders or send payments." : "Buyers can place orders and send payments. Close it to stop both at once."}
+            {locked ? "Buyers see a closed message and cannot order or pay." : "Buyers can order and pay. Close it to stop both."}
           </p>
         </div>
         <form action={setStoreLock.bind(null, !locked)}>

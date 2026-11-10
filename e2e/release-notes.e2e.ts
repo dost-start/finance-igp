@@ -14,6 +14,7 @@ test("release notes show the running version and every release; signed-out visit
 
   await signInAdmin(context);
   await page.goto("/admin");
+  await page.getByRole("button", { name: "More" }).click(); // release notes live in the More menu
   await expect(page.getByRole("link", { name: `Release notes v${current.version}` })).toBeVisible();
   await page.getByRole("link", { name: /Release notes/ }).click();
   await expect(page.getByRole("heading", { name: "Release notes", exact: true })).toBeVisible();
