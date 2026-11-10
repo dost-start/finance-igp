@@ -19,7 +19,9 @@ export function StoreChrome({ children }: { children: ReactNode }) {
           name); right after the logo intro the START wordmark peeks out beside it and tucks back. Once the page scrolls it becomes a floating frosted pill and "START: COLLECTIONS" slides out beside
           the mark; ScrollFlag sets <html data-scrolled> and src/app/start-intro.css does the rest. */}
       <ScrollFlag />
-      <ScrollReveal />
+      <Suspense fallback={null}>
+        <ScrollReveal />
+      </Suspense>
       <header className="sticky top-0 z-40">
         <div className="si-header-bar mx-auto flex w-full max-w-6xl items-center justify-between gap-1.5 px-4 py-3 min-[400px]:gap-3">
           <Link
