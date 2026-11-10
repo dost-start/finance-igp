@@ -135,7 +135,7 @@ export default async function Shop() {
       </section>
 
       {/* Jump-to pills, pinned just under the floating header as you scroll the shelves. */}
-      <nav aria-label="Shop sections" className="sticky top-[4.75rem] z-20 mt-5 sm:top-[5.25rem]">
+      <nav aria-label="Shop sections" className="sticky top-[4.75rem] z-20 mt-2 sm:top-[5.25rem]">
         <ul className="-mx-1 flex gap-2 overflow-x-auto px-1 py-1 sm:justify-center [scrollbar-width:none]">
           {shelves.map((s) => (
             <li key={s.id} className="shrink-0">
