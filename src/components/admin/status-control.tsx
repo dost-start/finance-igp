@@ -24,7 +24,7 @@ export function StatusControl({ orderUuid, options }: { orderUuid: string; optio
           aria-describedby="note-hint"
         />
         <p id="note-hint" className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-          Printed in the email the buyer receives. When canceling, this is the reason they read, so it is required.
+          Shown in the buyer&apos;s email. Required when canceling.
         </p>
       </div>
       {options.map((s) => (

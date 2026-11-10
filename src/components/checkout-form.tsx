@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
-import { createOrder, type CheckoutState } from "@/app/checkout/actions";
+import { createOrder, type CheckoutState } from "@/app/(store)/checkout/actions";
 import { useCart } from "@/lib/cart-store";
 import { formatPeso } from "@/lib/money";
 import { REGIONS } from "@/lib/regions";

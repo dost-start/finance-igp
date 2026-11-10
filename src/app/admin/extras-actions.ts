@@ -19,8 +19,8 @@ export async function setStoreLock(lock: boolean) {
     await saveStoreLocked(lock, admin.id);
     await writeAudit(getDb(), { adminId: admin.id, action: lock ? "store.lock" : "store.unlock", before: { locked: already }, after: { locked: lock } });
   }
-  revalidatePath("/admin");
-  redirect(`/admin?store=${lock ? "closed" : "open"}`);
+  revalidatePath("/admin", "layout");
+  redirect(`/admin/settings?store=${lock ? "closed" : "open"}`);
 }
 
 export type ProductFormValues = { name: string; price: string; active: boolean; sizesJson: string; photos: string; slug: string; type: string; variant: string };
@@ -116,15 +116,15 @@ export async function createProduct(_prev: ProductFormState, formData: FormData)
 export async function setLaunchDate(formData: FormData) {
   const admin = await requireAdmin();
   const iso = manilaInputToIso(String(formData.get("launchAt") ?? ""));
-  if (!iso) redirect("/admin?launch=invalid");
+  if (!iso) redirect("/admin/settings?launch=invalid");
   const before = await getLaunchAt();
   if (before !== iso) {
     await saveLaunchAt(iso, admin.id);
     await writeAudit(getDb(), { adminId: admin.id, action: "launch.update", before: { launchAt: before }, after: { launchAt: iso } });
   }
   revalidatePath("/");
-  revalidatePath("/admin");
-  redirect("/admin?launch=saved");
+  revalidatePath("/admin", "layout");
+  redirect("/admin/settings?launch=saved");
 }
 
 // "Back up now" on the System page. The same copy the nightly job makes; any signed-in member can run it.

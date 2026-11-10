@@ -5,7 +5,7 @@ import { formatLaunch, hasLaunched, isoToManilaInput } from "@/lib/launch";
 export function LaunchCard({ launchAt }: { launchAt: string }) {
   const live = hasLaunched(launchAt);
   return (
-    <section aria-label="Launch date" className="mt-5 rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
+    <section aria-label="Launch date" className="rounded-lg border border-zinc-200 p-5 dark:border-zinc-800">
       <div className="flex flex-wrap items-end gap-4">
         <div className="min-w-0 flex-1">
           <h2 className="text-sm font-semibold">Launch date: {formatLaunch(launchAt)}</h2>

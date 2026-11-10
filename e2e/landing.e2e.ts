@@ -39,7 +39,7 @@ test("the landing page counts down, previews the merch, and switches to the laun
 
   // 3. Finance sets a later launch date: the countdown follows.
   await signInAdmin(context);
-  await page.goto("/admin");
+  await page.goto("/admin/settings");
   await page.getByLabel("New date and time (Manila)").fill("2027-01-15T09:30");
   await page.getByRole("button", { name: "Save launch date" }).click();
   await expect(page.getByText("Launch date saved.")).toBeVisible();
@@ -48,7 +48,7 @@ test("the landing page counts down, previews the merch, and switches to the laun
   await expect(page.getByText("Opens January 15, 2027 at 9:30 AM (Manila time)")).toBeVisible();
 
   // 4. A date in the past shows the launch view: the store is open, the lineup has prices and links, Shop now goes to the shop.
-  await page.goto("/admin");
+  await page.goto("/admin/settings");
   await page.getByLabel("New date and time (Manila)").fill("2026-10-01T09:00");
   await page.getByRole("button", { name: "Save launch date" }).click();
   await expect(page.getByText("The landing page is showing the launch view.")).toBeVisible();
@@ -72,7 +72,7 @@ test("the landing page counts down, previews the merch, and switches to the laun
   await expect(page.locator("tbody").getByText(/From .* to October 1, 2026 at 9:00 AM \(Manila time\)/).first()).toBeVisible();
 
   // 6. Back to the planned date: the countdown returns for visitors.
-  await page.goto("/admin");
+  await page.goto("/admin/settings");
   await page.getByLabel("New date and time (Manila)").fill("2026-11-13T00:00");
   await page.getByRole("button", { name: "Save launch date" }).click();
   await expect(page.getByText("Launch date saved.")).toBeVisible();

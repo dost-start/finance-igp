@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { lookupOrder, type TrackState } from "@/app/track/actions";
+import { lookupOrder, type TrackState } from "@/app/(store)/track/actions";
 import { TrackingResult } from "@/components/tracking-result";
 
 const inputClass =

@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* Dark mode follows the data-theme attribute on <html>. A small script in the root layout sets it before the
+   first paint from the saved choice (Light, Dark) or, for System, from the device's own setting. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -17,15 +21,13 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --accent: #7dd3fc;
-    --accent-soft: #082f49;
-    --focus: #38bdf8;
-    color-scheme: dark;
-  }
+:root[data-theme="dark"] {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --accent: #7dd3fc;
+  --accent-soft: #082f49;
+  --focus: #38bdf8;
+  color-scheme: dark;
 }
 
 body {
