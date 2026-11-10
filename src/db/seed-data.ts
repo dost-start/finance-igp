@@ -21,25 +21,24 @@ const photo = (file: string): ProductImage => ({ url: `/products/${file}.webp`, 
 const single = (slug: string) => [photo(slug)];
 const frontBack = (slug: string) => [photo(`${slug}-front`), photo(`${slug}-back`)];
 
-const STICKERS: [string, string][] = [
-  ["START Stars Sticker", "Stars"],
-  ["Just Start Sticker (A)", "Just Start A"],
-  ["Just Start Sticker (B)", "Just Start B"],
-  ["START-DOST Star Sticker (A)", "Star A"],
-  ["START-DOST Star Sticker (B)", "Star B"],
-  ["United, We Innovate Sticker (A)", "Innovate A"],
-  ["United, We Innovate Sticker (B)", "Innovate B"],
-  ["Techno Scholars Unite Sticker", "Techno Scholars"],
-  ["Waving Star Sticker", "Waving Star"],
-  ["Start Now Monitor Sticker", "Start Now"],
-  ["90% Vibes 10% Code Sticker", "Vibes"],
-  ["Live Laugh Love Claude Sticker", "Claude"],
-  ["Startup Rocket Sticker", "Rocket"],
-  ["In the Middle of a Rebrand Sticker", "Rebrand"],
-  ["Folder Computer Sticker", "Folder"],
-  ["tech_4_people Sticker", "tech_4_people"],
-  ["div>a Sticker", "div>a"],
-  ["Do You Accept Cookies Sticker", "Cookies"],
+// [number in the slug, name, design label]. The numbers keep the original design order, so removed
+// duplicates leave gaps (02, 04, 06 were the "(A)" copies of Just Start, START-DOST Star and Innovate).
+const STICKERS: [string, string, string][] = [
+  ["01", "START Stars Sticker", "Stars"],
+  ["03", "Just Start Sticker", "Just Start"],
+  ["05", "START-DOST Star Sticker", "Star"],
+  ["07", "United, We Innovate Sticker", "Innovate"],
+  ["08", "Techno Scholars Unite Sticker", "Techno Scholars"],
+  ["09", "Waving Star Sticker", "Waving Star"],
+  ["10", "Start Now Monitor Sticker", "Start Now"],
+  ["11", "90% Vibes 10% Code Sticker", "Vibes"],
+  ["12", "Live Laugh Love Claude Sticker", "Claude"],
+  ["13", "Startup Rocket Sticker", "Rocket"],
+  ["14", "In the Middle of a Rebrand Sticker", "Rebrand"],
+  ["15", "Folder Computer Sticker", "Folder"],
+  ["16", "tech_4_people Sticker", "tech_4_people"],
+  ["17", "div>a Sticker", "div>a"],
+  ["18", "Do You Accept Cookies Sticker", "Cookies"],
 ];
 
 const PINS: [string, string][] = [
@@ -61,11 +60,12 @@ export const PRODUCTS: Seed[] = [
   ...["02", "03", "04", "05"].map((n): Seed => ({ slug: `lanyard-${n}`, name: `START Lanyard ${n}`, productType: "lanyard", designVariant: n, priceCentavos: 12000, sizes: ONE_SIZE, images: single(`lanyard-${n}`) })),
   { slug: "tote-light", name: "START Tote Bag", productType: "tote", designVariant: null, priceCentavos: 25000, sizes: ONE_SIZE, images: single("tote-light") },
   ...PINS.map(([name, variant], i): Seed => ({ slug: `pin-${num(i)}`, name, productType: "pin", designVariant: variant, priceCentavos: 8000, sizes: ONE_SIZE, images: single(`pin-${num(i)}`) })),
-  ...STICKERS.map(([name, variant], i): Seed => ({ slug: `sticker-${num(i)}`, name, productType: "sticker", designVariant: variant, priceCentavos: 3000, sizes: ONE_SIZE, images: single(`sticker-${num(i)}`) })),
+  ...STICKERS.map(([n, name, variant]): Seed => ({ slug: `sticker-${n}`, name, productType: "sticker", designVariant: variant, priceCentavos: 3000, sizes: ONE_SIZE, images: single(`sticker-${n}`) })),
 ];
 
-// Old placeholder products that have no design. The sync script switches them off; their orders stay readable.
-export const RETIRED_SLUGS = ["tote-dark", "lanyard-dark"];
+// Products no longer sold: old placeholders with no design, and duplicate stickers. The sync script
+// switches them off (never deletes), so any order that includes them stays readable.
+export const RETIRED_SLUGS = ["tote-dark", "lanyard-dark", "sticker-02", "sticker-04", "sticker-06"];
 
 // Four payment channels the buyer can choose from, to avoid transfer fees. QR images are
 // uploaded to Drive in sub-sprint 1D, never committed to git.

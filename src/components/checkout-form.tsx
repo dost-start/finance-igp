@@ -187,7 +187,7 @@ export function CheckoutForm() {
         <ul className="mt-4 divide-y divide-zinc-200 text-sm dark:divide-zinc-800">
           {items.map((i) => (
             <li key={`${i.productId}:${i.size}`} className="flex gap-3 py-3">
-              <Image src={i.image ?? "/products/jacket.svg"} alt="" width={56} height={56} unoptimized className="size-14 shrink-0 rounded object-cover" />
+              <Image src={i.image ?? "/products/jacket.svg"} alt="" width={56} height={56} unoptimized className="size-14 shrink-0 rounded bg-zinc-100 object-contain dark:bg-zinc-900" />
               <div className="min-w-0 flex-1">
                 <p className="font-medium">{i.name}</p>
                 <p className="text-zinc-500 dark:text-zinc-400">

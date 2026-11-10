@@ -37,7 +37,7 @@ export function CartView() {
           return (
             <li key={`${i.productId}:${i.size}`} className="flex gap-4 py-5">
               <Link href={`/products/${i.slug}`} className="shrink-0" aria-hidden="true" tabIndex={-1}>
-                <Image src={i.image ?? "/products/jacket.svg"} alt="" width={96} height={96} unoptimized className="size-24 rounded-md object-cover" />
+                <Image src={i.image ?? "/products/jacket.svg"} alt="" width={96} height={96} unoptimized className="size-24 rounded-md bg-zinc-100 object-contain dark:bg-zinc-900" />
               </Link>
               <div className="min-w-0 flex-1">
                 <div className="flex justify-between gap-3">
