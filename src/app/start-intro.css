@@ -74,6 +74,13 @@
   100% { opacity: 0; transform: translateX(-100%); }
 }
 
+/* ---------------------------------------------------------------- header on the waiting landing page */
+/* The landing page before launch is for people waiting: the header shows only the logo. The links return as soon
+   as the page switches to its live phase (data-phase="live", set by src/components/landing.tsx). */
+:root:has([data-landing]):not(:has([data-phase="live"])) .si-header-nav {
+  display: none;
+}
+
 /* ---------------------------------------------------------------- header on scroll */
 /* At the top: a plain bar, mark only. Scrolled (<html data-scrolled>, set by src/components/scroll-flag.tsx): the
    bar lifts into a floating frosted pill and the shop name slides out to the right from behind the mark. */

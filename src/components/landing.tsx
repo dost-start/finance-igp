@@ -95,7 +95,9 @@ export function Landing({ lineup }: { lineup: LineupItem[] }) {
   const live = known && c.done;
 
   return (
-    <main>
+    // data-landing: while this page is not in its live phase, the header hides Shop, Track order and Cart
+    // (src/app/start-intro.css), since the landing page is for people waiting for the launch.
+    <main data-landing="">
       {/* Hero: the brand-blue panel of the shop page (tiles of the START mark in the corners, a dot grid, circuit art),
           with Yellow Nova, the brand book's mascot for countdowns and hype posts, hosting the launch. */}
       <section className="relative isolate overflow-hidden rounded-3xl bg-brand-blue text-zinc-950">

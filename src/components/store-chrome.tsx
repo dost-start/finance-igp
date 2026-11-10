@@ -43,7 +43,7 @@ export function StoreChrome({ children }: { children: ReactNode }) {
               </span>
             </span>
           </Link>
-          <nav className="flex items-center gap-2.5 text-sm font-medium min-[380px]:gap-3 sm:gap-5">
+          <nav className="si-header-nav flex items-center gap-2.5 text-sm font-medium min-[380px]:gap-3 sm:gap-5">
             <Link href="/shop" className="whitespace-nowrap decoration-brand-yellow decoration-2 underline-offset-[6px] hover:underline">
               Shop
             </Link>
