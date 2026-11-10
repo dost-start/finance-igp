@@ -57,8 +57,8 @@ export function StoreChrome({ children }: { children: ReactNode }) {
       <div id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
         {children}
       </div>
-      {/* The brand close, on the brand's dark ground in both schemes: a closing line, the vector wordmark, a row
-          of help links, and a bottom bar with the theme switch, under a thin blue and yellow brand stripe. */}
+      {/* The brand close, on the brand's dark ground in both schemes: a closing line, the vector wordmark, a
+          description, help links, and a bottom bar with the theme switch, under a thin blue and yellow brand stripe. */}
       <footer className="relative isolate overflow-hidden bg-zinc-950 text-zinc-100" style={{ "--si-ink": "#f1f3f4" } as CSSProperties}>
         {/* A thin brand stripe along the top edge: blue, then yellow. */}
         <div aria-hidden="true" className="flex h-1.5">
@@ -66,8 +66,8 @@ export function StoreChrome({ children }: { children: ReactNode }) {
           <span className="flex-1 bg-brand-yellow" />
         </div>
 
-        {/* Compact: the closing line and the wordmark share a row, the help links run across, and pb-28 on phones keeps the
-            bottom bar clear of the fixed phone cart bar. */}
+        {/* Compact and balanced: two rows split left and right (closing line | wordmark, description | help links),
+            then the bottom bar. pb-28 on phones keeps the bottom bar clear of the fixed phone cart bar. */}
         <div className="mx-auto w-full max-w-6xl px-4 pb-28 pt-8 sm:pb-5 sm:pt-10">
           <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
             <p className="text-2xl font-extrabold leading-tight tracking-tight sm:text-3xl">
@@ -76,30 +76,24 @@ export function StoreChrome({ children }: { children: ReactNode }) {
             <span className="block aspect-[1742/400] h-7 sm:h-8" role="img" aria-label="START" dangerouslySetInnerHTML={{ __html: WORD_SVG }} />
           </div>
 
-          <div className="mt-6 space-y-2.5 text-sm">
-            {[
-              {
-                label: "Help",
-                links: [
-                  { href: "/track", label: "Track your order" },
-                  { href: "/cart", label: "Your cart" },
-                  { href: "/privacy", label: "Privacy Notice" },
-                ],
-              },
-            ].map((group) => (
-              <nav key={group.label} aria-label={group.label} className="flex flex-wrap items-baseline gap-x-5 gap-y-1.5">
-                <h2 className="w-12 shrink-0 font-semibold text-white">{group.label}</h2>
-                {group.links.map((l) => (
-                  <Link key={l.href} href={l.href} className="text-zinc-400 decoration-brand-yellow decoration-2 underline-offset-4 transition-colors hover:text-white hover:underline">
-                    {l.label}
-                  </Link>
-                ))}
-              </nav>
-            ))}
+          {/* Second row mirrors the first: who we are on the left, the help links on the right under the wordmark. */}
+          <div className="mt-5 flex flex-wrap items-center justify-between gap-x-8 gap-y-3 text-sm">
+            <p className="max-w-md text-zinc-400">The official merchandise of START-DOST: Scholars Transforming Advancement and Research for Technology.</p>
+            <nav aria-label="Help" className="flex flex-wrap items-center gap-x-5 gap-y-1.5">
+              {[
+                { href: "/track", label: "Track your order" },
+                { href: "/cart", label: "Your cart" },
+                { href: "/privacy", label: "Privacy Notice" },
+              ].map((l) => (
+                <Link key={l.href} href={l.href} className="text-zinc-300 decoration-brand-yellow decoration-2 underline-offset-4 transition-colors hover:text-white hover:underline">
+                  {l.label}
+                </Link>
+              ))}
+            </nav>
           </div>
 
           <div className="mt-7 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-white/10 pt-4 text-xs text-zinc-400" data-theme="dark">
-            <p>© START-DOST: Scholars Transforming Advancement and Research for Technology. Made by technoscholars, for technoscholars.</p>
+            <p>© START-DOST. Made by technoscholars, for technoscholars.</p>
             <ThemeSwitch />
           </div>
         </div>
