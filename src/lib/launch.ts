@@ -2,7 +2,7 @@
 // countdown or the launch view. It is stored in the database and changed from the admin area, so a
 // date change needs no rebuild. Manila has no daylight saving, so it is always UTC+8.
 export const LAUNCH_KEY = "launch_at";
-// 13 November 2026 is the planned launch day (docs/sprint-plan.md). Finance has not given a time of day,
+// 13 November 2026 is the planned launch day (docs/sprints/sprint-plan.md). Finance has not given a time of day,
 // so the day starts at midnight Manila time; it is a setting, not a fixed fact.
 export const DEFAULT_LAUNCH_AT = "2026-11-13T00:00:00+08:00";
 const MIN_YEAR = 2026;

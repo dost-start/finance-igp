@@ -3,19 +3,25 @@
 .env.*
 !.env.example
 
-# local data and tooling
-.data/
+# dependencies and build output
 node_modules/
 .next/
+tsconfig.tsbuildinfo
+
+# local data and tooling
+.data/
 .vercel/
 .DS_Store
 *.log
 
-tsconfig.tsbuildinfo
+# editor and agent tooling (keep only the shared dev-server config)
+.claude/*
+!.claude/launch.json
 
-# Playwright output
+# test output
 test-results/
 playwright-report/
+coverage/
 
-# Receipt-reading engine copied from node_modules at dev/build time
+# receipt-reading engine copied from node_modules at dev/build time
 public/ocr/
