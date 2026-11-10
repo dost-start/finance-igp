@@ -73,7 +73,7 @@ async function ProductContent({ params }: { params: PageProps<"/products/[slug]"
       </div>
 
       {related.length > 0 && (
-        <section aria-labelledby="related-heading" className="mt-20">
+        <section aria-labelledby="related-heading" className="shop-reveal mt-20">
           <h2 id="related-heading" className="text-2xl font-extrabold tracking-tight">
             {relatedTitle}
           </h2>
