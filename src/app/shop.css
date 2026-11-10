@@ -96,6 +96,15 @@ html:has(.shop-page) {
   50% { transform: translateY(-10px); }
 }
 
+/* Landing countdown: each new digit rolls up into its tile. */
+.lp-tick {
+  animation: lp-tick 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes lp-tick {
+  from { opacity: 0; transform: translateY(60%); }
+  to { opacity: 1; transform: none; }
+}
+
 /* Product names get a yellow underline that draws in from the left on hover (or keyboard focus) and slides
    out to the right when the pointer leaves. A background line, so it follows the text when a name wraps. */
 .shop-name {
@@ -145,6 +154,7 @@ html:has(.shop-page) {
   }
   .shop-track,
   .shop-float,
+  .lp-tick,
   .shop-reveal {
     animation: none;
   }

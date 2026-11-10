@@ -34,7 +34,7 @@ test("the landing page counts down, previews the merch, and switches to the laun
 
   // 2. The shop itself is always open to browse at /shop, with prices.
   await page.goto("/shop");
-  await expect(page.getByRole("heading", { name: "Shop", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: /The START\s*Collection/ })).toBeVisible();
   await expect(page.locator("main")).toContainText("₱");
 
   // 3. Finance sets a later launch date: the countdown follows.
