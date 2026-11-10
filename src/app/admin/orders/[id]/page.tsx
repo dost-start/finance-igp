@@ -116,15 +116,46 @@ async function Review({ params, searchParams }: { params: PageProps<"/admin/orde
         <p className="text-sm text-zinc-500 dark:text-zinc-400">Submitted {formatManilaShort(proof?.createdAt ?? order.createdAt)}</p>
       </div>
 
-      <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_24rem]">
-        <section aria-labelledby="receipt-heading" className="min-w-0">
-          <h2 id="receipt-heading" className="mb-3 text-lg font-extrabold tracking-tight">
-            Receipt
-          </h2>
-          {proof ? <ReceiptViewer src={`/api/admin/receipts/${order.id}`} /> : <p className="rounded-2xl border-2 border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:text-zinc-400 dark:border-zinc-700">No receipt uploaded yet.</p>}
-        </section>
+      {/* Two independent columns, so every card is only as tall as its own content: the receipt and the items on
+          the left, the decision and the details on the right. */}
+      <div className="mt-6 grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_24rem]">
+        <div className="min-w-0 space-y-5">
+          <section aria-labelledby="receipt-heading" className="lift-card rounded-2xl border border-zinc-200/70 bg-white p-5 sm:p-6 dark:border-zinc-800 dark:bg-zinc-900">
+            <h2 id="receipt-heading" className="mb-4 text-lg font-extrabold tracking-tight">
+              Receipt
+            </h2>
+            {proof ? (
+              <ReceiptViewer src={`/api/admin/receipts/${order.id}`} />
+            ) : (
+              <p className="rounded-xl border-2 border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">No receipt uploaded yet.</p>
+            )}
+          </section>
 
-        <div className="space-y-5 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:self-start lg:overflow-y-auto">
+          <section aria-labelledby="buyer-heading" className="lift-card rounded-2xl border border-zinc-200/70 bg-white p-5 sm:p-6 dark:border-zinc-800 dark:bg-zinc-900">
+            <h2 id="buyer-heading" className="text-lg font-extrabold tracking-tight">
+              Buyer
+            </h2>
+            <dl className="mt-4 space-y-3.5">
+              <Fact label="Name">{order.buyerName}</Fact>
+              <Fact label="Email">{order.email}</Fact>
+              <Fact label="Contact number">{order.contactNumber}</Fact>
+              <Fact label="Name of University/College">{order.university}</Fact>
+              <Fact label="University/College Address">{order.universityAddress}</Fact>
+              <Fact label="Home address">
+                {mapOk ? (
+                  <a href={order.homeAddressLink} target="_blank" rel="noopener noreferrer" className="font-medium underline underline-offset-4">
+                    Open in Google Maps
+                  </a>
+                ) : (
+                  "-"
+                )}
+              </Fact>
+              <Fact label="Landmark">{order.homeLandmark}</Fact>
+            </dl>
+          </section>
+        </div>
+
+        <div className="min-w-0 space-y-5">
           {proof && (
             <OcrPanel
               totalCentavos={order.totalCentavos}
@@ -137,7 +168,7 @@ async function Review({ params, searchParams }: { params: PageProps<"/admin/orde
             />
           )}
 
-          <aside aria-labelledby="decision-heading" className="lift-card rounded-2xl border border-zinc-200/70 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+          <aside aria-labelledby="decision-heading" className="lift-card rounded-2xl border border-zinc-200/70 bg-white p-5 sm:p-6 dark:border-zinc-800 dark:bg-zinc-900">
             <h2 id="decision-heading" className="text-lg font-extrabold tracking-tight">
               Decision
             </h2>
@@ -155,73 +186,49 @@ async function Review({ params, searchParams }: { params: PageProps<"/admin/orde
               </div>
             )}
           </aside>
-        </div>
-      </div>
 
-      <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-        <section aria-labelledby="items-heading" className="lift-card rounded-2xl border border-zinc-200/70 bg-white p-5 sm:p-6 dark:border-zinc-800 dark:bg-zinc-900">
-          <h2 id="items-heading" className="text-lg font-extrabold tracking-tight">
-            Items
-          </h2>
-          <ul className="mt-3 divide-y divide-zinc-200 text-sm dark:divide-zinc-800">
-            {items.map((i, n) => (
-              <li key={n} className="flex items-start justify-between gap-4 py-2.5">
-                <div className="min-w-0">
-                  <p>{i.name}</p>
+          <section aria-labelledby="items-heading" className="lift-card rounded-2xl border border-zinc-200/70 bg-white p-5 sm:p-6 dark:border-zinc-800 dark:bg-zinc-900">
+            <h2 id="items-heading" className="text-lg font-extrabold tracking-tight">
+              Items
+            </h2>
+            <ul className="mt-3 divide-y divide-zinc-200 text-sm dark:divide-zinc-800">
+              {items.map((i, n) => (
+                <li key={n} className="flex items-start justify-between gap-4 py-3">
+                  <div className="min-w-0">
+                    <p className="font-medium">{i.name}</p>
+                    <p className="text-zinc-500 dark:text-zinc-400">
+                      Size {i.size} · {i.quantity} × {formatPeso(i.unit)}
+                    </p>
+                  </div>
+                  <p className="tabular-nums">{formatPeso(i.unit * i.quantity)}</p>
+                </li>
+              ))}
+              <li className="flex items-center justify-between gap-4 pt-3 text-base font-extrabold">
+                <span>Total</span>
+                <span className="tabular-nums">{formatPeso(order.totalCentavos)}</span>
+              </li>
+            </ul>
+          </section>
+
+          <section aria-labelledby="history-heading" className="lift-card rounded-2xl border border-zinc-200/70 bg-white p-5 sm:p-6 dark:border-zinc-800 dark:bg-zinc-900">
+            <h2 id="history-heading" className="text-lg font-extrabold tracking-tight">
+              History
+            </h2>
+            <ol className="mt-4 space-y-4 border-l-2 border-zinc-200 pl-4 text-sm dark:border-zinc-800">
+              {events.map((e, n) => (
+                <li key={n} className="relative">
+                  <span aria-hidden="true" className="absolute -left-[1.4rem] top-1.5 size-2.5 rounded-full bg-brand-yellow ring-4 ring-white dark:ring-zinc-900" />
+                  <p className="font-semibold">{STATUS_LABEL[e.status]}</p>
+                  <p className="text-zinc-500 dark:text-zinc-400">{formatManilaShort(e.at)}</p>
                   <p className="text-zinc-500 dark:text-zinc-400">
-                    Size {i.size} · {i.quantity} × {formatPeso(i.unit)}
+                    {e.by ? `by ${e.by}` : "by the system"}
+                    {e.note ? `, ${e.note}` : ""}
                   </p>
-                </div>
-                <p className="tabular-nums">{formatPeso(i.unit * i.quantity)}</p>
-              </li>
-            ))}
-            <li className="flex items-center justify-between gap-4 py-2.5 font-semibold">
-              <span>Total</span>
-              <span className="tabular-nums">{formatPeso(order.totalCentavos)}</span>
-            </li>
-          </ul>
-        </section>
-
-        <section aria-labelledby="buyer-heading" className="lift-card rounded-2xl border border-zinc-200/70 bg-white p-5 sm:p-6 dark:border-zinc-800 dark:bg-zinc-900">
-          <h2 id="buyer-heading" className="text-lg font-extrabold tracking-tight">
-            Buyer
-          </h2>
-          <dl className="mt-3 space-y-3">
-            <Fact label="Name">{order.buyerName}</Fact>
-            <Fact label="Email">{order.email}</Fact>
-            <Fact label="Contact number">{order.contactNumber}</Fact>
-            <Fact label="Name of University/College">{order.university}</Fact>
-            <Fact label="University/College Address">{order.universityAddress}</Fact>
-            <Fact label="Home address">
-              {mapOk ? (
-                <a href={order.homeAddressLink} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">
-                  Open in Google Maps
-                </a>
-              ) : (
-                "-"
-              )}
-            </Fact>
-            <Fact label="Landmark">{order.homeLandmark}</Fact>
-          </dl>
-        </section>
-
-        <section aria-labelledby="history-heading" className="lift-card rounded-2xl border border-zinc-200/70 bg-white p-5 sm:p-6 dark:border-zinc-800 dark:bg-zinc-900 md:col-span-2 lg:col-span-1">
-          <h2 id="history-heading" className="text-lg font-extrabold tracking-tight">
-            History
-          </h2>
-          <ol className="mt-3 space-y-4 border-l border-zinc-200 pl-4 text-sm dark:border-zinc-800">
-            {events.map((e, n) => (
-              <li key={n}>
-                <p className="font-medium">{STATUS_LABEL[e.status]}</p>
-                <p className="text-zinc-500 dark:text-zinc-400">{formatManilaShort(e.at)}</p>
-                <p className="text-zinc-500 dark:text-zinc-400">
-                  {e.by ? `by ${e.by}` : "by the system"}
-                  {e.note ? `, ${e.note}` : ""}
-                </p>
-              </li>
-            ))}
-          </ol>
-        </section>
+                </li>
+              ))}
+            </ol>
+          </section>
+        </div>
       </div>
     </>
   );

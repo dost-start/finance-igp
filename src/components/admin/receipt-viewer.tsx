@@ -29,7 +29,7 @@ export function ReceiptViewer({ src }: { src: string }) {
           Open full size
         </a>
       </div>
-      <div className="lift-card max-h-[70vh] overflow-auto rounded-2xl border border-zinc-200/70 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="max-h-[70vh] overflow-auto rounded-xl border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={src}
