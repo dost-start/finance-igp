@@ -144,19 +144,19 @@ export function CartView() {
           })}
         </ul>
 
-        {/* The summary on the brand's dark ground, with the yellow call to action. */}
-        <aside className="relative isolate overflow-hidden rounded-3xl bg-zinc-950 p-6 text-zinc-100 shadow-[0_24px_50px_-18px_rgb(18_18_18/0.55)] dark:shadow-[0_24px_50px_-18px_rgb(0_0_0/0.8)] dark:ring-1 dark:ring-white/10">
+        {/* The summary: a light card in light mode, the brand's dark ground in dark mode, with the yellow call to action. */}
+        <aside className="lift-card relative isolate overflow-hidden rounded-3xl border border-zinc-200/70 bg-white p-6 text-zinc-900 dark:border-white/10 dark:bg-zinc-950 dark:text-zinc-100">
           <div aria-hidden="true" className="absolute -right-8 -top-8 -z-10 size-24 rounded-bl-full bg-brand-blue" />
           <h2 className="text-lg font-bold">Order summary</h2>
           <dl className="mt-5 space-y-2 text-sm">
             <div className="flex justify-between">
-              <dt className="text-zinc-400">
+              <dt className="text-zinc-500 dark:text-zinc-400">
                 {count} {count === 1 ? "item" : "items"}
               </dt>
               <dd className="tabular-nums">{formatPeso(total)}</dd>
             </div>
           </dl>
-          <p className="mt-5 flex items-baseline justify-between border-t border-white/10 pt-5">
+          <p className="mt-5 flex items-baseline justify-between border-t border-zinc-200 dark:border-white/10 pt-5">
             <span className="font-semibold">Total</span>
             <span className="text-3xl font-extrabold tabular-nums">{formatPeso(total)}</span>
           </p>
