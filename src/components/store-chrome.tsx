@@ -1,7 +1,9 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { CartLink } from "@/components/cart-link";
 import { MobileCartBar } from "@/components/mobile-cart-bar";
+import { MARK_SVG } from "@/components/start-intro-svg";
 import { StoreBanner } from "@/components/store-banner";
 import { ThemeSwitch } from "@/components/theme-switch";
 
@@ -12,15 +14,21 @@ export function StoreChrome({ children }: { children: ReactNode }) {
     <div className="flex flex-1 flex-col pb-20 sm:pb-0">
       <StoreBanner />
       <header className="border-b border-zinc-200 dark:border-zinc-800">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-1.5 px-4 py-4 min-[400px]:gap-3">
-          <Link href="/" className="whitespace-nowrap text-[13px] font-semibold tracking-tight min-[400px]:text-sm sm:text-lg">
-            START: COLLECTIONS
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-1.5 px-4 py-3 min-[400px]:gap-3">
+          <Link href="/" className="flex shrink-0 items-center gap-2 whitespace-nowrap text-sm font-extrabold tracking-tight sm:gap-2.5 sm:text-lg">
+            {/* The vector brand mark (its ink follows light/dark). It lands first, then the name slides out to the
+                right from behind it; see src/app/start-intro.css. */}
+            <span className="si-hdr-mark relative z-10 block h-7 sm:h-9" dangerouslySetInnerHTML={{ __html: MARK_SVG }} />
+            {/* On the narrowest phones the mark stands alone so the cart stays on screen. */}
+            <span className="overflow-hidden max-[419px]:sr-only">
+              <span className="si-hdr-word">START: COLLECTIONS</span>
+            </span>
           </Link>
-          <nav className="flex items-center gap-2.5 text-sm min-[380px]:gap-3 sm:gap-5">
-            <Link href="/shop" className="whitespace-nowrap underline-offset-4 hover:underline">
+          <nav className="flex items-center gap-2.5 text-sm font-medium min-[380px]:gap-3 sm:gap-5">
+            <Link href="/shop" className="whitespace-nowrap decoration-brand-yellow decoration-2 underline-offset-[6px] hover:underline">
               Shop
             </Link>
-            <Link href="/track" className="whitespace-nowrap underline-offset-4 hover:underline">
+            <Link href="/track" className="whitespace-nowrap decoration-brand-yellow decoration-2 underline-offset-[6px] hover:underline">
               Track order
             </Link>
             <CartLink />
@@ -30,14 +38,18 @@ export function StoreChrome({ children }: { children: ReactNode }) {
       <div id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
         {children}
       </div>
-      <footer className="border-t border-zinc-200 dark:border-zinc-800">
-        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-6 text-sm text-zinc-500 dark:text-zinc-400">
-          <p>START-DOST merchandise</p>
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <ThemeSwitch />
-            <Link href="/privacy" className="underline underline-offset-4">
-              Privacy Notice
-            </Link>
+      {/* The brand close: the wordmark on the brand's dark ground in both schemes, as on START-DOST pubmat footers. */}
+      <footer className="bg-zinc-900 text-zinc-100">
+        <div className="mx-auto w-full max-w-6xl px-4 pb-8 pt-12">
+          <Image src="/brand/wordmark-white.webp" alt="START: Scholars Transforming Advancement and Research for Technology" width={422} height={140} unoptimized className="h-auto w-56 sm:w-72" />
+          <div className="mt-8 flex flex-wrap items-center justify-between gap-x-6 gap-y-4 text-sm text-zinc-300">
+            <p>The official merchandise of START-DOST. Wear what you stand for.</p>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2" data-theme="dark">
+              <ThemeSwitch />
+              <Link href="/privacy" className="underline underline-offset-4 hover:text-white">
+                Privacy Notice
+              </Link>
+            </div>
           </div>
         </div>
       </footer>

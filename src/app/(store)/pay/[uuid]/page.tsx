@@ -52,7 +52,7 @@ async function Payment({ params }: { params: PageProps<"/pay/[uuid]">["params"] 
 export default function PayPage({ params }: PageProps<"/pay/[uuid]">) {
   return (
     <main>
-      <h1 className="text-3xl font-semibold tracking-tight">Payment</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight">Payment</h1>
       <Suspense fallback={<p className="mt-6 text-sm text-zinc-500 dark:text-zinc-400">Loading your order…</p>}>
         <Payment params={params} />
       </Suspense>

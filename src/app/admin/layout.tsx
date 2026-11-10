@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import { auth, signOut } from "@/auth";
@@ -63,7 +64,9 @@ export default function AdminLayout({ children }: LayoutProps<"/admin">) {
     <div className="flex flex-1 flex-col">
       <header className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/50">
         <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
-          <Link href="/admin" className="font-semibold tracking-tight focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-700">
+          <Link href="/admin" className="flex items-center gap-2 font-bold tracking-tight focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-700">
+            <Image src="/brand/mark-color.webp" alt="" width={288} height={440} unoptimized className="h-6 w-auto dark:hidden" />
+            <Image src="/brand/mark-white.webp" alt="" width={194} height={294} unoptimized className="hidden h-6 w-auto dark:block" />
             Merch admin
           </Link>
           <Suspense fallback={null}>

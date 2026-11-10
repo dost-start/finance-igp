@@ -1,0 +1,202 @@
+/* START logo motion: the landing intro (src/components/start-intro.tsx) and the header logo entrance
+   (src/components/store-chrome.tsx). The vector logo itself is src/components/start-intro-svg.ts.
+
+   The root layout's pre-paint script sets <html data-intro="playing"> on the first visit to "/" in a browser
+   session, so the intro starts with the first paint and the page never flashes underneath it. The intro sets
+   data-intro="done" when it ends or is skipped, which also lets the header logo play its entrance. */
+
+/* ---------------------------------------------------------------- shared logo colours */
+:root {
+  --si-blue: #0099ff;
+  --si-yellow: #ffdd00;
+  --si-ink: #202124;
+  --si-slate: #465461;
+}
+:root[data-theme="dark"] {
+  --si-ink: #f1f3f4;
+  --si-slate: #a0a8b1;
+}
+
+/* ---------------------------------------------------------------- header logo entrance */
+/* The S mark lands first, then the name slides out to the right from behind it. */
+.si-mark {
+  display: block;
+  height: 100%;
+  width: auto;
+  overflow: visible;
+}
+.si-hdr-mark {
+  animation: si-hdr-mark 550ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.si-hdr-word {
+  display: inline-block;
+  animation: si-hdr-word 900ms cubic-bezier(0.16, 1, 0.3, 1) 420ms both;
+}
+:root[data-intro="playing"] .si-hdr-mark,
+:root[data-intro="playing"] .si-hdr-word {
+  animation-play-state: paused;
+}
+@keyframes si-hdr-mark {
+  from { opacity: 0; transform: scale(0.6) rotate(-12deg); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes si-hdr-word {
+  from { opacity: 0; transform: translateX(-100%); }
+  30% { opacity: 1; }
+  to { opacity: 1; transform: none; }
+}
+
+/* ---------------------------------------------------------------- landing intro */
+.si-pre {
+  display: none;
+}
+:root[data-intro="playing"] {
+  overflow: hidden;
+}
+:root[data-intro="playing"] .si-pre {
+  --blue: #0099ff;
+  --yellow: #ffdd00;
+  --ink: #f1f3f4;
+  --muted: #cdd2d7;
+  --slate: #a0a8b1;
+  --si-ease-draw: cubic-bezier(0.65, 0, 0.35, 1);
+  --si-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --si-ease-exit: cubic-bezier(0.77, 0, 0.175, 1);
+  --si-ease-move: cubic-bezier(0.33, 1, 0.68, 1);
+  --si-ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.si-pre-bg {
+  position: absolute;
+  inset: 0;
+  background: #121212;
+  will-change: clip-path;
+}
+.si-brand {
+  position: relative;
+  width: min(760px, 90vw);
+}
+.si-lockup {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.si-skip {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 101;
+  border: 1px solid #3c4043;
+  border-radius: 999px;
+  background: none;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #a0a8b1;
+  cursor: pointer;
+}
+.si-skip:hover {
+  color: #f1f3f4;
+}
+
+/* Animated parts pivot on their own box; plain layout groups keep the SVG origin. */
+.si-tile, .si-square, .si-hub, .si-arrow, .si-bar, .si-ring, .si-ltr, .si-tag, .si-net-grow, .si-pulse, .si-t2-wipe {
+  transform-box: fill-box;
+}
+.si-mk-pos, .si-arc {
+  transform-box: view-box;
+}
+.si-net-grow, .si-hub, .si-square, .si-pulse {
+  transform-origin: center;
+}
+.si-arc-ink {
+  fill: var(--slate);
+}
+.si-sweep {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+.si-t2-wipe {
+  transform-origin: 0% 50%;
+  transform: scaleX(0);
+}
+.si-bar, .si-ring, .si-ltr, .si-tag {
+  transform-origin: 50% 100%;
+}
+
+@keyframes si-arrive { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes si-unfold { from { opacity: 0; transform: rotate(var(--r)) scale(0.5); } 35% { opacity: 1; } to { opacity: 1; transform: none; } }
+@keyframes si-grow { from { transform: scale(0); } to { transform: scale(1); } }
+@keyframes si-pop { 0% { transform: scale(0); } 65% { transform: scale(1.3); } 100% { transform: scale(1); } }
+@keyframes si-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes si-fire { from { opacity: 0; transform: translate(-150px, -150px); } 30% { opacity: 1; } to { opacity: 1; transform: none; } }
+@keyframes si-ripple { 0% { transform: scale(1); } 40% { transform: scale(1.045); } 100% { transform: scale(1); } }
+@keyframes si-flash { 0%, 100% { fill: var(--slate); } 35% { fill: var(--blue); } }
+@keyframes si-pulse { 0% { transform: scale(1.15); opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { transform: scale(0); opacity: 0; } }
+@keyframes si-charge { 0%, 100% { transform: scale(1); filter: none; } 40% { transform: scale(1.14); filter: drop-shadow(0 0 30px var(--yellow)); } }
+/* 690.9 is INTRO_SHIFT_PX in start-intro-svg.ts: the mark starts centred, then slides to its place. */
+@keyframes si-assemble { from { transform: translateX(690.9px) scale(1.12); } to { transform: none; } }
+@keyframes si-letter { from { opacity: 0; filter: blur(14px); transform: translateY(120px); } to { opacity: 1; filter: blur(0); transform: none; } }
+@keyframes si-stack { from { opacity: 0; transform: translateY(-340px); } 25% { opacity: 1; } to { opacity: 1; transform: none; } }
+@keyframes si-drop { 0% { opacity: 0; transform: translateY(-420px); } 20% { opacity: 1; } 60% { transform: translateY(0); } 75% { transform: translateY(-38px); } 100% { opacity: 1; transform: none; } }
+@keyframes si-wipe { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes si-tag { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: none; } }
+@keyframes si-depart { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(-32px) scale(0.98); } }
+@keyframes si-uncover { from { clip-path: inset(0); } to { clip-path: inset(0 0 100% round 0 0 45% 45%); } }
+
+/* Timeline in ms from the first paint. */
+.si-brand { animation: si-arrive 500ms var(--si-ease-out) both; }
+
+/* 1. The tiles unfold in the order you would write an S. */
+.si-t1 { animation: si-unfold 600ms var(--si-ease-out) 100ms both; }
+.si-t2 { animation: si-unfold 600ms var(--si-ease-out) 230ms both; }
+.si-t3 { animation: si-unfold 600ms var(--si-ease-out) 360ms both; }
+.si-t4 { animation: si-unfold 600ms var(--si-ease-out) 490ms both; }
+.si-t5 { animation: si-unfold 600ms var(--si-ease-out) 620ms both; }
+.si-t6 { animation: si-unfold 600ms var(--si-ease-out) 750ms both; }
+
+/* 2. The circuit grows out of the yellow square and its hubs pop. */
+.si-net-grow { animation: si-grow 900ms var(--si-ease-draw) 480ms both; }
+.si-hub { animation: si-pop 420ms var(--si-ease-out) calc(900ms + var(--i) * 90ms) both; }
+
+/* 3. The arcs sweep on, the arrow fires into them, and they ripple outward. */
+.si-sweep { animation: si-draw 560ms var(--si-ease-draw) calc(860ms + var(--i) * 90ms) both; }
+.si-arrow { animation: si-fire 520ms var(--si-ease-bounce) 1350ms both; }
+.si-arc { animation: si-ripple 520ms var(--si-ease-out) calc(1720ms + var(--i) * 90ms) both; }
+.si-arc-ink { animation: si-flash 520ms ease-in-out calc(1720ms + var(--i) * 90ms) both; }
+
+/* 4. A pulse runs through the network into the square, which charges up. */
+.si-pulse { animation: si-pulse 700ms var(--si-ease-draw) 1700ms both; }
+.si-square { animation: si-pop 500ms var(--si-ease-out) 380ms both, si-charge 500ms var(--si-ease-out) 2330ms both; }
+
+/* 5. The mark slides over and the wordmark builds: letters sharpen, the pyramid stacks, the ring drops, the
+   last T's arrow shoots out, then the tagline. */
+.si-mk-pos { animation: si-assemble 1000ms var(--si-ease-move) 2400ms both; }
+.si-ltr { animation: si-letter 650ms var(--si-ease-out) calc(2650ms + var(--i) * 110ms) both; }
+.si-bar { animation: si-stack 560ms var(--si-ease-bounce) calc(2780ms + var(--i) * 95ms) both; }
+.si-ring { animation: si-drop 800ms var(--si-ease-out) 3300ms both; }
+.si-t2-wipe { animation: si-wipe 520ms var(--si-ease-exit) 3350ms both; }
+.si-tag { animation: si-tag 520ms var(--si-ease-out) calc(3700ms + var(--i) * 120ms) both; }
+
+/* 6. Exit: the logo lifts away and the curtain rises. */
+.si-leave .si-brand { animation: si-depart 600ms var(--si-ease-exit) both; }
+.si-leave .si-pre-bg { animation: si-uncover 850ms var(--si-ease-exit) 150ms both; }
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-intro="playing"] .si-pre {
+    display: none;
+  }
+  :root[data-intro="playing"] {
+    overflow: visible;
+  }
+  .si-hdr-mark,
+  .si-hdr-word {
+    animation: none;
+  }
+}

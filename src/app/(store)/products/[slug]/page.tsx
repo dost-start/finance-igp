@@ -41,8 +41,8 @@ async function ProductContent({ params }: { params: PageProps<"/products/[slug]"
         <ProductGallery name={product.name} images={images} fit={product.productType === "sticker" ? "contain" : "cover"} />
 
         <div className="md:sticky md:top-6 md:self-start">
-          <h1 className="text-3xl font-semibold tracking-tight">{product.name}</h1>
-          <p className="mt-2 text-2xl">{formatPeso(product.priceCentavos)}</p>
+          <h1 className="text-3xl font-extrabold tracking-tight">{product.name}</h1>
+          <p className="mt-2 text-2xl font-semibold">{formatPeso(product.priceCentavos)}</p>
           <AddToCart
             product={{
               id: product.id,

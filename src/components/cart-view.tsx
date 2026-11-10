@@ -22,7 +22,7 @@ export function CartView() {
       <div className="mt-8 rounded-lg border border-dashed border-zinc-300 p-10 text-center dark:border-zinc-700">
         <p className="font-medium">Your cart is empty.</p>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Pick something from the shop and it will show up here.</p>
-        <Link href="/" className="mt-5 inline-block rounded-md bg-sky-800 px-5 py-2.5 text-sm font-semibold text-white hover:bg-sky-900">
+        <Link href="/" className="mt-5 inline-block rounded-full bg-sky-800 px-5 py-2.5 text-sm font-semibold text-white hover:bg-sky-900">
           Browse the shop
         </Link>
       </div>
@@ -37,7 +37,7 @@ export function CartView() {
           return (
             <li key={`${i.productId}:${i.size}`} className="flex gap-4 py-5">
               <Link href={`/products/${i.slug}`} className="shrink-0" aria-hidden="true" tabIndex={-1}>
-                <Image src={i.image ?? "/products/jacket.svg"} alt="" width={96} height={96} unoptimized className="size-24 rounded-md object-cover" />
+                <Image src={i.image ?? "/products/jacket.svg"} alt="" width={96} height={96} unoptimized className="size-24 rounded-md bg-product-backdrop object-cover" />
               </Link>
               <div className="min-w-0 flex-1">
                 <div className="flex justify-between gap-3">
@@ -93,7 +93,7 @@ export function CartView() {
           <span>Total</span>
           <span className="tabular-nums">{formatPeso(total)}</span>
         </p>
-        <Link href="/checkout" className="mt-5 block w-full rounded-md bg-sky-800 px-5 py-3 text-center text-sm font-semibold text-white hover:bg-sky-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700">
+        <Link href="/checkout" className="mt-5 block w-full rounded-full bg-sky-800 px-5 py-3 text-center text-sm font-semibold text-white hover:bg-sky-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700">
           Checkout
         </Link>
         <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">The final total is confirmed at checkout.</p>

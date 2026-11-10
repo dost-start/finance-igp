@@ -19,7 +19,7 @@ async function Tracked({ params }: { params: PageProps<"/track/[token]">["params
 export default function TrackedPage({ params }: PageProps<"/track/[token]">) {
   return (
     <main>
-      <h1 className="text-2xl font-semibold tracking-tight">Your order</h1>
+      <h1 className="text-2xl font-extrabold tracking-tight">Your order</h1>
       <div className="mt-6">
         <Suspense fallback={<p className="text-sm text-zinc-500 dark:text-zinc-400">Loading your order…</p>}>
           <Tracked params={params} />

@@ -10,7 +10,7 @@ export default async function Shop() {
 
   return (
     <main>
-      <h1 className="text-3xl font-semibold tracking-tight">Shop</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight">Shop</h1>
       <p className="mt-2 max-w-xl text-zinc-600 dark:text-zinc-400">
         Merchandise for the START-DOST community of DOST technoscholars. Placeholder items and prices while the real catalog is being finalized.
       </p>
@@ -21,7 +21,7 @@ export default async function Shop() {
           return (
             <li key={p.id}>
               <Link href={`/products/${p.slug}`} className="group block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-700">
-                <div className="relative overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-900">
+                <div className="relative overflow-hidden rounded-lg bg-product-backdrop">
                   <Image
                     src={p.images[0]?.url ?? "/products/jacket.svg"}
                     alt={p.name}

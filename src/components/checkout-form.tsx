@@ -40,7 +40,7 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="w-full rounded-md bg-sky-800 px-5 py-3 text-sm font-semibold text-white hover:bg-sky-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 disabled:cursor-wait disabled:opacity-70"
+      className="w-full rounded-full bg-sky-800 px-5 py-3 text-sm font-semibold text-white hover:bg-sky-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 disabled:cursor-wait disabled:opacity-70"
     >
       {pending ? "Saving your order…" : "Continue to payment"}
     </button>
@@ -75,7 +75,7 @@ export function CheckoutForm() {
       <div className="mt-8 rounded-lg border border-dashed border-zinc-300 p-10 text-center dark:border-zinc-700">
         <p className="font-medium">Your cart is empty.</p>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Add something from the shop before checking out.</p>
-        <Link href="/" className="mt-5 inline-block rounded-md bg-sky-800 px-5 py-2.5 text-sm font-semibold text-white hover:bg-sky-900">
+        <Link href="/" className="mt-5 inline-block rounded-full bg-sky-800 px-5 py-2.5 text-sm font-semibold text-white hover:bg-sky-900">
           Browse the shop
         </Link>
       </div>

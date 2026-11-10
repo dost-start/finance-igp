@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Your cart", robots: { index: false }
 export default function CartPage() {
   return (
     <main>
-      <h1 className="text-3xl font-semibold tracking-tight">Your cart</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight">Your cart</h1>
       <CartView />
     </main>
   );
