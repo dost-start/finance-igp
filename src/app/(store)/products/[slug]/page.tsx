@@ -50,8 +50,8 @@ async function ProductContent({ params }: { params: PageProps<"/products/[slug]"
       <div className="mt-6 grid gap-8 md:grid-cols-[1.1fr_1fr] md:gap-12 lg:gap-16">
         <ProductGallery name={product.name} images={images} fit={isCutout(product.productType) ? "contain" : "cover"} />
 
-        {/* Pinned beside the photos on wide screens, just below the floating header. */}
-        <div className="md:sticky md:top-28 md:self-start">
+        {/* Scrolls with the photos (it is shorter than they are, so pinning it only made the columns drift). */}
+        <div>
           <p className="inline-flex rounded-full bg-brand-yellow px-3 py-1 text-xs font-bold uppercase tracking-wider text-zinc-950">{shelf.label}</p>
           <h1 className="mt-4 text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">{product.name}</h1>
           <p className="mt-3 text-2xl font-bold tabular-nums">{formatPeso(product.priceCentavos)}</p>
