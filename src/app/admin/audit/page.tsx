@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { getDb, schema } from "@/db";
 import { requireAdmin } from "@/lib/admin";
 import { AUDIT_ACTIONS, AUDIT_LABEL, auditLabel, describeAudit, isAuditAction } from "@/lib/audit";
-import { formatManila } from "@/lib/email/templates";
+import { formatManilaTime, groupByDay } from "@/lib/admin-dates";
 
 export const metadata: Metadata = { title: "Audit log" };
 
@@ -45,7 +45,7 @@ async function Audit({ searchParams }: { searchParams: PageProps<"/admin/audit">
 
   return (
     <>
-      <h1 className="text-2xl font-semibold tracking-tight">Audit log</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight">Audit log</h1>
       <p className="mt-2 max-w-2xl text-sm text-zinc-600 dark:text-zinc-400">Who changed what, and when. Every confirmation, rejection, status change, correction, export, product edit and store lock is recorded here. It cannot be edited.</p>
 
       <form method="get" action="/admin/audit" className="mt-4 flex flex-wrap items-end gap-3">
@@ -53,7 +53,7 @@ async function Audit({ searchParams }: { searchParams: PageProps<"/admin/audit">
           <label htmlFor="audit-action" className="text-sm font-medium">
             Show
           </label>
-          <select id="audit-action" name="action" defaultValue={action ?? ""} className="mt-1 block rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm dark:border-zinc-700">
+          <select id="audit-action" name="action" defaultValue={action ?? ""} className="mt-1 block rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-sm outline-none transition focus-visible:border-brand-blue focus-visible:ring-4 focus-visible:ring-brand-blue/25 dark:border-zinc-700 dark:bg-zinc-950">
             <option value="">Everything</option>
             {AUDIT_ACTIONS.map((a) => (
               <option key={a} value={a}>
@@ -62,7 +62,7 @@ async function Audit({ searchParams }: { searchParams: PageProps<"/admin/audit">
             ))}
           </select>
         </div>
-        <button type="submit" className="rounded-md bg-sky-800 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-900">
+        <button type="submit" className="rounded-full bg-sky-800 px-4 py-2 text-sm font-bold text-white transition hover:bg-sky-900">
           Apply
         </button>
         {action && (
@@ -75,39 +75,46 @@ async function Audit({ searchParams }: { searchParams: PageProps<"/admin/audit">
       {rows.length === 0 ? (
         <p className="mt-6 text-sm text-zinc-500 dark:text-zinc-400">{action ? "Nothing recorded for this yet." : "Nothing has been recorded yet."}</p>
       ) : (
-        <div className="mt-4 overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-800">
+        <div className="mt-4 overflow-x-auto lift-card rounded-2xl border border-zinc-200/70 bg-white dark:border-zinc-800 dark:bg-zinc-900">
           <table className="w-full min-w-[48rem] text-left text-sm">
             <thead className="bg-zinc-50 text-xs text-zinc-500 dark:text-zinc-400 uppercase dark:bg-zinc-900">
               <tr>
-                {["When", "Who", "What", "Details", "Order"].map((h) => (
+                {["Time", "Who", "What", "Details", "Order"].map((h) => (
                   <th key={h} className="px-3 py-2 font-medium">
                     {h}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
-              {rows.map((r) => (
-                <tr key={r.id}>
-                  <td className="px-3 py-2 whitespace-nowrap">{formatManila(r.at)}</td>
-                  <td className="px-3 py-2">
-                    <span className="font-medium">{r.who}</span>
-                    <span className="block text-xs break-all text-zinc-500 dark:text-zinc-400">{r.email}</span>
-                  </td>
-                  <td className="px-3 py-2">{auditLabel(r.action)}</td>
-                  <td className="px-3 py-2 text-zinc-600 dark:text-zinc-400">{describeAudit(r.action, r.before as Record<string, unknown> | null, r.after as Record<string, unknown> | null)}</td>
-                  <td className="px-3 py-2 font-mono">
-                    {r.orderUuid && r.orderId ? (
-                      <Link href={`/admin/orders/${r.orderUuid}`} className="underline underline-offset-4">
-                        {r.orderId}
-                      </Link>
-                    ) : (
-                      "-"
-                    )}
-                  </td>
+            {groupByDay(rows, (r) => r.at).map((group) => (
+              <tbody key={group.key} className="divide-y divide-zinc-200 dark:divide-zinc-800">
+                <tr>
+                  <th colSpan={5} scope="colgroup" className="bg-zinc-50 px-3 py-2 text-left text-xs font-bold tracking-wide text-zinc-600 uppercase dark:bg-zinc-950 dark:text-zinc-300">
+                    {group.label}
+                  </th>
                 </tr>
-              ))}
-            </tbody>
+                {group.rows.map((r) => (
+                  <tr key={r.id}>
+                    <td className="px-3 py-2 whitespace-nowrap tabular-nums">{formatManilaTime(r.at)}</td>
+                    <td className="px-3 py-2">
+                      <span className="font-medium">{r.who}</span>
+                      <span className="block text-xs break-all text-zinc-500 dark:text-zinc-400">{r.email}</span>
+                    </td>
+                    <td className="px-3 py-2">{auditLabel(r.action)}</td>
+                    <td className="px-3 py-2 text-zinc-600 dark:text-zinc-400">{describeAudit(r.action, r.before as Record<string, unknown> | null, r.after as Record<string, unknown> | null)}</td>
+                    <td className="px-3 py-2 font-mono">
+                      {r.orderUuid && r.orderId ? (
+                        <Link href={`/admin/orders/${r.orderUuid}`} className="underline underline-offset-4">
+                          {r.orderId}
+                        </Link>
+                      ) : (
+                        "-"
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            ))}
           </table>
         </div>
       )}

@@ -6,7 +6,7 @@ import { OcrBadge } from "@/components/admin/ocr-badge";
 import { SelectAll } from "@/components/admin/select-all";
 import { StatusBadge } from "@/components/admin/status-badge";
 import { requireAdmin } from "@/lib/admin";
-import { formatManila } from "@/lib/email/templates";
+import { formatManilaShort } from "@/lib/email/templates";
 import { formatPeso } from "@/lib/money";
 import { OCR_FILTERS, PAGE_SIZE, PAYMENT_STATES, attentionRank, filtersToQuery, hasFilters, parseFilters, type OrderFilters } from "@/lib/order-filters";
 import { listOrders, nextWaitingId, productOptions, waitingSummary, type OrderRow } from "@/lib/order-list";
@@ -15,8 +15,8 @@ import { STATUS_LABEL, generalNextStatuses } from "@/lib/status";
 
 export const metadata: Metadata = { title: "Orders" };
 
-const fieldClass = "mt-1 w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm dark:border-zinc-700";
-const primaryButton = "rounded-md bg-sky-800 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700";
+const fieldClass = "mt-1 w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-sm outline-none transition focus-visible:border-brand-blue focus-visible:ring-4 focus-visible:ring-brand-blue/25 dark:border-zinc-700 dark:bg-zinc-950";
+const primaryButton = "rounded-full bg-sky-800 px-4 py-2 text-sm font-bold text-white transition hover:bg-sky-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700";
 
 // Quick views. Each is just a payment filter in the address, so they can be bookmarked and shared.
 const VIEWS = [
@@ -28,9 +28,9 @@ const VIEWS = [
 
 function Views({ f }: { f: OrderFilters }) {
   const tab = (active: boolean) =>
-    `rounded-md px-3 py-1.5 text-sm font-medium whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 ${active ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900" : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"}`;
+    `rounded-full px-4 py-1.5 text-sm font-semibold whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 ${active ? "bg-zinc-950 text-white shadow-sm dark:bg-zinc-100 dark:text-zinc-950" : "text-zinc-600 hover:bg-white hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"}`;
   return (
-    <nav aria-label="Order views" className="flex flex-wrap items-center gap-1">
+    <nav aria-label="Order views" className="inline-flex max-w-full flex-wrap items-center gap-1 rounded-full bg-zinc-200/60 p-1 dark:bg-zinc-900">
       <Link href="/admin" aria-current={!f.pay ? "page" : undefined} className={tab(!f.pay)}>
         All orders
       </Link>
@@ -48,28 +48,31 @@ function SearchBar({ f, products }: { f: OrderFilters; products: { id: string; n
   return (
     <form method="get" action="/admin" className="mt-4">
       <div className="flex flex-wrap items-end gap-3">
-        <div className="min-w-[14rem] max-w-md flex-1">
+        <div className="relative min-w-[14rem] max-w-md flex-1">
           <label htmlFor="f-q" className="sr-only">
             Search
           </label>
-          <input id="f-q" name="q" type="search" defaultValue={f.q ?? ""} placeholder="Search by order ID, name or email" autoComplete="off" className="w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm dark:border-zinc-700" />
+          <svg aria-hidden="true" viewBox="0 0 20 20" className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-zinc-400" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+            <path d="M9 15.5a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13ZM14 14l3.5 3.5" />
+          </svg>
+          <input id="f-q" name="q" type="search" defaultValue={f.q ?? ""} placeholder="Search by order ID, name or email" autoComplete="off" className="w-full rounded-full border border-zinc-300 bg-white py-2.5 pl-10 pr-4 text-sm outline-none transition focus-visible:border-brand-blue focus-visible:ring-4 focus-visible:ring-brand-blue/25 dark:border-zinc-700 dark:bg-zinc-950" />
         </div>
         <button type="submit" className={primaryButton}>
           Search
         </button>
-        <a href={`/api/admin/orders/export${filtersToQuery(f, { page: 1 })}`} className="ml-auto text-sm font-medium underline underline-offset-4">
+        <a href={`/api/admin/orders/export${filtersToQuery(f, { page: 1 })}`} className="ml-auto inline-flex items-center gap-1.5 rounded-full border border-zinc-300 bg-white px-4 py-2 text-sm font-semibold hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-950 dark:hover:bg-zinc-800">
           Export CSV
         </a>
       </div>
 
       <details open={open} className="group mt-3">
-        <summary className="inline-flex cursor-pointer list-none items-center gap-1 rounded-md py-1 text-sm font-medium text-zinc-600 hover:text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 dark:text-zinc-400 dark:hover:text-zinc-50 [&::-webkit-details-marker]:hidden">
+        <summary className="inline-flex cursor-pointer list-none items-center gap-1 rounded-xl py-1 text-sm font-medium text-zinc-600 hover:text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 dark:text-zinc-400 dark:hover:text-zinc-50 [&::-webkit-details-marker]:hidden">
           <svg aria-hidden="true" viewBox="0 0 20 20" className="size-4 transition-transform group-open:rotate-90" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
             <path d="M8 5l5 5-5 5" />
           </svg>
           More filters
         </summary>
-        <div className="mt-3 rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
+        <div className="mt-3 lift-card rounded-2xl border border-zinc-200/70 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <label htmlFor="f-status" className="text-sm font-medium">
@@ -160,7 +163,7 @@ function Flags({ r }: { r: OrderRow }) {
 
 function Table({ rows }: { rows: OrderRow[] }) {
   return (
-    <div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-800">
+    <div className="overflow-x-auto lift-card rounded-2xl border border-zinc-200/70 bg-white dark:border-zinc-800 dark:bg-zinc-900">
       <table className="w-full min-w-[44rem] text-left text-sm">
         <thead className="bg-zinc-50 text-xs text-zinc-500 uppercase dark:bg-zinc-900 dark:text-zinc-400">
           <tr>
@@ -180,7 +183,7 @@ function Table({ rows }: { rows: OrderRow[] }) {
             const movable = generalNextStatuses(r.status).length > 0;
             return (
               <tr key={r.id} className={urgent ? "bg-amber-50/70 hover:bg-amber-50 dark:bg-amber-950/30 dark:hover:bg-amber-950/50" : "hover:bg-zinc-50 dark:hover:bg-zinc-900"}>
-                <td className="px-3 py-3 align-top">
+                <td className={`border-l-4 px-3 py-3 align-top ${urgent ? "border-amber-400" : "border-transparent"}`}>
                   <input type="checkbox" name="ids" value={r.id} disabled={!movable} aria-label={`Select ${r.orderId}`} className="size-4" />
                 </td>
                 <td className="px-3 py-3 align-top font-mono">
@@ -195,7 +198,7 @@ function Table({ rows }: { rows: OrderRow[] }) {
                   <StatusBadge status={r.status} />
                   <Flags r={r} />
                 </td>
-                <td className="whitespace-nowrap px-3 py-3 align-top text-[13px] text-zinc-600 dark:text-zinc-400">{formatManila(r.when)}</td>
+                <td className="whitespace-nowrap px-3 py-3 align-top text-[13px] text-zinc-600 dark:text-zinc-400">{formatManilaShort(r.when)}</td>
               </tr>
             );
           })}
@@ -234,36 +237,50 @@ function Pager({ f, total }: { f: OrderFilters; total: number }) {
 // The first thing finance sees: how many orders are waiting, and one button to start on the one that needs
 // them most. Everything else on the page is for finding a particular order.
 function Queue({ waiting, attention, nextId }: { waiting: number; attention: number; nextId: string | null }) {
+  if (waiting === 0) {
+    return (
+      <section aria-label="Orders waiting for you" className="lift-card mt-6 flex items-center gap-4 rounded-3xl border border-zinc-200/70 bg-white p-5 sm:p-6 dark:border-zinc-800 dark:bg-zinc-900">
+        <span className="grid size-12 shrink-0 place-items-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+          <svg viewBox="0 0 20 20" className="size-6" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m4.5 10.5 3.5 3.5 7.5-8" />
+          </svg>
+        </span>
+        <div>
+          <h2 className="text-lg font-extrabold tracking-tight">Nothing waiting for verification</h2>
+          <p className="mt-0.5 text-sm text-zinc-600 dark:text-zinc-400">You are all caught up. New receipts appear here.</p>
+        </div>
+      </section>
+    );
+  }
   return (
-    <section aria-label="Orders waiting for you" className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-4 rounded-lg border border-zinc-200 p-5 dark:border-zinc-800">
-      <div className="min-w-0 flex-1">
-        {waiting > 0 ? (
-          <>
-            <h2 className="text-lg font-semibold">
-              <Link href="/admin?pay=verifying" className="underline-offset-4 hover:underline">
-                {waiting} waiting for verification
+    <section aria-label="Orders waiting for you" className="lift-panel relative isolate mt-6 overflow-hidden rounded-3xl bg-brand-blue p-6 text-zinc-950 sm:p-8">
+      <div aria-hidden="true" className="absolute -right-10 -top-10 -z-10 size-40 rounded-bl-full bg-brand-yellow sm:size-52" />
+      <div aria-hidden="true" className="shop-dots absolute inset-0 -z-10" />
+      <div className="flex flex-wrap items-center gap-x-8 gap-y-5">
+        <p className="text-6xl font-extrabold leading-none tracking-tight tabular-nums sm:text-7xl">{waiting}</p>
+        <div className="min-w-0 flex-1">
+          <h2 className="text-xl font-extrabold tracking-tight sm:text-2xl">
+            <Link href="/admin?pay=verifying" className="underline-offset-4 hover:underline">
+              {waiting === 1 ? "order is" : "orders are"} waiting for verification
+            </Link>
+          </h2>
+          {attention > 0 && (
+            <p className="mt-1 text-sm font-semibold">
+              <Link href="/admin?pay=verifying&ocr=attention" className="underline underline-offset-4">
+                {attention} {attention === 1 ? "needs" : "need"} a closer look
               </Link>
-            </h2>
-            {attention > 0 && (
-              <p className="mt-1 text-sm">
-                <Link href="/admin?pay=verifying&ocr=attention" className="font-medium text-amber-900 underline underline-offset-4 dark:text-amber-200">
-                  {attention} {attention === 1 ? "needs" : "need"} a closer look
-                </Link>
-              </p>
-            )}
-          </>
-        ) : (
-          <>
-            <h2 className="text-lg font-semibold">Nothing waiting for verification</h2>
-            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">New receipts appear here.</p>
-          </>
+            </p>
+          )}
+        </div>
+        {nextId && (
+          <Link href={`/admin/orders/${nextId}`} className="inline-flex items-center gap-2 rounded-full bg-zinc-950 px-6 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950">
+            Review next order
+            <svg viewBox="0 0 20 20" className="size-4" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 10h12m0 0-5-5m5 5-5 5" />
+            </svg>
+          </Link>
         )}
       </div>
-      {waiting > 0 && nextId && (
-        <Link href={`/admin/orders/${nextId}`} className="rounded-md bg-sky-800 px-5 py-2.5 text-sm font-semibold text-white hover:bg-sky-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700">
-          Review next order
-        </Link>
-      )}
     </section>
   );
 }
@@ -282,16 +299,16 @@ async function Orders({ searchParams }: { searchParams: PageProps<"/admin">["sea
   return (
     <>
       {done && (
-        <p role="status" className="mb-6 rounded-md border border-emerald-300 bg-emerald-50 p-3 text-sm text-emerald-900 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-100">
+        <p role="status" className="mb-6 rounded-2xl border border-emerald-300 bg-emerald-50 p-4 text-sm font-medium text-emerald-900 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-100">
           {done === "confirmed" ? "Payment confirmed." : done === "rejected" ? "Payment rejected." : "Saved."} No more orders are waiting.
         </p>
       )}
       {notice === "tech_only" && (
-        <p role="alert" className="mb-6 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-100">
+        <p role="alert" className="mb-6 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm font-medium text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-100">
           Editing products is only for the Technology team. Ask them if a product, price or size needs to change.
         </p>
       )}
-      <h1 className="text-2xl font-semibold tracking-tight">Orders</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight">Orders</h1>
       <Queue waiting={summary.waiting} attention={summary.attention} nextId={nextId} />
 
       <div className="mt-8">
@@ -299,7 +316,7 @@ async function Orders({ searchParams }: { searchParams: PageProps<"/admin">["sea
         <SearchBar f={f} products={products} />
       </div>
 
-      <h2 className="mt-6 text-lg font-semibold">
+      <h2 className="mt-8 text-xl font-extrabold tracking-tight">
         {f.pay && !f.status && !f.product && !f.ocr && !f.duplicate && !f.q ? (VIEW_TITLE[f.pay] ?? title) : title} ({total})
       </h2>
       {rows.length === 0 ? (

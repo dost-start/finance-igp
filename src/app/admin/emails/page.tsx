@@ -7,7 +7,7 @@ import { requireAdmin } from "@/lib/admin";
 import { emailBudget } from "@/lib/email/budget";
 import { isNearLimit } from "@/lib/email/limit";
 import { isProblem, resultLabel, templateLabel } from "@/lib/email/log";
-import { formatManila } from "@/lib/email/templates";
+import { formatManilaTime, groupByDay } from "@/lib/admin-dates";
 
 export const metadata: Metadata = { title: "Email log" };
 
@@ -40,12 +40,12 @@ async function Log({ searchParams }: { searchParams: PageProps<"/admin/emails">[
 
   return (
     <>
-      <h1 className="text-2xl font-semibold tracking-tight">Email log</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight">Email log</h1>
       <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
         Every email the system tried to send, including the ones that did not go out. {budget.used} of {budget.limit} sent in the last 24 hours.
       </p>
       {isNearLimit(budget) && (
-        <p role="alert" className="mt-3 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-100">
+        <p role="alert" className="mt-3 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm font-medium text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-100">
           The daily email limit is nearly used up ({budget.remaining} left). Status changes that need an email are refused until it frees up.
         </p>
       )}
@@ -62,42 +62,49 @@ async function Log({ searchParams }: { searchParams: PageProps<"/admin/emails">[
       {rows.length === 0 ? (
         <p className="mt-4 text-sm text-zinc-500 dark:text-zinc-400">{only ? "Every email was sent." : "No emails yet."}</p>
       ) : (
-        <div className="mt-4 overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-800">
+        <div className="mt-4 overflow-x-auto lift-card rounded-2xl border border-zinc-200/70 bg-white dark:border-zinc-800 dark:bg-zinc-900">
           <table className="w-full min-w-[44rem] text-left text-sm">
             <thead className="bg-zinc-50 text-xs text-zinc-500 dark:text-zinc-400 uppercase dark:bg-zinc-900">
               <tr>
-                {["When", "Email", "Order", "To", "Result"].map((h) => (
+                {["Time", "Email", "Order", "To", "Result"].map((h) => (
                   <th key={h} className="px-3 py-2 font-medium">
                     {h}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
-              {rows.map((r) => {
-                const problem = isProblem(r.result);
-                return (
-                  <tr key={r.id} className={problem ? "bg-amber-50/70 dark:bg-amber-950/30" : undefined}>
-                    <td className="px-3 py-2 whitespace-nowrap">{formatManila(r.sentAt)}</td>
-                    <td className="px-3 py-2">{templateLabel(r.template)}</td>
-                    <td className="px-3 py-2 font-mono">
-                      {r.orderUuid && r.orderId ? (
-                        <Link href={`/admin/orders/${r.orderUuid}`} className="underline underline-offset-4">
-                          {r.orderId}
-                        </Link>
-                      ) : (
-                        "-"
-                      )}
-                    </td>
-                    <td className="px-3 py-2 break-all">{r.recipient}</td>
-                    <td className={`px-3 py-2 ${problem ? "font-semibold text-red-800 dark:text-red-300" : ""}`}>
-                      {problem && <span aria-hidden="true">⚠ </span>}
-                      {resultLabel(r.result)}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
+            {groupByDay(rows, (r) => r.sentAt).map((group) => (
+              <tbody key={group.key} className="divide-y divide-zinc-200 dark:divide-zinc-800">
+                <tr>
+                  <th colSpan={5} scope="colgroup" className="bg-zinc-50 px-3 py-2 text-left text-xs font-bold tracking-wide text-zinc-600 uppercase dark:bg-zinc-950 dark:text-zinc-300">
+                    {group.label}
+                  </th>
+                </tr>
+                {group.rows.map((r) => {
+                  const problem = isProblem(r.result);
+                  return (
+                    <tr key={r.id} className={problem ? "bg-amber-50/70 dark:bg-amber-950/30" : undefined}>
+                      <td className="px-3 py-2 whitespace-nowrap tabular-nums">{formatManilaTime(r.sentAt)}</td>
+                      <td className="px-3 py-2">{templateLabel(r.template)}</td>
+                      <td className="px-3 py-2 font-mono">
+                        {r.orderUuid && r.orderId ? (
+                          <Link href={`/admin/orders/${r.orderUuid}`} className="underline underline-offset-4">
+                            {r.orderId}
+                          </Link>
+                        ) : (
+                          "-"
+                        )}
+                      </td>
+                      <td className="px-3 py-2 break-all">{r.recipient}</td>
+                      <td className={`px-3 py-2 ${problem ? "font-semibold text-red-800 dark:text-red-300" : ""}`}>
+                        {problem && <span aria-hidden="true">⚠ </span>}
+                        {resultLabel(r.result)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            ))}
           </table>
         </div>
       )}

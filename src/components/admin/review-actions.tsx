@@ -7,7 +7,7 @@ import { REJECT_REASONS } from "@/lib/email/templates";
 function Submit({ children, className }: { children: React.ReactNode; className: string }) {
   const { pending } = useFormStatus();
   return (
-    <button type="submit" disabled={pending} className={`${className} rounded-md px-5 py-3 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-wait disabled:opacity-60`}>
+    <button type="submit" disabled={pending} className={`${className} rounded-xl px-5 py-3 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-wait disabled:opacity-60`}>
       {pending ? "Saving…" : children}
     </button>
   );
@@ -26,7 +26,7 @@ export function ReviewActions({ orderUuid }: { orderUuid: string }) {
         <label htmlFor="reason" className="text-sm font-medium">
           Reason for rejecting
         </label>
-        <select id="reason" name="reason" required defaultValue="" className="mt-1 w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm dark:border-zinc-700">
+        <select id="reason" name="reason" required defaultValue="" className="mt-1 w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-sm outline-none transition focus-visible:border-brand-blue focus-visible:ring-4 focus-visible:ring-brand-blue/25 dark:border-zinc-700 dark:bg-zinc-950">
           <option value="" disabled>
             Choose a reason
           </option>

@@ -10,7 +10,7 @@ import { getLastBackup } from "@/lib/backup";
 import { CURRENT_VERSION } from "@/lib/changelog";
 import { emailBudget } from "@/lib/email/budget";
 import { isNearLimit } from "@/lib/email/limit";
-import { formatManila } from "@/lib/email/templates";
+import { formatManilaShort } from "@/lib/email/templates";
 import { formatLaunch, hasLaunched } from "@/lib/launch";
 import { getLaunchAt, isStoreLocked } from "@/lib/store";
 
@@ -62,16 +62,16 @@ async function System({ searchParams }: { searchParams: PageProps<"/admin/system
 
   return (
     <>
-      <h1 className="text-2xl font-semibold tracking-tight">System</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight">System</h1>
       <p className="mt-2 max-w-2xl text-sm text-zinc-600 dark:text-zinc-400">A quick look at whether everything behind the shop is healthy. A ⚠ means something needs attention.</p>
 
       {backupMsg && (
-        <p role={backupMsg === "failed" ? "alert" : "status"} className={`mt-4 rounded-md border p-3 text-sm ${backupMsg === "failed" ? "border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-100" : "border-emerald-300 bg-emerald-50 text-emerald-900 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-100"}`}>
+        <p role={backupMsg === "failed" ? "alert" : "status"} className={`mt-4 rounded-xl border p-3 text-sm ${backupMsg === "failed" ? "border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-100" : "border-emerald-300 bg-emerald-50 text-emerald-900 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-100"}`}>
           {backupMsg === "failed" ? "The backup did not work. Tell the Technology team." : "Backup saved."}
         </p>
       )}
 
-      <dl className="mt-4 max-w-3xl divide-y divide-zinc-200 rounded-lg border border-zinc-200 px-4 dark:divide-zinc-800 dark:border-zinc-800">
+      <dl className="mt-4 max-w-3xl divide-y divide-zinc-200 rounded-2xl border border-zinc-200 px-4 dark:divide-zinc-800 dark:border-zinc-800">
         <Row label="Version">
           {CURRENT_VERSION}{" "}
           <Link href="/admin/changelog" className="underline underline-offset-4">
@@ -87,7 +87,7 @@ async function System({ searchParams }: { searchParams: PageProps<"/admin/system
         <Row label="Last backup" ok={backup ? !stale : false}>
           {backup ? (
             <>
-              {agoFromNow(backup.at)} ({formatManila(new Date(backup.at))}): {backup.counts.orders ?? 0} orders, {Math.max(1, Math.round(backup.bytes / 1024))} KB, saved as <span className="font-mono text-xs break-all">{backup.file}</span> in the private Drive folder.
+              {agoFromNow(backup.at)} ({formatManilaShort(new Date(backup.at))}): {backup.counts.orders ?? 0} orders, {Math.max(1, Math.round(backup.bytes / 1024))} KB, saved as <span className="font-mono text-xs break-all">{backup.file}</span> in the private Drive folder.
               {stale && " It is older than a day: the nightly backup may have stopped."}
             </>
           ) : (
@@ -95,7 +95,7 @@ async function System({ searchParams }: { searchParams: PageProps<"/admin/system
           )}
           <div className="mt-2 flex flex-wrap items-center gap-3">
             <form action={runBackupNow}>
-              <button type="submit" className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800">
+              <button type="submit" className="rounded-full border border-zinc-300 px-3 py-1.5 text-sm font-semibold hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800">
                 Back up now
               </button>
             </form>
@@ -133,7 +133,7 @@ async function System({ searchParams }: { searchParams: PageProps<"/admin/system
       {errors.length === 0 ? (
         <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">No errors saved.</p>
       ) : (
-        <div className="mt-3 overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-800">
+        <div className="mt-3 overflow-x-auto lift-card rounded-2xl border border-zinc-200/70 bg-white dark:border-zinc-800 dark:bg-zinc-900">
           <table className="w-full min-w-[40rem] text-left text-sm">
             <thead className="bg-zinc-50 text-xs text-zinc-600 uppercase dark:bg-zinc-900 dark:text-zinc-400">
               <tr>
@@ -147,7 +147,7 @@ async function System({ searchParams }: { searchParams: PageProps<"/admin/system
             <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
               {errors.map((e) => (
                 <tr key={e.id}>
-                  <td className="px-3 py-2 whitespace-nowrap">{formatManila(e.createdAt)}</td>
+                  <td className="px-3 py-2 whitespace-nowrap">{formatManilaShort(e.createdAt)}</td>
                   <td className="px-3 py-2 font-mono text-xs">
                     {e.method} {e.route}
                   </td>

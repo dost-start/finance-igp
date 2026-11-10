@@ -15,7 +15,7 @@ import { requireAdmin } from "@/lib/admin";
 import { findDuplicateReferences } from "@/lib/duplicates";
 import { emailBudget } from "@/lib/email/budget";
 import { checkBudget } from "@/lib/email/limit";
-import { formatManila } from "@/lib/email/templates";
+import { formatManilaShort } from "@/lib/email/templates";
 import { formatPeso } from "@/lib/money";
 import { correctionTargets, generalNextStatuses, STATUS_LABEL } from "@/lib/status";
 
@@ -32,7 +32,7 @@ const DONE: Record<string, string> = { confirmed: "Payment confirmed. Next order
 function Fact({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <dt className="text-xs text-zinc-500 dark:text-zinc-400">{label}</dt>
+      <dt className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">{label}</dt>
       <dd className="mt-0.5 min-w-0 text-sm break-words">{children}</dd>
     </div>
   );
@@ -81,47 +81,47 @@ async function Review({ params, searchParams }: { params: PageProps<"/admin/orde
   return (
     <>
       <div className="flex flex-wrap items-center gap-3">
-        <Link href="/admin" className="inline-flex items-center gap-1 rounded-md text-sm font-medium text-zinc-600 hover:text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 dark:text-zinc-400 dark:hover:text-zinc-50">
+        <Link href="/admin" className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white/70 px-3.5 py-1.5 text-sm font-semibold text-zinc-700 transition-colors hover:border-brand-yellow hover:bg-brand-yellow hover:text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 dark:border-zinc-700 dark:bg-zinc-900/70 dark:text-zinc-300">
           <svg aria-hidden="true" viewBox="0 0 20 20" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 5l-5 5 5 5" />
           </svg>
           All orders
         </Link>
         {next && (
-          <Link href={`/admin/orders/${next.id}`} className="ml-auto rounded-md border border-zinc-300 px-3 py-1.5 text-sm font-medium hover:bg-zinc-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 dark:border-zinc-700 dark:hover:bg-zinc-800">
+          <Link href={`/admin/orders/${next.id}`} className="ml-auto rounded-full border border-zinc-300 px-3 py-1.5 text-sm font-semibold hover:bg-zinc-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 dark:border-zinc-700 dark:hover:bg-zinc-800">
             Next order waiting
           </Link>
         )}
       </div>
 
       {limitMessage && !limitMessage.ok && (
-        <p role="alert" className="mt-4 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-100">
+        <p role="alert" className="mt-4 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm font-medium text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-100">
           {limitMessage.message}
         </p>
       )}
       {notice && NOTICE[notice] && (
-        <p role="alert" className="mt-4 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-100">
+        <p role="alert" className="mt-4 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm font-medium text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-100">
           {NOTICE[notice]}
         </p>
       )}
       {done && DONE[done] && (
-        <p role="status" className="mt-4 rounded-md border border-emerald-300 bg-emerald-50 p-3 text-sm text-emerald-900 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-100">
+        <p role="status" className="mt-4 rounded-2xl border border-emerald-300 bg-emerald-50 p-4 text-sm font-medium text-emerald-900 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-100">
           {DONE[done]}
         </p>
       )}
 
       <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1">
-        <h1 className="font-mono text-2xl font-semibold tracking-tight">{order.orderId}</h1>
+        <h1 className="font-mono text-3xl font-extrabold tracking-tight">{order.orderId}</h1>
         <StatusBadge status={order.status} />
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">Submitted {formatManila(proof?.createdAt ?? order.createdAt)}</p>
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">Submitted {formatManilaShort(proof?.createdAt ?? order.createdAt)}</p>
       </div>
 
       <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_24rem]">
         <section aria-labelledby="receipt-heading" className="min-w-0">
-          <h2 id="receipt-heading" className="mb-2 text-base font-semibold">
+          <h2 id="receipt-heading" className="mb-3 text-lg font-extrabold tracking-tight">
             Receipt
           </h2>
-          {proof ? <ReceiptViewer src={`/api/admin/receipts/${order.id}`} /> : <p className="rounded-lg border border-dashed border-zinc-300 p-6 text-sm text-zinc-500 dark:text-zinc-400 dark:border-zinc-700">No receipt uploaded yet.</p>}
+          {proof ? <ReceiptViewer src={`/api/admin/receipts/${order.id}`} /> : <p className="rounded-2xl border-2 border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:text-zinc-400 dark:border-zinc-700">No receipt uploaded yet.</p>}
         </section>
 
         <div className="space-y-5 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:self-start lg:overflow-y-auto">
@@ -137,8 +137,8 @@ async function Review({ params, searchParams }: { params: PageProps<"/admin/orde
             />
           )}
 
-          <aside aria-labelledby="decision-heading" className="rounded-lg border border-zinc-300 p-5 shadow-sm dark:border-zinc-700">
-            <h2 id="decision-heading" className="text-base font-semibold">
+          <aside aria-labelledby="decision-heading" className="lift-card rounded-2xl border border-zinc-200/70 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+            <h2 id="decision-heading" className="text-lg font-extrabold tracking-tight">
               Decision
             </h2>
             {canReview ? (
@@ -158,9 +158,9 @@ async function Review({ params, searchParams }: { params: PageProps<"/admin/orde
         </div>
       </div>
 
-      <div className="mt-10 grid gap-10 border-t border-zinc-200 pt-8 md:grid-cols-2 lg:grid-cols-3 dark:border-zinc-800">
-        <section aria-labelledby="items-heading">
-          <h2 id="items-heading" className="text-base font-semibold">
+      <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <section aria-labelledby="items-heading" className="lift-card rounded-2xl border border-zinc-200/70 bg-white p-5 sm:p-6 dark:border-zinc-800 dark:bg-zinc-900">
+          <h2 id="items-heading" className="text-lg font-extrabold tracking-tight">
             Items
           </h2>
           <ul className="mt-3 divide-y divide-zinc-200 text-sm dark:divide-zinc-800">
@@ -182,8 +182,8 @@ async function Review({ params, searchParams }: { params: PageProps<"/admin/orde
           </ul>
         </section>
 
-        <section aria-labelledby="buyer-heading">
-          <h2 id="buyer-heading" className="text-base font-semibold">
+        <section aria-labelledby="buyer-heading" className="lift-card rounded-2xl border border-zinc-200/70 bg-white p-5 sm:p-6 dark:border-zinc-800 dark:bg-zinc-900">
+          <h2 id="buyer-heading" className="text-lg font-extrabold tracking-tight">
             Buyer
           </h2>
           <dl className="mt-3 space-y-3">
@@ -205,15 +205,15 @@ async function Review({ params, searchParams }: { params: PageProps<"/admin/orde
           </dl>
         </section>
 
-        <section aria-labelledby="history-heading" className="md:col-span-2 lg:col-span-1">
-          <h2 id="history-heading" className="text-base font-semibold">
+        <section aria-labelledby="history-heading" className="lift-card rounded-2xl border border-zinc-200/70 bg-white p-5 sm:p-6 dark:border-zinc-800 dark:bg-zinc-900 md:col-span-2 lg:col-span-1">
+          <h2 id="history-heading" className="text-lg font-extrabold tracking-tight">
             History
           </h2>
           <ol className="mt-3 space-y-4 border-l border-zinc-200 pl-4 text-sm dark:border-zinc-800">
             {events.map((e, n) => (
               <li key={n}>
                 <p className="font-medium">{STATUS_LABEL[e.status]}</p>
-                <p className="text-zinc-500 dark:text-zinc-400">{formatManila(e.at)}</p>
+                <p className="text-zinc-500 dark:text-zinc-400">{formatManilaShort(e.at)}</p>
                 <p className="text-zinc-500 dark:text-zinc-400">
                   {e.by ? `by ${e.by}` : "by the system"}
                   {e.note ? `, ${e.note}` : ""}

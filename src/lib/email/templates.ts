@@ -108,6 +108,12 @@ export function formatManila(date: Date): string {
   return new Intl.DateTimeFormat("en-PH", { dateStyle: "long", timeStyle: "short", timeZone: "Asia/Manila" }).format(date);
 }
 
+// The short form for the admin screens, where dates sit in narrow table columns: "Nov 11, 2026, 12:53 AM".
+// Emails and the buyer's tracking page keep the long form above.
+export function formatManilaShort(date: Date): string {
+  return new Intl.DateTimeFormat("en-PH", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Manila" }).format(date);
+}
+
 // Email 9: payment rejected. No Order ID here: the order is not confirmed yet.
 export function renderEmail9(d: { buyerName: string; reason: RejectReason; deadline: Date }, ticketUrl: string | null): EmailContent {
   const form = ticketUrl ?? "(the merch ticket form link will be added soon)";

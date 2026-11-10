@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 type Choice = "system" | "light" | "dark";
 const CHOICES: { value: Choice; label: string }[] = [
@@ -59,7 +59,8 @@ function applyAnimated(choice: Choice, from: { x: number; y: number }) {
   transition.finished.finally(() => delete root.dataset.themeSwitching);
 }
 
-export function ThemeSwitch() {
+// The saved choice, the follow-the-device behaviour and the pick action, shared by the button group and the menu.
+function useTheme(animate = true) {
   const choice = useSyncExternalStore(subscribe, read, () => "system" as Choice);
 
   // While on System, follow the device when it switches (for example at sunset).
@@ -79,9 +80,86 @@ export function ThemeSwitch() {
     } catch {
       /* private mode: the choice lasts until the page closes */
     }
-    applyAnimated(value, from);
+    if (animate) applyAnimated(value, from);
+    else apply(value);
     window.dispatchEvent(new Event("theme-change"));
   };
+  return { choice, pick };
+}
+
+// A dropdown version for the admin sidebar: one row like the other links, showing the current choice, that
+// opens a short list. Escape or a click elsewhere closes it. The admin switches theme at once, with no circle
+// animation (that belongs to the shop).
+export function ThemeMenu({ icon }: { icon: React.ReactNode }) {
+  const { choice, pick } = useTheme(false);
+  const [open, setOpen] = useState(false);
+  const wrap = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const onPointer = (e: PointerEvent) => {
+      if (wrap.current && !wrap.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointer);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onPointer);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+  const current = CHOICES.find((c) => c.value === choice)?.label ?? "System";
+
+  return (
+    <div ref={wrap}>
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls="theme-menu-list"
+        onClick={() => setOpen((o) => !o)}
+        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
+      >
+        {icon}
+        <span>Theme</span>
+        <span className="ml-auto text-xs font-medium text-zinc-400 dark:text-zinc-500">{current}</span>
+        <svg aria-hidden="true" viewBox="0 0 20 20" className={`size-4 shrink-0 text-zinc-400 transition-transform ${open ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M5 8l5 5 5-5" />
+        </svg>
+      </button>
+      {open && (
+        <ul id="theme-menu-list" className="mt-1 space-y-0.5 pl-3">
+          {CHOICES.map((c) => (
+            <li key={c.value}>
+              <button
+                type="button"
+                aria-pressed={choice === c.value}
+                onClick={(e) => {
+                  const r = e.currentTarget.getBoundingClientRect();
+                  pick(c.value, { x: r.left + r.width / 2, y: r.top + r.height / 2 });
+                  setOpen(false);
+                }}
+                className={`flex w-full items-center gap-3 rounded-xl py-2 pl-9 pr-3 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 ${
+                  choice === c.value ? "bg-zinc-100 text-zinc-950 dark:bg-zinc-800 dark:text-zinc-50" : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                }`}
+              >
+                {c.label}
+                {choice === c.value && (
+                  <svg aria-hidden="true" viewBox="0 0 20 20" className="ml-auto size-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m4.5 10.5 3.5 3.5 7.5-8" />
+                  </svg>
+                )}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+export function ThemeSwitch() {
+  const { choice, pick } = useTheme();
 
   return (
     <div role="group" aria-label="Theme" className="inline-flex rounded-md border border-zinc-300 p-0.5 text-sm dark:border-zinc-700">

@@ -20,7 +20,7 @@ export function StatusControl({ orderUuid, options }: { orderUuid: string; optio
           name="note"
           rows={2}
           maxLength={300}
-          className="mt-1 w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm dark:border-zinc-700"
+          className="mt-1 w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-sm outline-none transition focus-visible:border-brand-blue focus-visible:ring-4 focus-visible:ring-brand-blue/25 dark:border-zinc-700 dark:bg-zinc-950"
           aria-describedby="note-hint"
         />
         <p id="note-hint" className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
@@ -43,7 +43,7 @@ function StatusButton({ orderUuid, to }: { orderUuid: string; to: OrderStatus })
       type="submit"
       formAction={setOrderStatus.bind(null, orderUuid, to)}
       disabled={pending}
-      className={`w-full rounded-md border px-4 py-2.5 text-sm font-medium disabled:cursor-wait disabled:opacity-60 ${
+      className={`w-full rounded-xl border px-4 py-2.5 text-sm font-medium disabled:cursor-wait disabled:opacity-60 ${
         danger ? "border-red-700 text-red-800 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-950" : "border-zinc-300 hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
       }`}
     >

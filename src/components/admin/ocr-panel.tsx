@@ -61,7 +61,7 @@ export function OcrPanel({ totalCentavos, typedReference, channel, ocrAmount, oc
   const verdict = VERDICT[ocrResult];
 
   return (
-    <section aria-labelledby="check-heading" className="rounded-lg border border-zinc-200 p-5 dark:border-zinc-800">
+    <section aria-labelledby="check-heading" className="lift-card rounded-2xl border border-zinc-200/70 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 id="check-heading" className="text-base font-semibold">
           Check against the receipt
@@ -70,7 +70,7 @@ export function OcrPanel({ totalCentavos, typedReference, channel, ocrAmount, oc
       </div>
 
       {duplicates.length > 0 && (
-        <div role="alert" className="mt-4 rounded-md border border-amber-400 bg-amber-50 p-3 text-sm text-amber-950 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100">
+        <div role="alert" className="mt-4 rounded-2xl border border-amber-400 bg-amber-50 p-4 text-sm font-medium text-amber-950 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100">
           <p className="font-semibold">This reference number was already used on another order.</p>
           <p className="mt-1">Make sure the same payment is not claimed twice:</p>
           <ul className="mt-2 space-y-1">

@@ -8,7 +8,7 @@ import { STATUS_LABEL } from "@/lib/status";
 function Save() {
   const { pending } = useFormStatus();
   return (
-    <button type="submit" disabled={pending} className="w-full rounded-md border border-zinc-400 px-4 py-2.5 text-sm font-medium hover:bg-zinc-100 disabled:cursor-wait disabled:opacity-60 dark:border-zinc-600 dark:hover:bg-zinc-800">
+    <button type="submit" disabled={pending} className="w-full rounded-full border border-zinc-400 px-4 py-2.5 text-sm font-semibold hover:bg-zinc-100 disabled:cursor-wait disabled:opacity-60 dark:border-zinc-600 dark:hover:bg-zinc-800">
       {pending ? "Saving…" : "Save correction"}
     </button>
   );
@@ -25,7 +25,7 @@ export function CorrectionForm({ orderUuid, targets }: { orderUuid: string; targ
           <label htmlFor="correct-to" className="text-sm font-medium">
             Correct status
           </label>
-          <select id="correct-to" name="to" required defaultValue="" className="mt-1 w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm dark:border-zinc-700">
+          <select id="correct-to" name="to" required defaultValue="" className="mt-1 w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-sm outline-none transition focus-visible:border-brand-blue focus-visible:ring-4 focus-visible:ring-brand-blue/25 dark:border-zinc-700 dark:bg-zinc-950">
             <option value="" disabled>
               Choose the right status
             </option>
@@ -40,7 +40,7 @@ export function CorrectionForm({ orderUuid, targets }: { orderUuid: string; targ
           <label htmlFor="correct-reason" className="text-sm font-medium">
             What went wrong
           </label>
-          <textarea id="correct-reason" name="reason" required rows={2} maxLength={300} className="mt-1 w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm dark:border-zinc-700" />
+          <textarea id="correct-reason" name="reason" required rows={2} maxLength={300} className="mt-1 w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-sm outline-none transition focus-visible:border-brand-blue focus-visible:ring-4 focus-visible:ring-brand-blue/25 dark:border-zinc-700 dark:bg-zinc-950" />
         </div>
         <Save />
         <p className="text-xs text-zinc-500 dark:text-zinc-400">Recorded in the history and audit log with your name. The buyer is not emailed.</p>

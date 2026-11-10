@@ -7,8 +7,8 @@ import { getLaunchAt, isStoreLocked } from "@/lib/store";
 
 export const metadata: Metadata = { title: "Store settings" };
 
-const GOOD = "rounded-md border border-emerald-300 bg-emerald-50 p-3 text-sm text-emerald-900 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-100";
-const WARN = "rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-100";
+const GOOD = "rounded-2xl border border-emerald-300 bg-emerald-50 p-4 text-sm font-medium text-emerald-900 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-100";
+const WARN = "rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm font-medium text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-100";
 
 // The two controls that used to sit above the order list: opening or closing the store, and the launch
 // date. They are rarely used, so they live here instead of in front of the orders finance works on all day.
@@ -22,7 +22,7 @@ async function Settings({ searchParams }: { searchParams: PageProps<"/admin/sett
 
   return (
     <>
-      <h1 className="text-2xl font-semibold tracking-tight">Store settings</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight">Store settings</h1>
       <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">Changes here apply to buyers straight away.</p>
 
       {store && (

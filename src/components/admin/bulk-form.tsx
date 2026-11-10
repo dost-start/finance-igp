@@ -12,7 +12,7 @@ function Apply({ count }: { count: number }) {
     <button
       type="submit"
       disabled={pending || count === 0}
-      className="rounded-md bg-sky-800 px-5 py-2.5 text-sm font-semibold text-white hover:bg-sky-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 disabled:cursor-not-allowed disabled:opacity-50"
+      className="rounded-full bg-sky-800 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-sky-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 disabled:cursor-not-allowed disabled:opacity-50"
     >
       {pending ? "Updating…" : `Update ${count} selected`}
     </button>
@@ -50,14 +50,14 @@ export function BulkForm({ children }: { children: ReactNode }) {
       {children}
 
       {count === 0 && !state && <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">Tick orders to update them together.</p>}
-      <div hidden={count === 0 && !state} className="sticky bottom-0 mt-4 rounded-lg border border-zinc-300 bg-white p-4 shadow-sm dark:border-zinc-700 dark:bg-zinc-950">
+      <div hidden={count === 0 && !state} className="sticky bottom-0 mt-4 rounded-2xl border border-zinc-300 bg-white p-4 shadow-sm dark:border-zinc-700 dark:bg-zinc-950">
         <fieldset className="grid gap-3 sm:grid-cols-[14rem_1fr_auto] sm:items-end">
           <legend className="mb-2 text-sm font-semibold">Update selected orders</legend>
           <div>
             <label htmlFor="bulk-to" className="text-sm font-medium">
               Move to
             </label>
-            <select id="bulk-to" name="to" defaultValue="" className="mt-1 w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm dark:border-zinc-700">
+            <select id="bulk-to" name="to" defaultValue="" className="mt-1 w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-sm outline-none transition focus-visible:border-brand-blue focus-visible:ring-4 focus-visible:ring-brand-blue/25 dark:border-zinc-700 dark:bg-zinc-950">
               <option value="" disabled>
                 Choose a status
               </option>
@@ -72,7 +72,7 @@ export function BulkForm({ children }: { children: ReactNode }) {
             <label htmlFor="bulk-note" className="text-sm font-medium">
               Note for the buyers <span className="font-normal text-zinc-500 dark:text-zinc-400">(optional; required to cancel)</span>
             </label>
-            <input id="bulk-note" name="note" maxLength={300} autoComplete="off" className="mt-1 w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm dark:border-zinc-700" />
+            <input id="bulk-note" name="note" maxLength={300} autoComplete="off" className="mt-1 w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-sm outline-none transition focus-visible:border-brand-blue focus-visible:ring-4 focus-visible:ring-brand-blue/25 dark:border-zinc-700 dark:bg-zinc-950" />
           </div>
           <Apply count={count} />
         </fieldset>

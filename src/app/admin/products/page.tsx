@@ -16,19 +16,19 @@ async function Products({ searchParams }: { searchParams: PageProps<"/admin/prod
 
   return (
     <>
-      <h1 className="text-2xl font-semibold tracking-tight">Products</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight">Products</h1>
       <p className="mt-2 max-w-2xl text-sm text-zinc-600 dark:text-zinc-400">Change a product&apos;s name, price, sizes and whether it is on sale. Edits show in the shop straight away. Add new products here as the real catalog arrives. Orders already placed keep the price they were placed at. Only the Technology team sees this page.</p>
       <p className="mt-4">
-        <Link href="/admin/products/new" className="inline-block rounded-md bg-sky-800 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700">
+        <Link href="/admin/products/new" className="inline-block rounded-full bg-sky-800 px-4 py-2 text-sm font-bold text-white transition hover:bg-sky-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700">
           Add a product
         </Link>
       </p>
       {saved && (
-        <p role="status" className="mt-4 rounded-md border border-emerald-300 bg-emerald-50 p-3 text-sm text-emerald-900 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-100">
+        <p role="status" className="mt-4 rounded-2xl border border-emerald-300 bg-emerald-50 p-4 text-sm font-medium text-emerald-900 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-100">
           Saved &ldquo;{saved}&rdquo;.
         </p>
       )}
-      <div className="mt-4 overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-800">
+      <div className="mt-4 overflow-x-auto lift-card rounded-2xl border border-zinc-200/70 bg-white dark:border-zinc-800 dark:bg-zinc-900">
         <table className="w-full min-w-[40rem] text-left text-sm">
           <thead className="bg-zinc-50 text-xs text-zinc-500 dark:text-zinc-400 uppercase dark:bg-zinc-900">
             <tr>

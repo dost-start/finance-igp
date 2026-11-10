@@ -9,14 +9,14 @@ async function Notes() {
   await requireAdmin(); // every finance and tech member can read it
   return (
     <>
-      <h1 className="text-2xl font-semibold tracking-tight">Release notes</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight">Release notes</h1>
       <p className="mt-2 max-w-2xl text-sm text-zinc-600 dark:text-zinc-400">
         What changed in each version of the shop, newest first. You are on <strong>version {CURRENT_VERSION}</strong>. A new sprint raises the middle number; a fix or polish raises the last.
       </p>
-      <div className="mt-6 space-y-10">
+      <div className="mt-6 space-y-5">
         {RELEASES.map((r) => (
-          <section key={r.version} aria-labelledby={`v${r.version}`} className="max-w-3xl">
-            <h2 id={`v${r.version}`} className="text-lg font-semibold">
+          <section key={r.version} aria-labelledby={`v${r.version}`} className="lift-card max-w-3xl rounded-2xl border border-zinc-200/70 bg-white p-5 sm:p-7 dark:border-zinc-800 dark:bg-zinc-900">
+            <h2 id={`v${r.version}`} className="text-xl font-extrabold tracking-tight">
               {r.version}: {r.title}
               {r.version === CURRENT_VERSION && <span className="ml-2 rounded-full bg-emerald-100 px-2.5 py-0.5 align-middle text-xs font-medium text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200">Running now</span>}
             </h2>

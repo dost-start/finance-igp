@@ -20,16 +20,16 @@ export function ReceiptViewer({ src }: { src: string }) {
             type="button"
             onClick={() => setLevel(i)}
             aria-pressed={level === i}
-            className={["rounded-md border px-3 py-1", level === i ? "border-sky-800 bg-sky-800 text-white" : "border-zinc-300 dark:border-zinc-700"].join(" ")}
+            className={["rounded-full border px-4 py-1.5 font-semibold transition-colors", level === i ? "border-sky-800 bg-sky-800 text-white" : "border-zinc-300 bg-white hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-950 dark:hover:bg-zinc-800"].join(" ")}
           >
             {l.label}
           </button>
         ))}
-        <a href={src} target="_blank" rel="noopener noreferrer" className="ml-auto underline underline-offset-4">
+        <a href={src} target="_blank" rel="noopener noreferrer" className="ml-auto font-semibold underline underline-offset-4">
           Open full size
         </a>
       </div>
-      <div className="max-h-[70vh] overflow-auto rounded-lg border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="lift-card max-h-[70vh] overflow-auto rounded-2xl border border-zinc-200/70 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={src}
