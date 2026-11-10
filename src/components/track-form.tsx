@@ -57,7 +57,7 @@ export function TrackForm() {
         <button
           type="submit"
           disabled={pending}
-          className="w-full rounded-md bg-sky-800 px-5 py-3 text-sm font-semibold text-white hover:bg-sky-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 disabled:cursor-wait disabled:opacity-70 sm:w-auto"
+          className="w-full rounded-full bg-sky-800 px-5 py-3 text-sm font-semibold text-white hover:bg-sky-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 disabled:cursor-wait disabled:opacity-70 sm:w-auto"
         >
           {pending ? "Checking…" : "Track my order"}
         </button>

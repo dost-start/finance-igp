@@ -43,7 +43,7 @@ export function ProductGallery({ name, images, fit }: { name: string; images: Ga
       }}
       className="relative rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-700"
     >
-      <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-900">
+      <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-product-backdrop">
         {images.map((img, i) => (
           <Image
             key={img.url + i}

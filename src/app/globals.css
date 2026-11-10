@@ -4,37 +4,77 @@
    first paint from the saved choice (Light, Dark) or, for System, from the device's own setting. */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
+/* START-DOST Brand Book 26-27. Backgrounds avoid pure white and pure black (#FAFAFA, #121212); dark
+   ink is #202124, light ink #F1F3F4; logo colours are blue #0099FF, yellow #FFDD00 and slate #465461. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  /* One accent for the whole app: links, primary buttons, focus. Tailwind sky stays the source. */
-  --accent: #075985;
-  --accent-soft: #e0f2fe;
-  --focus: #0369a1;
+  --background: #fafafa;
+  --foreground: #202124;
+  /* Links, primary buttons and focus use the brand's deep blue shade, which keeps 4.5:1 with white text. */
+  --accent: #0057b2;
+  --accent-soft: #d9efff;
+  --focus: #0077d6;
   color-scheme: light;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-poppins);
   --font-mono: var(--font-geist-mono);
 }
 
+/* The brand palette replaces Tailwind's sky (accent) and zinc (neutrals) so every existing class takes
+   the brand without touching markup. Steps keep roughly the old lightness so earlier contrast checks hold.
+   Brand shades used as-is: #94d4ff, #5fbfff, #3bb1ff, #0099ff, #0057b2, #465461, #3c4043, #202124, #121212. */
+@theme {
+  --color-sky-50: #eef8ff;
+  --color-sky-100: #d9efff;
+  --color-sky-200: #b8e2ff;
+  --color-sky-300: #94d4ff;
+  --color-sky-400: #5fbfff;
+  --color-sky-500: #3bb1ff;
+  --color-sky-600: #0099ff;
+  --color-sky-700: #0077d6;
+  --color-sky-800: #0057b2;
+  --color-sky-900: #00468f;
+  --color-sky-950: #002a57;
+
+  --color-zinc-50: #f4f5f6;
+  --color-zinc-100: #eceef0;
+  --color-zinc-200: #e0e3e6;
+  --color-zinc-300: #cdd2d7;
+  --color-zinc-400: #a0a8b1;
+  --color-zinc-500: #646f7b;
+  --color-zinc-600: #4f5a66;
+  --color-zinc-700: #3c4043;
+  --color-zinc-800: #2a2d31;
+  --color-zinc-900: #202124;
+  --color-zinc-950: #121212;
+
+  --color-brand-blue: #0099ff;
+  --color-brand-yellow: #ffdd00;
+  --color-brand-yellow-soft: #ffe646;
+  --color-brand-slate: #465461;
+  /* The grey studio backdrop of the shirt photos, behind every product image so the lineup reads as one set. */
+  --color-product-backdrop: #bdbdbd;
+}
+
 :root[data-theme="dark"] {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-  --accent: #7dd3fc;
-  --accent-soft: #082f49;
-  --focus: #38bdf8;
+  --background: #121212;
+  --foreground: #f1f3f4;
+  --accent: #5fbfff;
+  --accent-soft: #002a57;
+  --focus: #3bb1ff;
   color-scheme: dark;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-poppins), Arial, Helvetica, sans-serif;
   text-rendering: optimizeLegibility;
+  /* Full-bleed brand fields reach 100vw; clip the scrollbar's width instead of scrolling sideways. */
+  overflow-x: clip;
 }
 
 /* Headings break evenly instead of leaving one word alone on the last line. */
@@ -42,6 +82,7 @@ h1,
 h2,
 h3 {
   text-wrap: balance;
+  letter-spacing: -0.02em;
 }
 
 p,
@@ -88,14 +129,16 @@ html {
 
 /* Buttons and links step down a hair on press so a tap feels received. */
 button:not(:disabled),
-a[class*="rounded-md"][class*="bg-"] {
+a[class*="rounded-md"][class*="bg-"],
+a[class*="rounded-full"][class*="bg-"] {
   transition:
     background-color 150ms cubic-bezier(0.22, 1, 0.36, 1),
     transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 button:not(:disabled):active,
-a[class*="rounded-md"][class*="bg-"]:active {
+a[class*="rounded-md"][class*="bg-"]:active,
+a[class*="rounded-full"][class*="bg-"]:active {
   transform: translateY(1px);
 }
 

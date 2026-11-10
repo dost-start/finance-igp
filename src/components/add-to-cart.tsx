@@ -111,7 +111,7 @@ export function AddToCart({ product }: Props) {
           type="button"
           onClick={onAdd}
           disabled={!firstAvailable}
-          className="w-full rounded-md bg-sky-800 px-5 py-3 text-sm font-semibold text-white hover:bg-sky-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 disabled:cursor-not-allowed disabled:bg-zinc-300 sm:w-auto dark:disabled:bg-zinc-700"
+          className="w-full rounded-full bg-sky-800 px-5 py-3 text-sm font-semibold text-white hover:bg-sky-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 disabled:cursor-not-allowed disabled:bg-zinc-300 sm:w-auto dark:disabled:bg-zinc-700"
         >
           {firstAvailable ? "Add to cart" : "Sold out"}
         </button>

@@ -214,7 +214,7 @@ export function PaymentForm({ orderUuid, totalCentavos, channels, alreadySubmitt
         <button
           type="submit"
           disabled={busy}
-          className="mt-5 w-full rounded-md bg-sky-800 px-5 py-3 text-sm font-semibold text-white hover:bg-sky-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 disabled:cursor-wait disabled:opacity-70"
+          className="mt-5 w-full rounded-full bg-sky-800 px-5 py-3 text-sm font-semibold text-white hover:bg-sky-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 disabled:cursor-wait disabled:opacity-70"
         >
           {busy ? (step === "checking" ? "Checking receipt…" : "Uploading…") : phase === "error" ? "Try again" : "Submit payment details"}
         </button>

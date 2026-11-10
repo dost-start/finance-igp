@@ -1,4 +1,5 @@
 import { Landing, type LineupItem } from "@/components/landing";
+import { StartIntro } from "@/components/start-intro";
 import { getActiveProducts } from "@/lib/catalog";
 
 // The landing page (PRD FR07.01 to 07.06). The page itself stays static and fast; the countdown, the
@@ -12,5 +13,10 @@ export default async function Home() {
     priceCentavos: p.priceCentavos,
     soldOut: p.sizes.every((s) => !s.available),
   }));
-  return <Landing lineup={lineup} />;
+  return (
+    <>
+      <StartIntro />
+      <Landing lineup={lineup} />
+    </>
+  );
 }

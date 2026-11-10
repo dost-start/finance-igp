@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Checkout", robots: { index: false } 
 export default function CheckoutPage() {
   return (
     <main>
-      <h1 className="text-3xl font-semibold tracking-tight">Checkout</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight">Checkout</h1>
       <CheckoutGate>
         <CheckoutForm />
       </CheckoutGate>
