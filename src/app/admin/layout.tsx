@@ -42,19 +42,19 @@ async function ProductsLink() {
 export default function AdminLayout({ children }: LayoutProps<"/admin">) {
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between border-b border-zinc-200 pb-4 dark:border-zinc-800">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-b border-zinc-200 pb-4 dark:border-zinc-800">
         <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
           <Link href="/admin" className="font-semibold">
             Merch admin
           </Link>
-          <nav aria-label="Admin sections" className="flex gap-4 text-sm">
+          <nav aria-label="Admin sections" className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
             <Link href="/admin" className="underline-offset-4 hover:underline">
               Orders
             </Link>
-            <Link href="/admin/emails" className="underline-offset-4 hover:underline">
+            <Link href="/admin/emails" className="whitespace-nowrap underline-offset-4 hover:underline">
               Email log
             </Link>
-            <Link href="/admin/audit" className="underline-offset-4 hover:underline">
+            <Link href="/admin/audit" className="whitespace-nowrap underline-offset-4 hover:underline">
               Audit log
             </Link>
             <Suspense fallback={null}>
@@ -66,7 +66,7 @@ export default function AdminLayout({ children }: LayoutProps<"/admin">) {
             <Link href="/admin/help" className="underline-offset-4 hover:underline">
               Help
             </Link>
-            <Link href="/admin/changelog" className="underline-offset-4 hover:underline">
+            <Link href="/admin/changelog" className="whitespace-nowrap underline-offset-4 hover:underline">
               Release notes <span className="text-zinc-500 dark:text-zinc-400">v{CURRENT_VERSION}</span>
             </Link>
           </nav>

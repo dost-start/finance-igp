@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Third-party reading engine copied from node_modules (scripts/copy-ocr-assets.mjs).
     "public/ocr/**",
+    // Vendored Claude Code skills (third-party scripts), not app code.
+    ".claude/**",
   ]),
 ]);
 

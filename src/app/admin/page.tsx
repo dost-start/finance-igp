@@ -142,17 +142,17 @@ function Table({ rows }: { rows: OrderRow[] }) {
                   <Link href={`/admin/orders/${r.id}`} className="underline underline-offset-4">
                     {r.orderId}
                   </Link>
-                  {urgent && <span className="ml-2 text-xs font-sans font-semibold text-amber-900 dark:text-amber-200">Check first</span>}
+                  {urgent && <span className="ml-2 whitespace-nowrap text-xs font-sans font-semibold text-amber-900 dark:text-amber-200">Check first</span>}
                 </td>
                 <td className="px-3 py-2">{r.buyer}</td>
                 <td className="px-3 py-2 tabular-nums">{formatPeso(r.total)}</td>
                 <td className="px-3 py-2">{r.channel ?? "-"}</td>
-                <td className="px-3 py-2 font-mono text-xs break-all">{r.reference ?? "-"}</td>
+                <td className="px-3 py-2 font-mono text-xs whitespace-nowrap">{r.reference ?? "-"}</td>
                 <td className="px-3 py-2">
                   <Flags r={r} />
                 </td>
-                <td className="px-3 py-2 whitespace-nowrap">{formatManila(r.when)}</td>
-                <td className="px-3 py-2">
+                <td className="whitespace-nowrap px-2 py-2 text-[13px]">{formatManila(r.when)}</td>
+                <td className="px-3 py-2 whitespace-nowrap">
                   <StatusBadge status={r.status} />
                 </td>
               </tr>

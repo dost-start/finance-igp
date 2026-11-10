@@ -49,7 +49,8 @@ export function BulkForm({ children }: { children: ReactNode }) {
     >
       {children}
 
-      <div className="sticky bottom-0 mt-4 rounded-lg border border-zinc-300 bg-white p-4 shadow-sm dark:border-zinc-700 dark:bg-zinc-950">
+      {count === 0 && !state && <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">Tick one or more orders to update them together.</p>}
+      <div hidden={count === 0 && !state} className="sticky bottom-0 mt-4 rounded-lg border border-zinc-300 bg-white p-4 shadow-sm dark:border-zinc-700 dark:bg-zinc-950">
         <fieldset className="grid gap-3 sm:grid-cols-[14rem_1fr_auto] sm:items-end">
           <legend className="mb-2 text-sm font-semibold">Update the selected orders together</legend>
           <div>
