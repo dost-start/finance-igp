@@ -45,24 +45,27 @@ html:has(.shop-page) {
   mask-image: linear-gradient(to right, black 0%, black 35%, transparent 75%);
 }
 
-/* The circuit art behind the title draws its lines in, then its nodes appear. */
+/* The circuit art behind the title draws its lines in, then its nodes appear. The resting state is fully
+   drawn and the animations only start from hidden ("both" fill), so if an animation never runs the art still
+   shows instead of staying invisible. */
 .shop-circuit path {
   stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation: shop-trace 1400ms cubic-bezier(0.65, 0, 0.35, 1) 200ms forwards;
+  stroke-dashoffset: 0;
+  animation: shop-trace 1400ms cubic-bezier(0.65, 0, 0.35, 1) 200ms both;
 }
 .shop-circuit path:nth-of-type(2) { animation-delay: 450ms; }
 .shop-circuit path:nth-of-type(3) { animation-delay: 650ms; }
 .shop-circuit path:nth-of-type(4) { animation-delay: 800ms; }
 .shop-circuit path:nth-of-type(5) { animation-delay: 950ms; }
 .shop-circuit g {
-  opacity: 0;
-  animation: shop-fade 600ms ease 1300ms forwards;
+  animation: shop-fade 600ms ease 1300ms both;
 }
 @keyframes shop-trace {
+  from { stroke-dashoffset: 1; }
   to { stroke-dashoffset: 0; }
 }
 @keyframes shop-fade {
+  from { opacity: 0; }
   to { opacity: 1; }
 }
 
@@ -70,10 +73,10 @@ html:has(.shop-page) {
 .shop-highlight {
   clip-path: polygon(3% 0, 97% 0, 100% 100%, 0 100%);
   transform-origin: left center;
-  transform: scaleX(0);
-  animation: shop-sweep 700ms cubic-bezier(0.22, 1, 0.36, 1) 500ms forwards;
+  animation: shop-sweep 700ms cubic-bezier(0.22, 1, 0.36, 1) 500ms both;
 }
 @keyframes shop-sweep {
+  from { transform: scaleX(0); }
   to { transform: scaleX(1); }
 }
 
