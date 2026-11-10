@@ -169,7 +169,6 @@ export function CartView() {
               <path d="M4 10h12m0 0-5-5m5 5-5 5" />
             </svg>
           </Link>
-          <p className="mt-3 text-center text-xs text-zinc-400">The final total is confirmed at checkout.</p>
         </aside>
       </div>
     </>
