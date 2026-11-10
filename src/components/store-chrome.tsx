@@ -5,6 +5,7 @@ import { CartLink } from "@/components/cart-link";
 import { MobileCartBar } from "@/components/mobile-cart-bar";
 import { ScrollFlag } from "@/components/scroll-flag";
 import { MARK_SVG } from "@/components/start-intro-svg";
+import { WORD_SVG } from "@/components/start-word-svg";
 import { StoreBanner } from "@/components/store-banner";
 import { ThemeSwitch } from "@/components/theme-switch";
 
@@ -15,7 +16,7 @@ export function StoreChrome({ children }: { children: ReactNode }) {
     <div className="flex flex-1 flex-col pb-20 sm:pb-0">
       <StoreBanner />
       {/* At the top of the page the header is a plain bar with just the START mark (the page itself carries the
-          name). Once the page scrolls it becomes a floating frosted pill and "START: COLLECTIONS" slides out beside
+          name); right after the logo intro the START wordmark peeks out beside it and tucks back. Once the page scrolls it becomes a floating frosted pill and "START: COLLECTIONS" slides out beside
           the mark; ScrollFlag sets <html data-scrolled> and src/app/start-intro.css does the rest. */}
       <ScrollFlag />
       <header className="sticky top-0 z-40">
@@ -26,6 +27,16 @@ export function StoreChrome({ children }: { children: ReactNode }) {
             className="flex shrink-0 items-center whitespace-nowrap text-sm font-extrabold tracking-tight sm:text-lg"
           >
             <span className="si-hdr-mark relative z-10 block h-7 sm:h-9" dangerouslySetInnerHTML={{ __html: MARK_SVG }} />
+            {/* Right after the logo intro (or on load), the START wordmark slides out beside the mark, holds, and
+                tucks back behind it; see .si-hdr-tease. */}
+            <span className="si-hdr-tease" aria-hidden="true">
+              <span className="si-hdr-clip">
+                <span className="si-hdr-tease-word block pl-2 sm:pl-2.5">
+                  {/* A fixed aspect box: inside the sliding column the SVG needs a definite width to open into. */}
+                  <span className="block aspect-[1742/400] h-[18px] sm:h-[22px]" dangerouslySetInnerHTML={{ __html: WORD_SVG }} />
+                </span>
+              </span>
+            </span>
             {/* Phones never show the name (it would push the cart off screen); see .si-hdr-name. */}
             <span className="si-hdr-name" aria-hidden="true">
               <span className="si-hdr-clip">

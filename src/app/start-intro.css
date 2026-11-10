@@ -36,6 +36,44 @@
   to { opacity: 1; transform: none; }
 }
 
+/* ---------------------------------------------------------------- header wordmark reveal */
+/* After the mark lands, the START wordmark slides out beside it (its column opens from 0fr), holds, then tucks
+   back behind the mark. It waits while the logo intro plays, so it reads as the intro handing over to the header,
+   and gives way to the scrolled name ("START: COLLECTIONS") once the page scrolls. */
+.si-word {
+  display: block;
+  height: 100%;
+  width: auto;
+  overflow: visible;
+}
+.si-hdr-tease {
+  display: grid;
+  grid-template-columns: 0fr;
+  animation: si-hdr-tease 2800ms cubic-bezier(0.22, 1, 0.36, 1) 550ms both;
+}
+.si-hdr-tease-word {
+  animation: si-hdr-tease-word 2800ms cubic-bezier(0.22, 1, 0.36, 1) 550ms both;
+}
+:root[data-intro="playing"] .si-hdr-tease,
+:root[data-intro="playing"] .si-hdr-tease-word {
+  animation-play-state: paused;
+}
+:root[data-scrolled] .si-hdr-tease {
+  display: none;
+}
+@keyframes si-hdr-tease {
+  0% { grid-template-columns: 0fr; }
+  20% { grid-template-columns: 1fr; }
+  80% { grid-template-columns: 1fr; }
+  100% { grid-template-columns: 0fr; }
+}
+@keyframes si-hdr-tease-word {
+  0% { opacity: 0; transform: translateX(-100%); }
+  20% { opacity: 1; transform: none; }
+  80% { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: translateX(-100%); }
+}
+
 /* ---------------------------------------------------------------- header on scroll */
 /* At the top: a plain bar, mark only. Scrolled (<html data-scrolled>, set by src/components/scroll-flag.tsx): the
    bar lifts into a floating frosted pill and the shop name slides out to the right from behind the mark. */
@@ -254,7 +292,9 @@
   :root[data-intro="playing"] {
     overflow: visible;
   }
-  .si-hdr-mark {
+  .si-hdr-mark,
+  .si-hdr-tease,
+  .si-hdr-tease-word {
     animation: none;
   }
   .si-header-bar,

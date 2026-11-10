@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getActiveProducts } from "@/lib/catalog";
+import { IntroReplayButton } from "@/components/intro-replay-button";
 import { ShelfRow } from "@/components/shelf-row";
 import { StartIntro } from "@/components/start-intro";
 import { formatPeso } from "@/lib/money";
@@ -127,10 +128,11 @@ export default async function Shop() {
             <h1 className="text-5xl font-extrabold leading-[1.02] tracking-tight sm:text-6xl">
               The{" "}
               {/* A yellow bar under START, cut like a step of the wordmark's pyramid. */}
-              <span className="relative isolate inline-block">
+              {/* START is also a button: pressing it plays the logo intro again. */}
+              <IntroReplayButton>
                 <span aria-hidden="true" className="shop-highlight absolute -inset-x-[0.1em] bottom-[0.06em] -z-10 h-[0.36em] bg-brand-yellow" />
                 START
-              </span>
+              </IntroReplayButton>
               <br />
               Collection.
             </h1>
