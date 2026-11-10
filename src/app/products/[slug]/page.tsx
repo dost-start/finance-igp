@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { AddToCart } from "@/components/add-to-cart";
+import { ProductGallery } from "@/components/product-gallery";
 import { getActiveProducts, getProductBySlug } from "@/lib/catalog";
 import { formatPeso } from "@/lib/money";
 
@@ -38,20 +38,7 @@ async function ProductContent({ params }: { params: PageProps<"/products/[slug]"
       </nav>
 
       <div className="mt-6 grid gap-10 md:grid-cols-2">
-        <div className="space-y-4">
-          {images.map((img, idx) => (
-            <Image
-              key={img.url + idx}
-              src={img.url}
-              alt={idx === 0 ? product.name : `${product.name}, ${img.kind} view`}
-              width={900}
-              height={900}
-              unoptimized
-              priority={idx === 0}
-              className={`aspect-square w-full rounded-lg bg-zinc-100 dark:bg-zinc-900 ${product.productType === "sticker" ? "object-contain p-2" : "object-cover"}`}
-            />
-          ))}
-        </div>
+        <ProductGallery name={product.name} images={images} fit={product.productType === "sticker" ? "contain" : "cover"} />
 
         <div className="md:sticky md:top-6 md:self-start">
           <h1 className="text-3xl font-semibold tracking-tight">{product.name}</h1>
