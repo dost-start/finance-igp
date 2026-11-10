@@ -13,7 +13,7 @@ export function ProductGallery({ name, images, fit }: { name: string; images: Ga
   const touchStartX = useRef<number | null>(null);
   const count = images.length;
   const go = (step: number) => setIndex((i) => (i + step + count) % count);
-  const fitClass = fit === "contain" ? "object-contain p-2" : "object-cover";
+  const fitClass = fit === "contain" ? "object-contain p-[10%]" : "object-cover";
 
   return (
     <div
@@ -41,9 +41,9 @@ export function ProductGallery({ name, images, fit }: { name: string; images: Ga
         const dx = e.changedTouches[0].clientX - start;
         if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
       }}
-      className="relative rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-700"
+      className="relative rounded-3xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-700"
     >
-      <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-product-backdrop">
+      <div className="relative aspect-square w-full overflow-hidden rounded-3xl bg-product-backdrop">
         {images.map((img, i) => (
           <Image
             key={img.url + i}
@@ -66,7 +66,7 @@ export function ProductGallery({ name, images, fit }: { name: string; images: Ga
             type="button"
             onClick={() => go(-1)}
             aria-label="Previous photo"
-            className="absolute left-3 top-1/2 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/85 text-zinc-900 shadow hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 dark:bg-zinc-900/85 dark:text-zinc-100 dark:hover:bg-zinc-900"
+            className="absolute left-3 top-[calc((100%-4.75rem)/2)] flex size-11 -translate-y-1/2 sm:top-[calc((100%-5.75rem)/2)] items-center justify-center rounded-full bg-white/85 text-zinc-900 shadow hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 dark:bg-zinc-900/85 dark:text-zinc-100 dark:hover:bg-zinc-900"
           >
             <svg aria-hidden="true" viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M15 5l-7 7 7 7" />
@@ -76,16 +76,28 @@ export function ProductGallery({ name, images, fit }: { name: string; images: Ga
             type="button"
             onClick={() => go(1)}
             aria-label="Next photo"
-            className="absolute right-3 top-1/2 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/85 text-zinc-900 shadow hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 dark:bg-zinc-900/85 dark:text-zinc-100 dark:hover:bg-zinc-900"
+            className="absolute right-3 top-[calc((100%-4.75rem)/2)] flex size-11 -translate-y-1/2 sm:top-[calc((100%-5.75rem)/2)] items-center justify-center rounded-full bg-white/85 text-zinc-900 shadow hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 dark:bg-zinc-900/85 dark:text-zinc-100 dark:hover:bg-zinc-900"
           >
             <svg aria-hidden="true" viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 5l7 7-7 7" />
             </svg>
           </button>
 
-          <div className="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center gap-1.5" aria-hidden="true">
+          {/* Thumbnails under the photo: tap one to jump to it. */}
+          <div className="mt-3 flex gap-3">
             {images.map((img, i) => (
-              <span key={img.url + i} className={`size-2 rounded-full ${i === index ? "bg-zinc-900 dark:bg-zinc-100" : "bg-zinc-900/30 dark:bg-zinc-100/30"}`} />
+              <button
+                key={img.url + i}
+                type="button"
+                onClick={() => setIndex(i)}
+                aria-label={`Show photo ${i + 1} of ${count}`}
+                aria-current={i === index ? "true" : undefined}
+                className={`relative size-16 overflow-hidden rounded-xl bg-product-backdrop transition sm:size-20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 ${
+                  i === index ? "ring-2 ring-zinc-950 ring-offset-2 ring-offset-background dark:ring-zinc-100" : "opacity-60 hover:opacity-100"
+                }`}
+              >
+                <Image src={img.url} alt="" width={160} height={160} unoptimized className={`size-full ${fit === "contain" ? "object-contain p-1.5" : "object-cover"}`} />
+              </button>
             ))}
           </div>
           <p className="sr-only" aria-live="polite">

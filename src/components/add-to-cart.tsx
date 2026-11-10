@@ -39,22 +39,22 @@ export function AddToCart({ product }: Props) {
   }
 
   return (
-    <div className="mt-6 space-y-5">
+    <div className="space-y-6">
       {!single && (
         <fieldset>
-          <legend className="text-sm font-medium">Size</legend>
-          <div className="mt-2 flex flex-wrap gap-2">
+          <legend className="text-sm font-semibold">Size</legend>
+          <div className="mt-3 flex flex-wrap gap-2">
             {product.sizes.map((s) => {
               const selected = size === s.size;
               return (
                 <label
                   key={s.size}
                   className={[
-                    "relative cursor-pointer rounded-md border px-4 py-2 text-sm has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-sky-700",
+                    "relative grid h-11 min-w-12 cursor-pointer place-items-center rounded-full border px-4 text-sm font-medium transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-sky-700",
                     s.available
                       ? selected
-                        ? "border-sky-800 bg-sky-800 text-white"
-                        : "border-zinc-300 hover:border-zinc-500 dark:border-zinc-700"
+                        ? "border-zinc-950 bg-zinc-950 text-white dark:border-white dark:bg-white dark:text-zinc-950"
+                        : "border-zinc-300 hover:border-zinc-950 dark:border-zinc-700 dark:hover:border-zinc-300"
                       : "cursor-not-allowed border-zinc-200 text-zinc-400 line-through dark:border-zinc-800 dark:text-zinc-600",
                   ].join(" ")}
                 >
@@ -82,11 +82,11 @@ export function AddToCart({ product }: Props) {
       )}
 
       <div>
-        <label htmlFor="qty" className="block text-sm font-medium">
+        <label htmlFor="qty" className="block text-sm font-semibold">
           Quantity
         </label>
-        <div className="mt-2 inline-flex items-center rounded-md border border-zinc-300 dark:border-zinc-700">
-          <button type="button" onClick={() => setQty((q) => Math.max(1, q - 1))} className="px-3 py-2 text-lg leading-none" aria-label="Decrease quantity">
+        <div className="mt-3 inline-flex h-11 items-center rounded-full border border-zinc-300 dark:border-zinc-700">
+          <button type="button" onClick={() => setQty((q) => Math.max(1, q - 1))} className="grid size-11 place-items-center rounded-full text-lg leading-none hover:bg-zinc-100 dark:hover:bg-zinc-800" aria-label="Decrease quantity">
             <span aria-hidden="true">−</span>
           </button>
           <input
@@ -98,9 +98,9 @@ export function AddToCart({ product }: Props) {
               setQty(Math.min(MAX_QTY, Math.max(1, n || 1)));
               setAdded(false);
             }}
-            className="w-12 bg-transparent py-2 text-center text-sm outline-none"
+            className="w-10 bg-transparent text-center text-sm font-semibold tabular-nums outline-none"
           />
-          <button type="button" onClick={() => setQty((q) => Math.min(MAX_QTY, q + 1))} className="px-3 py-2 text-lg leading-none" aria-label="Increase quantity">
+          <button type="button" onClick={() => setQty((q) => Math.min(MAX_QTY, q + 1))} className="grid size-11 place-items-center rounded-full text-lg leading-none hover:bg-zinc-100 dark:hover:bg-zinc-800" aria-label="Increase quantity">
             <span aria-hidden="true">+</span>
           </button>
         </div>
@@ -111,8 +111,13 @@ export function AddToCart({ product }: Props) {
           type="button"
           onClick={onAdd}
           disabled={!firstAvailable}
-          className="w-full rounded-full bg-sky-800 px-5 py-3 text-sm font-semibold text-white hover:bg-sky-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 disabled:cursor-not-allowed disabled:bg-zinc-300 sm:w-auto dark:disabled:bg-zinc-700"
+          className="flex h-13 w-full items-center justify-center gap-2 rounded-full bg-zinc-950 px-6 text-base font-semibold text-white transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-zinc-950/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 disabled:translate-y-0 disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:shadow-none dark:bg-brand-yellow dark:text-zinc-950 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-400"
         >
+          {firstAvailable && (
+            <svg viewBox="0 0 20 20" className="size-5" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 6h12l-1.5 7.5h-9zM5 6 4.3 3H2.5M8 17a1 1 0 1 0 0-.01M14.5 17a1 1 0 1 0 0-.01" />
+            </svg>
+          )}
           {firstAvailable ? "Add to cart" : "Sold out"}
         </button>
         <p role="status" className="mt-2 min-h-5 text-sm">

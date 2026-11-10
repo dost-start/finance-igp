@@ -1,65 +1,16 @@
 import Image from "next/image";
-import Link from "next/link";
 import { getActiveProducts } from "@/lib/catalog";
 import { IntroReplayButton } from "@/components/intro-replay-button";
+import { ProductCard } from "@/components/product-card";
 import { ShelfRow } from "@/components/shelf-row";
 import { StartIntro } from "@/components/start-intro";
-import { formatPeso } from "@/lib/money";
+import { MORE_SHELF, SHELVES } from "@/lib/shelves";
 
 export const metadata = { title: "Shop" };
 
 type Product = Awaited<ReturnType<typeof getActiveProducts>>[number];
 
-// The shelves, in the order they appear. Each product type lands on one shelf; a type not listed here
-// goes on the last one ("More") so a new kind of item never disappears from the shop.
-const SHELVES = [
-  { id: "apparel", label: "Apparel", types: ["tshirt", "jacket"] },
-  { id: "lanyards", label: "Lanyards", types: ["lanyard"] },
-  { id: "bags", label: "Bags", types: ["tote"] },
-  { id: "pins", label: "Pins", types: ["pin"] },
-  { id: "stickers", label: "Stickers", types: ["sticker"] },
-] as const;
-// Every card is the same width on every shelf: two and a bit on phones, four and a bit on wide screens, so the
-// next card always peeks in when a shelf has more to scroll to.
-const CARD_WIDTH = "w-[44%] sm:w-[30%] lg:w-[23%]";
-
-const isSoldOut = (p: Product) => p.sizes.every((s) => !s.available);
 const imageOf = (p: Product) => p.images[0]?.url ?? "/products/jacket.svg";
-// Stickers and pins are cut-out art, so they sit inside the frame; garments fill it.
-const isCutout = (p: Product) => p.productType === "sticker" || p.productType === "pin";
-
-function ProductCard({ p }: { p: Product }) {
-  const soldOut = isSoldOut(p);
-  return (
-    <li className={`${CARD_WIDTH} shrink-0 snap-start`}>
-      <Link
-        href={`/products/${p.slug}`}
-        className="group block rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-700"
-      >
-        <div className="relative overflow-hidden rounded-2xl bg-product-backdrop transition-shadow duration-300 group-hover:shadow-xl group-hover:shadow-zinc-900/15">
-          <Image
-            src={imageOf(p)}
-            alt={p.name}
-            width={600}
-            height={600}
-            unoptimized
-            className={`aspect-square w-full transition-transform duration-500 ease-out group-hover:scale-[1.04] ${isCutout(p) ? "object-contain p-[12%]" : "object-cover"}`}
-          />
-          {soldOut && (
-            <span className="absolute left-3 top-3 rounded-full bg-zinc-950 px-2.5 py-1 text-xs font-semibold text-white">Sold out</span>
-          )}
-          {/* The price sits on the photo as a small tag, so the name below gets the full width. */}
-          <span className="absolute bottom-3 right-3 rounded-full bg-white/90 px-2.5 py-1 text-sm font-semibold tabular-nums text-zinc-950 shadow-sm backdrop-blur">
-            {formatPeso(p.priceCentavos)}
-          </span>
-        </div>
-        <p className="mt-3 text-sm font-medium">
-          <span className="shop-name">{p.name}</span>
-        </p>
-      </Link>
-    </li>
-  );
-}
 
 export default async function Shop() {
   const products = await getActiveProducts();
@@ -67,7 +18,7 @@ export default async function Shop() {
   const known = new Set<string>(SHELVES.flatMap((s) => s.types));
   const shelves = [
     ...SHELVES.map((s) => ({ ...s, items: products.filter((p) => (s.types as readonly string[]).includes(p.productType)) })),
-    { id: "more", label: "More", items: products.filter((p) => !known.has(p.productType)) },
+    { ...MORE_SHELF, items: products.filter((p) => !known.has(p.productType)) },
   ].filter((s) => s.items.length > 0);
 
   const stickers = products.filter((p) => p.productType === "sticker");
