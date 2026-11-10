@@ -61,26 +61,26 @@ export function StoreChrome({ children }: { children: ReactNode }) {
           columns, and a bottom bar with the theme switch. The corner quarter circles are tiles of the START mark,
           as in the shop hero. */}
       <footer className="relative isolate overflow-hidden bg-zinc-950 text-zinc-100" style={{ "--si-ink": "#f1f3f4" } as CSSProperties}>
-        <div aria-hidden="true" className="absolute -right-16 -top-16 -z-10 size-36 rounded-bl-full bg-brand-yellow sm:-right-24 sm:-top-24 sm:size-96" />
-        <div aria-hidden="true" className="absolute -bottom-32 left-[42%] -z-10 hidden size-56 rounded-t-full bg-brand-blue sm:block" />
-        <div aria-hidden="true" className="absolute -bottom-20 -left-20 -z-10 size-48 rounded-tr-full bg-white/[0.06]" />
+        <div aria-hidden="true" className="absolute -right-12 -top-12 -z-10 size-28 rounded-bl-full bg-brand-yellow sm:-right-16 sm:-top-16 sm:size-56" />
+        <div aria-hidden="true" className="absolute -bottom-24 left-[42%] -z-10 hidden size-36 rounded-t-full bg-brand-blue sm:block" />
+        <div aria-hidden="true" className="absolute -bottom-16 -left-16 -z-10 size-32 rounded-tr-full bg-white/[0.06]" />
 
         {/* pb-28 on phones keeps the bottom bar clear of the fixed phone cart bar. */}
-        <div className="mx-auto w-full max-w-6xl px-4 pb-28 pt-14 sm:pb-8 sm:pt-20">
-          <p className="max-w-3xl text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl">
+        <div className="mx-auto w-full max-w-6xl px-4 pb-28 pt-10 sm:pb-6 sm:pt-12">
+          <p className="max-w-2xl text-2xl font-extrabold leading-tight tracking-tight sm:text-4xl">
             Science and Technology <span className="text-brand-yellow">for the people</span>
           </p>
 
-          <div className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr] sm:mt-16">
+          <div className="mt-8 grid gap-8 sm:mt-10 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr]">
             <div>
-              <span className="block aspect-[1742/400] h-10 sm:h-12" role="img" aria-label="START" dangerouslySetInnerHTML={{ __html: WORD_SVG }} />
-              <p className="mt-4 max-w-xs text-sm text-zinc-400">
+              <span className="block aspect-[1742/400] h-8 sm:h-9" role="img" aria-label="START" dangerouslySetInnerHTML={{ __html: WORD_SVG }} />
+              <p className="mt-3 max-w-xs text-sm text-zinc-400">
                 The official merchandise of START-DOST: Scholars Transforming Advancement and Research for Technology.
               </p>
             </div>
             <nav aria-label="Shop">
               <h2 className="text-sm font-semibold text-white">Shop</h2>
-              <ul className="mt-4 space-y-2.5 text-sm text-zinc-400">
+              <ul className="mt-3 space-y-2 text-sm text-zinc-400">
                 {[
                   { href: "/shop", label: "All merch" },
                   { href: "/shop#apparel", label: "Apparel" },
@@ -98,7 +98,7 @@ export function StoreChrome({ children }: { children: ReactNode }) {
             </nav>
             <nav aria-label="Help">
               <h2 className="text-sm font-semibold text-white">Help</h2>
-              <ul className="mt-4 space-y-2.5 text-sm text-zinc-400">
+              <ul className="mt-3 space-y-2 text-sm text-zinc-400">
                 {[
                   { href: "/track", label: "Track your order" },
                   { href: "/cart", label: "Your cart" },
@@ -114,7 +114,7 @@ export function StoreChrome({ children }: { children: ReactNode }) {
             </nav>
           </div>
 
-          <div className="mt-14 flex flex-wrap items-center justify-between gap-x-6 gap-y-4 border-t border-white/10 pt-6 text-sm text-zinc-400" data-theme="dark">
+          <div className="mt-10 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-white/10 pt-5 text-sm text-zinc-400" data-theme="dark">
             <p>© START-DOST. Made by technoscholars, for technoscholars.</p>
             <ThemeSwitch />
           </div>
