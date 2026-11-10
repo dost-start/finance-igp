@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import type { CSSProperties } from "react";
 import { asc, eq, sql } from "drizzle-orm";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { z } from "zod";
+import { OrderSteps } from "@/components/order-steps";
 import { PaymentForm } from "@/components/payment-form";
 import { StoreClosed } from "@/components/store-closed";
 import { isStoreLocked } from "@/lib/store";
@@ -26,10 +28,10 @@ async function Payment({ params }: { params: PageProps<"/pay/[uuid]">["params"] 
   // The Order ID is deliberately never shown here: buyers get it by email after finance verifies payment.
   if (order.status !== "order_received" && order.status !== "pending_payment") {
     return (
-      <div className="mt-6 max-w-xl rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
-        <p className="font-medium">This order is no longer open for payment.</p>
+      <div className="lift-card mt-8 max-w-xl rounded-3xl border border-zinc-200/70 bg-white p-6 sm:p-8 dark:border-zinc-800 dark:bg-zinc-900">
+        <p className="text-xl font-extrabold tracking-tight">This order is no longer open for payment.</p>
         <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">If you have questions, use the merch ticket form linked in your emails.</p>
-        <Link href="/" className="mt-4 inline-block text-sm underline underline-offset-4">
+        <Link href="/shop" className="mt-5 inline-flex items-center rounded-full bg-sky-800 px-6 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-sky-900">
           Back to the shop
         </Link>
       </div>
@@ -52,8 +54,12 @@ async function Payment({ params }: { params: PageProps<"/pay/[uuid]">["params"] 
 export default function PayPage({ params }: PageProps<"/pay/[uuid]">) {
   return (
     <main>
-      <h1 className="text-3xl font-extrabold tracking-tight">Payment</h1>
-      <Suspense fallback={<p className="mt-6 text-sm text-zinc-500 dark:text-zinc-400">Loading your order…</p>}>
+      <h1 className="page-enter text-3xl font-extrabold tracking-tight sm:text-4xl">Payment</h1>
+      <p className="page-enter mt-2 text-zinc-600 dark:text-zinc-400" style={{ "--enter-delay": "50ms" } as CSSProperties}>Scan the QR, pay the exact amount, then send us your receipt.</p>
+      <div className="page-enter mt-5" style={{ "--enter-delay": "90ms" } as CSSProperties}>
+        <OrderSteps current={3} />
+      </div>
+      <Suspense fallback={<div role="status" aria-busy="true" className="mt-8 h-64 animate-pulse rounded-3xl bg-zinc-100 dark:bg-zinc-900"><span className="sr-only">Loading your order</span></div>}>
         <Payment params={params} />
       </Suspense>
     </main>

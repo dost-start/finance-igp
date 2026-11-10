@@ -39,7 +39,7 @@ import { REJECT_REASONS, formatManila, rejectionDeadline, renderEmail2, renderEm
 
 describe("Email 2 (payment confirmation)", () => {
   const { subject, text } = renderEmail2(
-    { buyerName: "Juan", orderId: "R13000001", trackingUrl: "https://shop.example/track/abc", items: data.items, totalCentavos: 99000 },
+    { buyerName: "Juan", orderId: "R13000001", trackingUrl: "https://shop.example/track/abc", contactLast4: "4567", items: data.items, totalCentavos: 99000 },
     "https://forms.example/ticket",
   );
   it("shows the Order ID, the tracking link and the verified total", () => {
@@ -48,6 +48,9 @@ describe("Email 2 (payment confirmation)", () => {
     expect(text).toContain("Tracking Link: https://shop.example/track/abc");
     expect(text).toContain("Total Verified: ₱990");
     expect(text).toContain("last 4 digits of your contact number");
+  });
+  it("prints the last 4 digits so the buyer can keep them", () => {
+    expect(text).toContain("Tracking Code (last 4 digits of your contact number): 4567");
   });
   it("is no-reply", () => {
     expect(text).toContain("no-reply address. Please do not reply.");

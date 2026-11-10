@@ -87,7 +87,7 @@ export async function confirmPayment(orderUuid: string) {
 
   after(async () => {
     const content = renderEmail2(
-      { buyerName: order.buyerName, orderId: order.orderId, trackingUrl: trackingUrl(token), items: await itemsFor(orderUuid), totalCentavos: order.totalCentavos },
+      { buyerName: order.buyerName, orderId: order.orderId, trackingUrl: trackingUrl(token), contactLast4: order.contactLast4, items: await itemsFor(orderUuid), totalCentavos: order.totalCentavos },
       ticketFormUrl(),
     );
     await sendOrderEmail({ orderUuid, template: "2-payment-confirmation", to: order.email, content });

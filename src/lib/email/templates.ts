@@ -56,6 +56,7 @@ export type Email2Data = {
   buyerName: string;
   orderId: string;
   trackingUrl: string;
+  contactLast4: string;
   items: { name: string; size: string; quantity: number }[];
   totalCentavos: number;
 };
@@ -71,11 +72,12 @@ export function renderEmail2(d: Email2Data, ticketUrl: string | null): EmailCont
     "Order Confirmation Details",
     `Order ID: ${d.orderId}`,
     `Tracking Link: ${d.trackingUrl}`,
+    `Tracking Code (last 4 digits of your contact number): ${d.contactLast4}`,
     "Items Ordered:",
     lines,
     `Total Verified: ${formatPeso(d.totalCentavos)}`,
     "",
-    "Open the tracking link above to check the progress of your order at any time. You can also check your order on our tracking page using your Order ID and the last 4 digits of your contact number. We will send another update when our team starts production.",
+    "Open the tracking link above to check the progress of your order at any time. You can also check your order on our tracking page using your Order ID and the Tracking Code above (the last 4 digits of your contact number). Keep this email so you can find them again. We will send another update when our team starts production.",
     "",
     "Best regards,",
     "START: COLLECTIONS Team",

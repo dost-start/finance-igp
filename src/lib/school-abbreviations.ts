@@ -107,12 +107,32 @@ function key(s: string): string {
   return s.toLowerCase().replace(/[^a-z]/g, "");
 }
 
-// Returns the full name to suggest when the whole entry looks like an abbreviation, else null. Only short,
-// single-word entries count, so "University of Cebu" is never second-guessed.
-export function expandSchoolAbbreviation(input: string): string | null {
+type Generated = Record<string, string[]>;
+
+// Returns up to three full names the entry could stand for, best guess first, or [] when it does not look
+// like an abbreviation. Hand-picked entries above come first (they cover 2-letter ones like UP and NU); the
+// generated map (initials of ~1,700 schools, see scripts/gen-school-acronyms.py) fills in the rest. Only
+// short single-word entries count, so "University of Cebu" is never second-guessed.
+export function suggestSchoolNames(input: string, generated: Generated | null): string[] {
   const t = input.trim();
-  if (t.length < 2 || t.length > 12 || /\s/.test(t.replace(/\./g, ""))) return null;
-  const full = SCHOOLS[key(t)];
-  if (!full || key(full) === key(t)) return null;
-  return full;
+  if (t.length < 2 || t.length > 12 || /\s/.test(t.replace(/\./g, ""))) return [];
+  const k = key(t);
+  if (k.length < 2) return [];
+  const seen = new Set<string>();
+  const out: string[] = [];
+  const add = (name: string | undefined) => {
+    if (!name) return;
+    const nk = key(name);
+    if (nk === k || seen.has(nk)) return;
+    seen.add(nk);
+    out.push(name);
+  };
+  add(SCHOOLS[k]);
+  for (const name of generated?.[k] ?? []) add(name);
+  return out.slice(0, 3);
+}
+
+// Kept for callers that only want the single curated answer.
+export function expandSchoolAbbreviation(input: string): string | null {
+  return suggestSchoolNames(input, null)[0] ?? null;
 }

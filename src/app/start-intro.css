@@ -310,3 +310,9 @@
     transition: none;
   }
 }
+
+/* Checkout and payment (ScrollFlag sets data-plain-header): the header is the plain top bar and scrolls away with
+   the page instead of floating over it. */
+:root[data-plain-header] .si-site-header {
+  position: static;
+}

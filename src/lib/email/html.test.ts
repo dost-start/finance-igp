@@ -29,7 +29,7 @@ describe("toHtml", () => {
     const e9 = toHtml(renderEmail9({ buyerName: "Ana", reason: "Unreadable receipt", deadline: new Date() }, form).text);
     expect(e9).toContain(`<a href="${form}">${form}</a>`);
     const token = "a".repeat(64);
-    const e2 = toHtml(renderEmail2({ buyerName: "Ana", orderId: "R13000001", trackingUrl: `https://start-shop-six.vercel.app/track/${token}`, items: [], totalCentavos: 100 }, form).text);
+    const e2 = toHtml(renderEmail2({ buyerName: "Ana", orderId: "R13000001", trackingUrl: `https://start-shop-six.vercel.app/track/${token}`, contactLast4: "4567", items: [], totalCentavos: 100 }, form).text);
     expect(e2).toContain(`<a href="https://start-shop-six.vercel.app/track/${token}">`);
   });
 });
